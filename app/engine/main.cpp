@@ -1,4 +1,4 @@
-import Window;
+#include "WindowSFML.hpp"
 
 int main() {
     WindowSFML window("STG_Builder", 640, 480);
