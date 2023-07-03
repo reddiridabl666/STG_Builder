@@ -1,7 +1,10 @@
 #include "WindowSFML.hpp"
 
-#include "imgui-SFML.h"
-#include "imgui.h"
+#include <imgui-SFML.h>
+#include <imgui.h>
+
+#include "Drawable.hpp"
+#include "UiElement.hpp"
 
 WindowSFML::WindowSFML(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync)
     : window_(sf::VideoMode(sf::Vector2u{width, height}), name,
@@ -13,7 +16,9 @@ WindowSFML::WindowSFML(const std::string& name, uint width, uint height, bool is
     }
 }
 
-bool WindowSFML::is_open() const { return window_.isOpen(); }
+bool WindowSFML::is_open() const {
+    return window_.isOpen();
+}
 
 void WindowSFML::process_events() {
     sf::Event event{};
@@ -25,11 +30,17 @@ void WindowSFML::process_events() {
     }
 }
 
-void WindowSFML::render(const DrawableCollection& drawables) {
+void WindowSFML::draw_all(const Collection<Drawable>& drawables) {
+    for (const auto& obj : drawables) {
+        window_.draw(obj->get_drawable());
+    }
+}
+
+void WindowSFML::draw_ui(const Collection<UiElement>& ui_elements) {
     ImGui::SFML::Update(window_, clock_.restart());
 
-    for (const auto& obj : drawables) {
-        window_.draw(*obj);
+    for (const auto& obj : ui_elements) {
+        obj->draw();
     }
 }
 
@@ -39,4 +50,6 @@ void WindowSFML::display() {
     window_.display();
 }
 
-WindowSFML::~WindowSFML() { ImGui::SFML::Shutdown(); }
+WindowSFML::~WindowSFML() {
+    ImGui::SFML::Shutdown();
+}

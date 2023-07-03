@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(stg_builder)
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_compile_options(-std=c++2b)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -67,4 +66,5 @@ if (SANITIZE)
 endif ()
 
 add_subdirectory(pkg/core)
+add_subdirectory(pkg/ui)
 add_subdirectory(app)

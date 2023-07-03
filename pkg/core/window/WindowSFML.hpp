@@ -1,7 +1,8 @@
 #pragma once
 
-#include "SFML/Graphics.hpp"
-#include "SFML/System.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+
 #include "Window.hpp"
 
 class WindowSFML : public Window {
@@ -14,7 +15,10 @@ class WindowSFML : public Window {
 
     bool is_open() const override;
     void process_events() override;
-    void render(const DrawableCollection&) override;
+
+    void draw_all(const Collection<Drawable>&) override;
+    void draw_ui(const Collection<UiElement>&) override;
+
     void display() override;
 
     ~WindowSFML() override;
