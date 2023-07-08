@@ -7,3 +7,4 @@ AccessModifierOffset: -2
 AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortEnumsOnASingleLine: false
+# RequiresExpressionIndentation: REI_OuterScope

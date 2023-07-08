@@ -32,7 +32,7 @@ void WindowSFML::process_events() {
 
 void WindowSFML::draw_all(const Collection<Drawable>& drawables) {
     for (const auto& obj : drawables) {
-        window_.draw(obj->get_drawable());
+        window_.draw(obj->drawable());
     }
 }
 

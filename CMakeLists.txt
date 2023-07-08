@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
-set(SFML_VERSION 2.5.1)
+set(SFML_VERSION 2.6)
 set(IMGUI_VERSION 1.89.6)
 set(IMGUI_SFML_VERSION 2.5)
 
@@ -32,7 +32,7 @@ FetchContent_Declare(
 )
 
 # SFML
-option(SFML_BUILD_AUDIO "Build audio" ON)
+option(SFML_BUILD_AUDIO "Build audio" OFF)
 option(SFML_BUILD_NETWORK "Build network" OFF)
 FetchContent_MakeAvailable(sfml)
 
@@ -64,6 +64,12 @@ if (SANITIZE)
     add_compile_options(${SANITIZER_FLAGS})
     add_link_options(${SANITIZER_FLAGS})
 endif ()
+
+find_package(Boost 1.80.0) 
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIR})
+endif()
 
 add_subdirectory(pkg/core)
 add_subdirectory(pkg/ui)

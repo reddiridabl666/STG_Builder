@@ -25,7 +25,7 @@ class ShapeObject : public Displayable {
         shape_.setTexture(texture);
     }
 
-  private:
+  protected:
     T shape_;
 };
 

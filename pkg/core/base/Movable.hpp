@@ -5,22 +5,22 @@
 
 class Movable {
   public:
-    virtual sf::Transformable& get_transformable() = 0;
+    virtual sf::Transformable& transformable() = 0;
 
-    const sf::Transformable& get_transformable() const {
-        return const_cast<Movable*>(this)->get_transformable();
+    const sf::Transformable& transformable() const {
+        return const_cast<Movable*>(this)->transformable();
     }
 
     const sf::Vector2f& pos() const {
-        return get_transformable().getPosition();
+        return transformable().getPosition();
     }
 
     void set_pos(const sf::Vector2f& pos) {
-        get_transformable().setPosition(pos);
+        transformable().setPosition(pos);
     }
 
     void move(const sf::Vector2f& pos) {
-        get_transformable().move(pos);
+        transformable().move(pos);
     }
 
     virtual ~Movable() = default;

@@ -1,15 +1,17 @@
 #pragma once
 
-#include <string>
+#include <concepts>
 
+template <typename T, typename U>
 struct Event {
-    enum Type {
-        MouseClick,
-        KeyUp,
-        KeyDown,
-        TypeCount
-    };
+    using Type = U;
 
     Type type;
-    int payload;
+    T payload;
 };
+
+template <typename T>
+concept EventType = requires(T event) {
+                        { event.type } -> std::same_as<typename T::Type>;
+                        { event.payload };
+                    };

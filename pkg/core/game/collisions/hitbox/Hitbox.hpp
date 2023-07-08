@@ -3,6 +3,8 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#include "Geometry.hpp"
+
 class RectHitbox;
 class CircleHitbox;
 
@@ -16,6 +18,8 @@ class Hitbox {
     Hitbox(Type type) : type_(type) {}
 
     bool intersects_with(const Hitbox& other) const;
+
+    virtual FloatBox get_box() const = 0;
 
     Type get_type() const {
         return type_;
@@ -32,24 +36,23 @@ class Hitbox {
 class RectHitbox : public Hitbox {
   public:
     RectHitbox() : Hitbox(Hitbox::Type::Rect) {}
+    virtual const FloatRect& rect() const = 0;
 
   protected:
-    virtual bool intersects_with_rect(const RectHitbox& other) const = 0;
-    virtual bool intersects_with_circle(const CircleHitbox& other) const = 0;
+    bool intersects_with_rect(const RectHitbox& other) const override;
+    bool intersects_with_circle(const CircleHitbox& other) const override;
 
-  private:
-    sf::FloatRect rect_;
+    friend CircleHitbox;
 };
 
 class CircleHitbox : public Hitbox {
   public:
     CircleHitbox() : Hitbox(Hitbox::Type::Circle) {}
 
-  protected:
-    virtual bool intersects_with_rect(const RectHitbox& other) const = 0;
-    virtual bool intersects_with_circle(const CircleHitbox& other) const = 0;
+    virtual float radius() const = 0;
+    virtual const sf::Vector2f& center() const = 0;
 
-  private:
-    sf::Vector2f radius_;
-    sf::Vector2f center_;
+  protected:
+    bool intersects_with_rect(const RectHitbox& other) const override;
+    bool intersects_with_circle(const CircleHitbox& other) const override;
 };
