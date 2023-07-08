@@ -1,0 +1,34 @@
+{
+    "bg": {
+        "image_path": "bg.jpg",
+        "speed": 0
+    },
+    "menu": {
+        "ratio": 0.3,
+        "stats": [
+            "health",
+            "score"
+        ]
+    },
+    "player": {
+        "image_path": "player.jpg",
+        "size": {
+            "x": 20,
+            "y": 20
+        },
+        "speed": {
+            "normal": 1,
+            "alt": 1.2
+        },
+        "hitbox": {
+            "type": "rect",
+            "size": {
+                "x": 20,
+                "y": 20
+            },
+            "show": "true",
+            "color": "green"
+        },
+        "bullets": {}
+    }
+}

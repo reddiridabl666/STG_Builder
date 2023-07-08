@@ -8,6 +8,10 @@ class Window;
 class Drawable {
   public:
     virtual sf::Drawable& get_drawable() = 0;
-    virtual sf::Transformable& get_transformable() = 0;
+
+    const sf::Drawable& get_drawable() const {
+        return const_cast<Drawable*>(this)->get_drawable();
+    }
+
     virtual ~Drawable() = default;
 };
