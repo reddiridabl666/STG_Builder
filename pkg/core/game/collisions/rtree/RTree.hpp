@@ -9,7 +9,7 @@
 namespace rtree = boost::geometry::index;
 
 template <typename index_type = std::string, typename box_type = FloatBox>
-class RTree : public Observable<Event<index_type, box_type>> {
+class RTree : public Observable<index_type, box_type> {
   public:
     using value_type = std::pair<box_type, index_type>;
 

@@ -13,6 +13,8 @@ concept Shape = std::is_base_of<sf::Shape, T>::value;
 template <Shape T>
 class ShapeObject : public Displayable {
   public:
+    ShapeObject(const T& shape) : shape_(shape) {}
+
     sf::Drawable& get_drawable() {
         return shape_;
     }
@@ -25,10 +27,29 @@ class ShapeObject : public Displayable {
         shape_.setTexture(texture);
     }
 
+    sf::Vector2f get_size() const override {
+        return sprite_.getTexture()->getSize() * sprite_.getScale();
+    }
+
   protected:
     T shape_;
 };
 
-using RectObject = ShapeObject<sf::RectangleShape>;
+class RectObject : public ShapeObject<sf::RectangleShape> {
+  public:
+    RectObject(size_t x = 0, size_t y = 0) : ShapeObject(sf::RectangleShape(sf::Vector2f{x, y})) {}
 
-using CircleObject = ShapeObject<sf::CircleShape>;
+    sf::Vector2f get_size() const override {
+        return shape_.getSize();
+    }
+};
+
+class CircleObject : public ShapeObject<sf::CircleShape> {
+  public:
+    CircleObject(size_t radius = 0) : ShapeObject(sf::CircleShape(radius)) {}
+
+    sf::Vector2f get_size() const override {
+        auto radius = shape_.getRadius();
+        return sf::Vector2f{radius, radius};
+    }
+};

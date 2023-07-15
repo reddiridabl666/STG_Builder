@@ -1,0 +1,35 @@
+{
+    "name": "The first level",
+    "bg": {
+        "image_path": "bg.jpg",
+        "speed": 0
+    },
+    "entities": [
+        {
+            "type": "enemy",
+            "pos": {
+                "x": "center",
+                "y": 200
+            }
+        },
+        {
+            "type": "enemy",
+            "pos": {
+                "x": "55%",
+                "y": 400
+            }
+        },
+        {
+            "type": "enemy",
+            "count": 4,
+            "pos": {
+                "x": -50,
+                "y": 600
+            },
+            "delta": {
+                "x": 50,
+                "y": 50
+            }
+        }
+    ]
+}

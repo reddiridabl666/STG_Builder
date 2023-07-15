@@ -11,7 +11,6 @@ class RTreeGeometry : public Identifiable<std::string>, public Updatable {
   public:
     RTreeGeometry(const std::string& id, std::unique_ptr<Framed>&& frame, RTree<>& rtree);
     void update() override;
-    ~RTreeGeometry();
 
   private:
     std::unique_ptr<Framed> frame_;

@@ -1,6 +1,6 @@
 #pragma once
 
 #include "Drawable.hpp"
-#include "Movable.hpp"
+#include "Transformable.hpp"
 
-class Displayable : public Drawable, public Movable {};
+class Displayable : public Drawable, public Transformable {};

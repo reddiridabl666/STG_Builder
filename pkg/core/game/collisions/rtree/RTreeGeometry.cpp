@@ -11,7 +11,7 @@ void RTreeGeometry::update() {
     Event<std::string, FloatBox> event{id(), cur_frame};
 
     rtree_.remove(id(), old_frame_);
-    rtree_.insert(id(), frame_->get_frame());
+    rtree_.insert(id(), cur_frame);
 
     old_frame_ = cur_frame;
 }

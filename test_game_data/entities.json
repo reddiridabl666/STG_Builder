@@ -1,0 +1,11 @@
+{
+    "enemy": {
+        "image_path": "enemy.jpg",
+        "size": {
+            "x": 20,
+            "y": 20
+        },
+        "speed": 2,
+        "score": 100
+    }
+}
