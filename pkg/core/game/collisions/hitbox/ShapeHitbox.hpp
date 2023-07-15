@@ -10,7 +10,7 @@ class CircleShapeHitbox : public CircleHitbox {
   public:
     CircleShapeHitbox(const sf::CircleShape& shape) : shape_(shape) {}
 
-    FloatBox get_box() const override {
+    FloatBox get_frame() const override {
         return shape_.getGlobalBounds();
     }
 
@@ -30,7 +30,7 @@ class RectShapeHitbox : public RectHitbox {
   public:
     RectShapeHitbox(const sf::RectangleShape& shape) : shape_(shape) {}
 
-    FloatBox get_box() const override {
+    FloatBox get_frame() const override {
         return shape_.getGlobalBounds();
     }
 

@@ -3,12 +3,13 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#include "Framed.hpp"
 #include "Geometry.hpp"
 
 class RectHitbox;
 class CircleHitbox;
 
-class Hitbox {
+class Hitbox : public Framed {
   public:
     enum class Type {
         Circle,
@@ -18,8 +19,6 @@ class Hitbox {
     Hitbox(Type type) : type_(type) {}
 
     bool intersects_with(const Hitbox& other) const;
-
-    virtual FloatBox get_box() const = 0;
 
     Type get_type() const {
         return type_;

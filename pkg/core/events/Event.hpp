@@ -2,16 +2,16 @@
 
 #include <concepts>
 
-template <typename T, typename U>
+template <typename T, typename Payload>
 struct Event {
-    using Type = U;
+    using Type = T;
 
     Type type;
-    T payload;
+    Payload payload;
 };
 
 template <typename T>
 concept EventType = requires(T event) {
-                        { event.type } -> std::same_as<typename T::Type>;
-                        { event.payload };
-                    };
+    { event.type } -> std::same_as<typename T::Type>;
+    { event.payload };
+};

@@ -20,6 +20,9 @@ concept Numeric = std::is_integral_v<T> || std::is_floating_point_v<T>;
 template <Numeric T>
 struct Box {
   public:
+    using point_type = sf::Vector2<T>;
+
+    Box() = default;
     Box(const sf::Rect<T>& rect) : rect_(rect) {}
 
     sf::Vector2<T> top_left() const;

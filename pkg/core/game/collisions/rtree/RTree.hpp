@@ -4,20 +4,29 @@
 #include <utility>
 
 #include "Geometry.hpp"
+#include "Observable.hpp"
 
 namespace rtree = boost::geometry::index;
 
-template <typename index_type, typename box_type = FloatBox>
-class RTree {
+template <typename index_type = std::string, typename box_type = FloatBox>
+class RTree : public Observable<Event<index_type, box_type>> {
   public:
     using value_type = std::pair<box_type, index_type>;
 
-    void insert(const box_type& box, index_type index) {
+    void insert(index_type index, const box_type& box) {
         rtree_.insert(std::make_pair(box, index));
     }
 
-    void remove(const box_type& box, index_type index) {
+    void remove(index_type index, const box_type& box) {
         rtree_.remove(std::make_pair(box, index));
+    }
+
+    void remove(const value_type& value) {
+        rtree_.remove(value);
+    }
+
+    void insert(const value_type& value) {
+        rtree_.insert(value);
     }
 
     const auto& intersects(const box_type& box) const {

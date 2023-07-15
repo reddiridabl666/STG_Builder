@@ -6,25 +6,31 @@
 
 #include "Event.hpp"
 
-template <EventType T>
+template <typename T, typename P>
 class Observable {
   public:
-    using Callback = std::function<void(T)>;
+    using Callback = std::function<void(const Event<T, P>&)>;
 
-    void on(T::Type event, const Callback& cb);
-    void emit(T event);
+    void on(const T& event, const Callback& cb);
+    void off(const T& event);
+    void emit(const Event<T, P>& event);
 
   private:
-    std::unordered_map<Event::Type, std::vector<Callback>> cbs_;
+    std::unordered_map<T, std::vector<Callback>> cbs_;
 };
 
-template <EventType T>
-void Observable<T>::on(T::Type event_type, const Callback& cb) {
+template <typename T, typename P>
+void Observable<T, P>::on(const T& event_type, const Callback& cb) {
     cbs_[event_type].push_back(cb);
 }
 
-template <EventType T>
-void Observable<T>::emit(T event) {
+template <typename T, typename P>
+void Observable<T, P>::off(const T& event_type) {
+    cbs_.erase(event_type);
+}
+
+template <typename T, typename P>
+void Observable<T, P>::emit(const Event<T, P>& event) {
     for (const auto& cb : cbs_[event.type]) {
         cb(event);
     }
