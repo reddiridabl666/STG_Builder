@@ -23,10 +23,6 @@ class ShapeObject : public Displayable {
         return shape_;
     }
 
-    void set_texture(const sf::Texture& texture) {
-        shape_.setTexture(texture);
-    }
-
     sf::Vector2f get_size() const override {
         return sprite_.getTexture()->getSize() * sprite_.getScale();
     }

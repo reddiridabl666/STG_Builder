@@ -10,24 +10,29 @@
 
 class ObjectTemplate {
   public:
-    using AssetPaths = std::unordered_map<AssetType, std::vector<std::string>>;
+    using AssetPaths = std::vector<std::string>;
 
-    ObjectTemplate(sf::Vector2f pos, const Asset& asset)
-        : pos_(pos), paths_{{asset.type, std::vector<std::string>{asset.path}}} {}
+    ObjectTemplate(sf::Vector2f pos, const Asset& image) : pos_(pos), images_{image.path} {}
 
-    ObjectTemplate(sf::Vector2f pos, const AssetPaths& paths) : pos_(pos), paths_(paths) {}
+    ObjectTemplate(sf::Vector2f pos, const AssetPaths& images, const AssetPaths& sounds = AssetPaths{})
+        : pos_(pos), images_(images), sounds_(sounds) {}
 
     const sf::Vector2f& pos() const {
         return pos_;
     }
 
-    const std::vector<std::string>& asset_paths(AssetType type) {
-        return paths_[type];
+    const AssetPaths images() const {
+        return images_;
+    }
+
+    const AssetPaths sounds() const {
+        return sounds_;
     }
 
     virtual GameObject create_object() const = 0;
 
   private:
-    AssetPaths paths_;
+    AssetPaths images_;
+    AssetPaths sounds_;
     sf::Vector2f pos_;
 };

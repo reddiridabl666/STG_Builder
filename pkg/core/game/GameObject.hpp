@@ -4,6 +4,7 @@
 
 #include "Displayable.hpp"
 #include "Updatable.hpp"
+#include "Value.hpp"
 
 class GameObject : public Updatable, public Displayable {
   public:

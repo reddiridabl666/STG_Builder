@@ -57,13 +57,13 @@ option(DEBUG "Add debug info" OFF)
 
 if (DEBUG)
     target_compile_options(${TARGET} PRIVATE -g)
-endif ()
+endif()
 
 if (SANITIZE)
     set(SANITIZER_FLAGS -fsanitize=address,leak,undefined)
     add_compile_options(${SANITIZER_FLAGS})
     add_link_options(${SANITIZER_FLAGS})
-endif ()
+endif()
 
 find_package(Boost 1.80.0) 
 
@@ -72,5 +72,6 @@ if(Boost_FOUND)
 endif()
 
 add_subdirectory(pkg/core)
+add_subdirectory(pkg/builder)
 add_subdirectory(pkg/ui)
 add_subdirectory(app)
