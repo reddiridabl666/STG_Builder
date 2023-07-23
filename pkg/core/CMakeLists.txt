@@ -8,6 +8,7 @@ set(INCLUDE_DIRS
     events
     base
     game
+    game/collisions
     game/collisions/hitbox
     game/collisions/rtree
 )

@@ -11,4 +11,3 @@ set(INCLUDE_DIRS
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::json)

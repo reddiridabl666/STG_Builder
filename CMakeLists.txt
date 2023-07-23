@@ -68,7 +68,7 @@ endif()
 find_package(Boost 1.80.0) 
 
 if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIR})
+    include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
 add_subdirectory(pkg/core)

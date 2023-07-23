@@ -15,7 +15,7 @@ std::pair<T, bool> try_get(json::value value, std::string_view key) {
     }
 }
 
-static bool has_value(json::value value, std::string_view key) {
+[[maybe_unused]] static bool has_value(json::value value, std::string_view key) {
     try {
         value.at(key);
         return true;
@@ -55,7 +55,7 @@ std::pair<std::string, bool> EntityGenerator::generate(json::value value) {
         return std::make_pair("", false);
     }
 
-    std::string class_name = kPrefix_ + class_name;
+    class_name = kPrefix_ + class_name;
     auto value_classes = get_value_classes(value);
 
     out << "class " << class_name << " : public GameObject";
