@@ -1,9 +1,12 @@
 #include "EntityGenerator.hpp"
 
+#include <expected>
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+
+#include "Errors.hpp"
 
 template <typename T>
 std::pair<T, bool> try_get(json::value value, std::string_view key) {
@@ -47,12 +50,12 @@ static std::unordered_map<std::string, std::string> get_value_classes(json::valu
     return res;
 }
 
-std::pair<std::string, bool> EntityGenerator::generate(json::value value) {
+std::expected<std::string, Error> EntityGenerator::generate(json::value value) {
     std::stringstream out;
 
     auto [class_name, ok] = try_get<std::string>(value, "name");
     if (!ok) {
-        return std::make_pair("", false);
+        return std::unexpected(Error());
     }
 
     class_name = kPrefix_ + class_name;
@@ -83,5 +86,7 @@ std::pair<std::string, bool> EntityGenerator::generate(json::value value) {
 
     out << "{}";
 
-    return std::make_pair(out.str(), true);
+    std::expected<std::string, Error> exp;
+
+    return out.str();
 }

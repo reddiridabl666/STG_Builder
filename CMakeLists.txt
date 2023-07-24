@@ -71,6 +71,8 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
+include_directories(pkg/common)
+
 add_subdirectory(pkg/core)
 add_subdirectory(pkg/builder)
 add_subdirectory(pkg/ui)
