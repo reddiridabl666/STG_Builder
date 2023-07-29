@@ -1,8 +1,12 @@
 #pragma once
 
-#include <format>
+#include <fmt/core.h>
+
+#include <concepts>
+#include <memory>
 #include <ostream>
 #include <string>
+#include <tl/expected.hpp>
 
 #define ERROR_CODES    \
     XX(0, OK)          \
@@ -18,13 +22,17 @@ struct Error {
         ERROR_CODES
     };
 
+    virtual std::string message() const = 0;
+};
+
+struct ErrorCode : public Error {
 #undef XX
 
 #define XX(error_code, error_message) \
     case Error::Code::error_message:  \
         return #error_message;
 
-    virtual std::string message() const {
+    std::string message() const override {
         switch (code) {
             ERROR_CODES
             default:
@@ -32,28 +40,77 @@ struct Error {
         }
     }
 
-    Error(Code code = Code::Undefined) : code(code) {}
+    ErrorCode(Code code = Code::Undefined) : code(code) {}
 
     Code code;
 };
 
-struct KeyError : public Error {
+struct ErrorPtr : public Error {
   public:
-    KeyError(std::string key) : Error(Code::NoKey), key_(std::move(key)) {}
+    explicit ErrorPtr(std::shared_ptr<Error>&& error) : value_(std::move(error)) {}
 
     std::string message() const override {
-        return std::format("Key '{}' is required", key_);
+        return value_->message();
     }
 
   private:
+    std::shared_ptr<Error> value_;
+};
+
+template <typename T, typename... Ts>
+inline tl::unexpected<ErrorPtr> unexpected_error(Ts&&... args) {
+    return tl::unexpected(ErrorPtr(std::make_shared<T>(std::forward<Ts>(args)...)));
+}
+
+struct KeyError : public ErrorCode {
+  public:
+    KeyError(std::string key) : ErrorCode(Code::NoKey), key_(std::move(key)) {}
+
+    std::string message() const override {
+        return fmt::format("Key '{}' is required", key_);
+    }
+
+  protected:
     std::string key_;
 };
 
-struct TypeError : public Error {};
+struct NoKeyError : public KeyError {
+  public:
+    NoKeyError(std::string key) : KeyError(std::move(key)) {}
 
-struct InternalError : public Error {};
+    std::string message() const override {
+        return fmt::format("No such key: '{}'", key_);
+    }
+};
 
-inline std::ostream& operator<<(std::ostream& out, Error error) {
+struct TypeError : public ErrorCode {
+  public:
+    TypeError(std::string key, std::string req, std::string got)
+        : ErrorCode(Code::InvalidType), req_(std::move(req)), got_(std::move(got)), key_(std::move(key)) {}
+
+    std::string message() const override {
+        return fmt::format("Expected type '{}', but got '{}' at key '{}'", req_, got_, key_);
+    }
+
+  private:
+    std::string req_;
+    std::string got_;
+    std::string key_;
+};
+
+struct InternalError : public ErrorCode {
+  public:
+    InternalError(std::string msg) : ErrorCode(Code::Internal), msg_(std::move(msg)) {}
+
+    std::string message() const override {
+        return msg_;
+    }
+
+  private:
+    std::string msg_;
+};
+
+inline std::ostream& operator<<(std::ostream& out, const Error& error) {
     return out << error.message();
 }
 

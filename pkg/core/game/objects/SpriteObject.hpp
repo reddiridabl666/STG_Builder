@@ -8,14 +8,13 @@
 
 class SpriteObject : public Displayable {
   public:
-    SpriteObject(std::shared_ptr<sf::Texture>&& texture)
-        : texture_(std::move(texture)), sprite_(*texture_) {}
+    SpriteObject(std::shared_ptr<sf::Texture>&& texture) : texture_(std::move(texture)), sprite_(*texture_) {}
 
-    sf::Drawable& get_drawable() {
+    sf::Drawable& drawable() override {
         return sprite_;
     }
 
-    sf::Transformable& get_transformable() {
+    sf::Transformable& transformable() override {
         return sprite_;
     }
 

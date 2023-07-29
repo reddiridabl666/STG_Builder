@@ -1,25 +1,21 @@
 #pragma once
 
-#include <algorithm>
+// #include <algorithm>
 #include <cstddef>
 
-template <size_t N>
-struct StringLiteral {
-    constexpr StringLiteral(const char (&str)[N]) {
-        std::copy_n(str, N, value);
-    }
+// template <size_t N>
+// struct StringLiteral {
+//     constexpr StringLiteral(const char (&str)[N]) {
+//         std::copy_n(str, N, value);
+//     }
 
-    char value[N];
-};
+//     char value[N];
+// };
 
-template <StringLiteral Name, std::integral T = int>
+template <typename T = int>
 class Value {
   public:
     Value(T val = 0) : val_(val) {}
-
-    std::string_view name() const {
-        return std::string_view(Name.value, sizeof(Name.value));
-    }
 
     void set(T val) {
         val_ = val;
@@ -43,6 +39,10 @@ class Value {
 
     void dec() {
         --val_;
+    }
+
+    void mul(T val) {
+        val_ *= val;
     }
 
   private:

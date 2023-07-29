@@ -27,8 +27,12 @@ class Transformable {
 
     virtual sf::Vector2f get_size() const = 0;
 
-    void move(const sf::Vector2f& pos) {
-        transformable().move(pos);
+    void move(const sf::Vector2f& offset) {
+        transformable().move(offset);
+    }
+
+    void move(float x, float y) {
+        move(sf::Vector2f{x, y});
     }
 
     virtual ~Transformable() = default;

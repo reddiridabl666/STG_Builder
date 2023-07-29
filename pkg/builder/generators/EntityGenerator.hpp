@@ -1,18 +1,14 @@
 #pragma once
 
-#include <boost/json/src.hpp>
 #include <expected>
 #include <string>
 #include <string_view>
 
 #include "Errors.hpp"
-
-namespace json = boost::json;
+#include "Json.hpp"
+#include "ObjectTemplate.hpp"
 
 class EntityGenerator {
-  private:
-    static inline const std::string kPrefix_ = "gen_";
-
   public:
-    std::expected<std::string, Error> generate(json::value value);
+    tl::expected<ObjectTemplate, Error> generate(nlohmann::json value);
 };

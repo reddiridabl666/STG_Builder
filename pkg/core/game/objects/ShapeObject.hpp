@@ -15,11 +15,11 @@ class ShapeObject : public Displayable {
   public:
     ShapeObject(const T& shape) : shape_(shape) {}
 
-    sf::Drawable& get_drawable() {
+    sf::Drawable& drawable() override {
         return shape_;
     }
 
-    sf::Transformable& get_transformable() {
+    sf::Transformable& transformable() override {
         return shape_;
     }
 

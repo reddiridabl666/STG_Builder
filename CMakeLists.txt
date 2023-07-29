@@ -71,7 +71,12 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
-include_directories(pkg/common)
+find_package(fmt)
+
+link_libraries(fmt::fmt)
+link_libraries(ImGui-SFML::ImGui-SFML)
+
+include_directories(pkg/common lib)
 
 add_subdirectory(pkg/core)
 add_subdirectory(pkg/builder)

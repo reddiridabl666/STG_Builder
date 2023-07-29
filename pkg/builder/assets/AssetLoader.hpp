@@ -1,22 +1,25 @@
 #pragma once
 
-#include <concepts>
-#include <expected>
-#include <string>
+#include <fmt/core.h>
 
-#include "Error.hpp"
+#include <memory>
+#include <string>
+#include <tl/expected.hpp>
+
+#include "Errors.hpp"
 #include "Loadable.hpp"
 
 struct AssetLoader {
-    std::string base_folder;
+    std::string base_folder = "";
 
     template <Loadable T>
-    std::expected<T, Error> load(const std::string& path) const {
-        T asset{};
-        auto res = asset.loadFromFile(base_folder + "/" + path);
+    tl::expected<std::shared_ptr<T>, ErrorPtr> load(const std::string& path) const {
+        auto asset = std::make_shared<T>();
+        bool res = asset->loadFromFile(base_folder + "/" + path);
 
         if (!res) {
-            return std::unexpected<Error>(Error::Code::Internal);
+            return unexpected_error<InternalError>(
+                fmt::format("Failure loading asset {}/{}", base_folder, path));
         }
         return asset;
     }
