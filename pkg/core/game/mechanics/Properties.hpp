@@ -12,8 +12,7 @@ struct Properties {
   public:
     using Data = std::unordered_map<std::string, Value<>>;
 
-    Properties(Data data = Data{})
-        : values_(std::move(data)) {}
+    Properties(Data data = Data{}) : values_(std::move(data)) {}
 
     bool has(const std::string& key) const {
         return values_.contains(key);
@@ -30,7 +29,7 @@ struct Properties {
         return values_.at(key);
     }
 
-    void add(const std::string& key, int value) {
+    void set(const std::string& key, int value) {
         values_[key] = value;
     }
 

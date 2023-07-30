@@ -8,7 +8,7 @@
 #include "Json.hpp"
 #include "ObjectTemplate.hpp"
 
-class EntityGenerator {
+class ObjectTemplateFactory {
   public:
-    tl::expected<ObjectTemplate, Error> generate(nlohmann::json value);
+    tl::expected<ObjectTemplate, ErrorPtr> generate(const std::string& name, nlohmann::json json) const;
 };

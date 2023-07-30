@@ -1,6 +1,6 @@
 {
     "enemy": {
-        "image_path": "enemy.jpg",
+        "image": "enemy.jpg",
         "size": {
             "x": 20,
             "y": 20

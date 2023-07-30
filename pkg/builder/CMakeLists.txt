@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.25)
 project(stg_builder_gen)
 
 set(SOURCES
-    generators/EntityGenerator.cpp
+    generators/ObjectTemplateFactory.cpp
     assets/AssetProcessor.cpp
     objects/ObjectOptions.cpp
     objects/ObjectTemplate.cpp

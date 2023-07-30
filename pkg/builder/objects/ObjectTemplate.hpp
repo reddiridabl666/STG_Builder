@@ -17,33 +17,27 @@ class ObjectTemplate {
 
     // ObjectTemplate(const std::string& name, const Properties::Data& props)
     //     : Properties(props), name_(name) {}
+    ObjectTemplate(const std::string& name = "") : name(name) {}
 
-    ObjectTemplate(const std::string& name, int speed, const Properties& props, const Asset& image)
-        : name_(name), speed_(speed), props_(props), images_{image.path} {}
+    ObjectTemplate(const std::string& name, int speed, sf::Vector2f size, const Properties& props,
+                   const Asset& image)
+        : name(name), speed(speed), size(size), props(props), images{image.path} {}
 
-    ObjectTemplate(const std::string& name, int speed, const Properties& props, const AssetPaths& images,
-                   const AssetPaths& sounds = AssetPaths{})
-        : name_(name), speed_(speed), props_(props), images_(images), sounds_(sounds) {}
-
-    const AssetPaths images() const {
-        return images_;
-    }
-
-    const AssetPaths sounds() const {
-        return sounds_;
-    }
+    ObjectTemplate(const std::string& name, int speed, sf::Vector2f size, const Properties& props,
+                   const AssetPaths& images, const AssetPaths& sounds = AssetPaths{})
+        : name(name), speed(speed), size(size), props(props), images(images), sounds(sounds) {}
 
     tl::expected<GameObject, ErrorPtr> create_object(AssetManager<sf::Texture>& textures
                                                      /*AssetManager<sf::Sound>& sounds*/) const;
 
-  private:
-    std::string name_;
-    int speed_;
+    std::string name;
+    int speed;
+    sf::Vector2f size;
 
-    Properties props_;
+    Properties props;
 
-    AssetPaths images_;
-    AssetPaths sounds_;
+    AssetPaths images;
+    AssetPaths sounds;
 
     // collision::Props
     // hitbox options

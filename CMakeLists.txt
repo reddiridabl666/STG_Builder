@@ -71,7 +71,7 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
-find_package(fmt)
+find_package(fmt 10.0.0)
 
 link_libraries(fmt::fmt)
 link_libraries(ImGui-SFML::ImGui-SFML)
