@@ -7,15 +7,15 @@
 #include "Position.hpp"
 #include "Properties.hpp"
 
-class ObjectOptions {
+struct ObjectOptions {
   public:
-    ObjectOptions(const position::Func& pos, const Properties& props, const movement::Func& move)
-        : pos_(pos), move_(move), props_(props) {}
+    ObjectOptions() = default;
 
     void set_props(const GameField& field, GameObject& obj);
 
-  private:
-    position::Func pos_;
-    movement::Func move_;
-    Properties props_;
+    position::Func pos_x;
+    position::Func pos_y;
+
+    movement::Func move;
+    Properties props;
 };

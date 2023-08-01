@@ -21,6 +21,10 @@ class Transformable {
         transformable().setPosition(pos);
     }
 
+    void set_pos(float x, float y) {
+        set_pos(sf::Vector2f{x, y});
+    }
+
     void set_size(const sf::Vector2f& size) {
         transformable().scale(size / get_size());
     }

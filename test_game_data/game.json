@@ -8,7 +8,7 @@
         ]
     },
     "player": {
-        "image_path": "player.jpg",
+        "image": "player.jpg",
         "size": {
             "x": 20,
             "y": 20
