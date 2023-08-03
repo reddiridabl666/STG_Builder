@@ -3,10 +3,11 @@ cmake_minimum_required(VERSION 3.25)
 project(stg_builder_gen)
 
 set(SOURCES
-    generators/ObjectTemplateFactory.cpp
+    generators/ObjectTypeFactory.cpp
+    generators/ObjectOptionsFactory.cpp
     assets/AssetProcessor.cpp
     objects/ObjectOptions.cpp
-    objects/ObjectTemplate.cpp
+    objects/ObjectType.cpp
 )
 
 set(INCLUDE_DIRS

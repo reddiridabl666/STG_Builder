@@ -19,7 +19,7 @@ class AssetStorage {
         return assets_.contains(filename) && !assets_.at(filename).expired();
     }
 
-    tl::expected<std::shared_ptr<T>, ErrorPtr> get(const std::string& filename) const noexcept {
+    ErrorOr<std::shared_ptr<T>> get(const std::string& filename) const noexcept {
         if (!exists(filename)) {
             return unexpected_error<NoKeyError>(filename);
         }

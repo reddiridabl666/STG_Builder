@@ -30,10 +30,8 @@ void WindowSFML::process_events() {
     }
 }
 
-void WindowSFML::draw_all(const Collection<Drawable>& drawables) {
-    for (const auto& obj : drawables) {
-        window_.draw(obj->drawable());
-    }
+void WindowSFML::draw(const Drawable& obj) {
+    window_.draw(obj.drawable());
 }
 
 void WindowSFML::draw_ui(const Collection<UiElement>& ui_elements) {

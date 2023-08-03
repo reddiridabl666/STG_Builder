@@ -1,5 +1,6 @@
 {
     "name": "My first game",
+    "levels": 1,
     "menu": {
         "ratio": 0.3,
         "stats": [

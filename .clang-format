@@ -8,3 +8,4 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortEnumsOnASingleLine: false
 AllowShortLambdasOnASingleLine: Empty
+# BreakBeforeBinaryOperators: All

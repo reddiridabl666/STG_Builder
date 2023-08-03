@@ -1,10 +1,10 @@
-#include "ObjectTemplate.hpp"
+#include "ObjectType.hpp"
 
 #include "AssetManager.hpp"
 #include "GameObject.hpp"
 #include "SpriteObject.hpp"
 
-tl::expected<GameObject, ErrorPtr> ObjectTemplate::create_object(AssetManager<sf::Texture>& textures) const {
+ErrorOr<GameObject> ObjectType::create_object(AssetManager<sf::Texture>& textures) const {
     auto texture = textures.get(images[0]);
     if (!texture) {
         return tl::unexpected(texture.error());

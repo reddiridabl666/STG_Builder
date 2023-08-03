@@ -1,8 +1,21 @@
-#include "ObjectTemplateFactory.hpp"
+#include "ObjectTypeFactory.hpp"
 
-tl::expected<ObjectTemplate, ErrorPtr> ObjectTemplateFactory::generate(const std::string& name,
-                                                                       const nl::json& json) const {
-    ObjectTemplate res(name);
+ErrorOr<ObjectTypeFactory::res_type> ObjectTypeFactory::generate(const nl::json& json) const {
+    res_type res;
+
+    for (auto& [key, value] : json.items()) {
+        auto obj = generate(key, value);
+        if (!obj) {
+            return tl::unexpected(obj.error());
+        }
+        res[key] = std::move(obj.value());
+    }
+
+    return res;
+}
+
+ErrorOr<ObjectType> ObjectTypeFactory::generate(const std::string& name, const nl::json& json) const {
+    ObjectType res(name);
 
     auto ok = handler_chain_.handle(res, json);
     if (!ok) {
@@ -13,22 +26,22 @@ tl::expected<ObjectTemplate, ErrorPtr> ObjectTemplateFactory::generate(const std
 }
 
 namespace {
-struct SizeHandler : public Handler<ObjectTemplate> {
+struct SizeHandler : public Handler<ObjectType> {
     bool should_handle(const std::string& key) const override {
         return key == "size";
     }
 
-    void handle(ObjectTemplate& obj, const std::string& key, const nl::json& value) override {
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
         obj.size = value.template get<sf::Vector2f>();
     }
 };
 
-struct ImageHandler : public Handler<ObjectTemplate> {
+struct ImageHandler : public Handler<ObjectType> {
     bool should_handle(const std::string& key) const override {
         return key.starts_with("image");
     }
 
-    void handle(ObjectTemplate& obj, const std::string& key, const nl::json& value) override {
+    void handle(ObjectType& obj, const std::string& key, const nl::json& value) override {
         if (key == "image") {
             obj.images = {value.template get<std::string>()};
         } else {
@@ -37,12 +50,12 @@ struct ImageHandler : public Handler<ObjectTemplate> {
     }
 };
 
-struct SoundHandler : public Handler<ObjectTemplate> {
+struct SoundHandler : public Handler<ObjectType> {
     bool should_handle(const std::string& key) const override {
         return key.starts_with("sound");
     }
 
-    void handle(ObjectTemplate& obj, const std::string& key, const nl::json& value) override {
+    void handle(ObjectType& obj, const std::string& key, const nl::json& value) override {
         if (key == "sound") {
             obj.sounds = {value.template get<std::string>()};
         } else {
@@ -51,23 +64,23 @@ struct SoundHandler : public Handler<ObjectTemplate> {
     }
 };
 
-struct SpeedHandler : public Handler<ObjectTemplate> {
+struct SpeedHandler : public Handler<ObjectType> {
     bool should_handle(const std::string& key) const override {
         return key == "speed";
     }
 
-    void handle(ObjectTemplate& obj, const std::string& key, const nl::json& value) override {
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
         obj.speed = value.template get<int>();
     }
 };
 }  // namespace
 
 // clang-format off
-HandlerChain<ObjectTemplate> ObjectTemplateFactory::handler_chain_({
+HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_({
     std::make_unique<SizeHandler>(),
     std::make_unique<SpeedHandler>(),
     std::make_unique<ImageHandler>(),
     std::make_unique<SoundHandler>(),
-    std::make_unique<PropsHandler<ObjectTemplate>>()
+    std::make_unique<PropsHandler<ObjectType>>()
 });
 // clang-format on

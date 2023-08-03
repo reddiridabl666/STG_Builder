@@ -13,7 +13,7 @@ struct AssetLoader {
     std::string base_folder = "";
 
     template <Loadable T>
-    tl::expected<std::shared_ptr<T>, ErrorPtr> load(const std::string& path) const {
+    ErrorOr<std::shared_ptr<T>> load(const std::string& path) const {
         auto asset = std::make_shared<T>();
         bool res = asset->loadFromFile(base_folder + "/" + path);
 

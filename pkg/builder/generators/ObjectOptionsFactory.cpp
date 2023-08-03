@@ -3,12 +3,27 @@
 #include <unordered_map>
 #include <variant>
 
-tl::expected<ObjectOptions, ErrorPtr> ObjectOptionsFactory::generate(const nl::json& json) const {
+ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const nl::json& json) const {
     ObjectOptions res;
 
     auto ok = handler_chain_.handle(res, json);
     if (!ok) {
         return tl::unexpected(ok.error());
+    }
+
+    return res;
+}
+
+ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
+    const std::vector<nl::json>& json) const {
+    res_type res;
+
+    for (auto& obj : json) {
+        auto opts = generate(obj);
+        if (!opts) {
+            return tl::unexpected(opts.error());
+        }
+        res.push_back(std::move(opts.value()));
     }
 
     return res;

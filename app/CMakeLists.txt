@@ -9,6 +9,11 @@ set(LIBS
     ImGui-SFML::ImGui-SFML
 )
 
+set(INCLUDE_DIRS
+    engine/level
+    engine/app
+)
+
 add_executable(${PROJECT_NAME} engine/main.cpp engine/app/App.cpp)
-target_include_directories(${PROJECT_NAME} PUBLIC engine/app)
+target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})

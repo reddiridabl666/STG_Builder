@@ -9,12 +9,12 @@
 template <typename T>
 struct Handler {
     virtual bool should_handle(const std::string& key) const = 0;
-    virtual void handle(T& obj, const std::string& key, const nl::json& value = 0;
+    virtual void handle(T& obj, const std::string& key, const nl::json& value = 0);
 };
 
 template <typename T>
 struct PropsHandler : public Handler<T> {
-    bool should_handle(const std::string& key) const override {
+    bool should_handle(const std::string&) const override {
         return true;
     }
 
@@ -34,13 +34,14 @@ class HandlerChain {
 
     HandlerChain(storage_type&& handlers) : handlers_(std::move(handlers)) {}
 
-    tl::expected<void, ErrorPtr> handle(T& res, const nl::json& json) const noexcept {
+    ErrorOr<void> handle(T& res, const nl::json& json) const noexcept {
         for (auto& [key, value] : json.items()) {
             auto ok = handle(res, key, value);
             if (!ok) {
                 return tl::unexpected(ok.error());
             }
         }
+        return void_t;
     }
 
     void handle_unsafe(T& res, const nl::json& json) const {
@@ -52,12 +53,12 @@ class HandlerChain {
         }
     }
 
-    tl::expected<void, ErrorPtr> handle(T& res, const std::string& key,
-                                        const nl::json& value) const noexcept {
-        for (auto& handler : handlers) {
-            if (handler.should_handle(key)) {
+    ErrorOr<void> handle(T& res, const std::string& key, const nl::json& value) const noexcept {
+        for (auto& handler : handlers_) {
+            if (handler->should_handle(key)) {
                 try {
-                    return handler.handle(res, key, value);
+                    handler->handle(res, key, value);
+                    return void;
                 } catch (std::exception& e) {
                     return unexpected_error<InternalError>(e.what());
                 }

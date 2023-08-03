@@ -1,5 +1,6 @@
 #pragma once
 
+#include <deque>
 #include <tl/expected.hpp>
 
 #include "Errors.hpp"
@@ -9,7 +10,11 @@
 
 class ObjectOptionsFactory {
   public:
-    tl::expected<ObjectOptions, ErrorPtr> generate(const nl::json& value) const;
+    using res_type = std::deque<ObjectOptions>;
+
+    ErrorOr<ObjectOptions> generate(const nl::json& value) const;
+
+    ErrorOr<res_type> generate(const std::vector<nl::json>& json) const;
 
   private:
     static HandlerChain<ObjectOptions> handler_chain_;

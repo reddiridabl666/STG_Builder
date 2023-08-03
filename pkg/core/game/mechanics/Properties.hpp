@@ -25,7 +25,7 @@ struct Properties {
         return std::ref(values_[key]);
     }
 
-    Value<>& value(const std::string& key) {
+    Value<>& at(const std::string& key) {
         return values_.at(key);
     }
 

@@ -26,7 +26,7 @@ Func linear(float x, float y) {
     };
 }
 
-Func user_control(int user_num = 1) {
+Func user_control(int user_num) {
     return [user_num](GameObject& obj, float delta) {
         if (keys_are_pressed({Key::W, Key::Up})) {
             obj.move(0, -1 * obj.speed() * delta);

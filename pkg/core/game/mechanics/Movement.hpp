@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/System/Vector2.hpp>
 #include <functional>
 
 class GameObject;
@@ -7,7 +8,7 @@ class GameObject;
 namespace movement {
 using Func = std::function<void(GameObject& obj, float delta)>;
 
-inline const Func no_op = [](auto& _obj, float _delta) {};
+inline const Func no_op = [](GameObject&, float) {};
 
 Func linear(float x = 0, float y = -1);
 

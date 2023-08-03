@@ -57,6 +57,9 @@ struct ErrorPtr : public Error {
     std::shared_ptr<Error> value_;
 };
 
+template <typename T>
+using ErrorOr = tl::expected<T, ErrorPtr>;
+
 template <typename T, typename... Ts>
 inline tl::unexpected<ErrorPtr> unexpected_error(Ts&&... args) {
     return tl::unexpected(ErrorPtr(std::make_shared<T>(std::forward<Ts>(args)...)));

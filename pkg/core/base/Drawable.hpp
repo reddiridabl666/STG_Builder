@@ -8,7 +8,7 @@ class Drawable {
   public:
     virtual sf::Drawable& drawable() = 0;
 
-    const sf::Drawable& get_drawable() const {
+    const sf::Drawable& drawable() const {
         return const_cast<Drawable*>(this)->drawable();
     }
 
