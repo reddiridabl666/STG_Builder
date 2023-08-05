@@ -8,7 +8,7 @@
 namespace Key = sf::Keyboard;
 
 namespace {
-bool keys_are_pressed(std::initializer_list<Key::Key>&& keys) {
+bool keys_are_pressed(const std::initializer_list<Key::Key>& keys) {
     for (auto key : keys) {
         if (Key::isKeyPressed(key)) {
             return true;
@@ -24,6 +24,10 @@ Func linear(float x, float y) {
         auto speed = obj.speed();
         obj.move(speed * x * delta, speed * y * delta);
     };
+}
+
+Func circular(sf::Vector2f, float) {
+    return Func();
 }
 
 Func user_control(int user_num) {

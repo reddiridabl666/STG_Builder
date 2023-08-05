@@ -17,9 +17,9 @@ ErrorOr<ObjectTypeFactory::res_type> ObjectTypeFactory::generate(const nl::json&
 ErrorOr<ObjectType> ObjectTypeFactory::generate(const std::string& name, const nl::json& json) const {
     ObjectType res(name);
 
-    auto ok = handler_chain_.handle(res, json);
-    if (!ok) {
-        return tl::unexpected(ok.error());
+    auto error = handler_chain_.handle(res, json);
+    if (error) {
+        return tl::unexpected(error);
     }
 
     return res;
@@ -75,12 +75,15 @@ struct SpeedHandler : public Handler<ObjectType> {
 };
 }  // namespace
 
-// clang-format off
-HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_({
-    std::make_unique<SizeHandler>(),
-    std::make_unique<SpeedHandler>(),
-    std::make_unique<ImageHandler>(),
-    std::make_unique<SoundHandler>(),
-    std::make_unique<PropsHandler<ObjectType>>()
-});
-// clang-format on
+HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
+    std::vector<std::unique_ptr<Handler<ObjectType>>> res;
+    res.reserve(5);
+
+    res.push_back(std::make_unique<SizeHandler>());
+    res.push_back(std::make_unique<SpeedHandler>());
+    res.push_back(std::make_unique<ImageHandler>());
+    res.push_back(std::make_unique<SoundHandler>());
+    res.push_back(std::make_unique<PropsHandler<ObjectType>>());
+
+    return res;
+}();

@@ -49,8 +49,14 @@ struct ErrorPtr : public Error {
   public:
     explicit ErrorPtr(std::shared_ptr<Error>&& error) : value_(std::move(error)) {}
 
+    ErrorPtr(nullptr_t null) : value_(null) {}
+
     std::string message() const override {
         return value_->message();
+    }
+
+    operator bool() const {
+        return bool(value_);
     }
 
   private:
@@ -61,8 +67,13 @@ template <typename T>
 using ErrorOr = tl::expected<T, ErrorPtr>;
 
 template <typename T, typename... Ts>
+inline ErrorPtr make_error(Ts&&... args) {
+    return ErrorPtr(std::make_shared<T>(std::forward<Ts>(args)...));
+}
+
+template <typename T, typename... Ts>
 inline tl::unexpected<ErrorPtr> unexpected_error(Ts&&... args) {
-    return tl::unexpected(ErrorPtr(std::make_shared<T>(std::forward<Ts>(args)...)));
+    return tl::unexpected(make_error<T>(std::forward<Ts>(args)...));
 }
 
 struct KeyError : public ErrorCode {

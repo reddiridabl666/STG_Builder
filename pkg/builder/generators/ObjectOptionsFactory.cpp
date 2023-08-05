@@ -6,9 +6,9 @@
 ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const nl::json& json) const {
     ObjectOptions res;
 
-    auto ok = handler_chain_.handle(res, json);
-    if (!ok) {
-        return tl::unexpected(ok.error());
+    auto error = handler_chain_.handle(res, json);
+    if (error) {
+        return tl::unexpected(error);
     }
 
     return res;
@@ -30,28 +30,12 @@ ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
 }
 
 namespace {
-struct PosHandler : Handler<ObjectOptions> {
-  public:
-    PosHandler() : handler_chain_({std::make_unique<X_Handler>(), std::make_unique<Y_Handler>()}) {}
-
-    bool should_handle(const std::string& key) const override {
-        return key == "pos";
-    }
-
-    void handle(ObjectOptions& obj, const std::string& _, const nl::json& value) override {
-        handler_chain_.handle_unsafe(obj, value);
-    }
-
-  private:
-    HandlerChain<ObjectOptions> handler_chain_;
-};
-
 struct X_Handler : Handler<ObjectOptions> {
     bool should_handle(const std::string& key) const override {
         return key == "x";
     }
 
-    void handle(ObjectOptions& obj, const std::string& key, const nl::json& value) override {
+    void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
         if (!value.is_string()) {
             obj.pos_x = position::set(value.template get<float>());
             return;
@@ -72,7 +56,7 @@ struct Y_Handler : Handler<ObjectOptions> {
         return key == "y";
     }
 
-    void handle(ObjectOptions& obj, const std::string& key, const nl::json& value) override {
+    void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
         if (!value.is_string()) {
             obj.pos_y = position::set(value.template get<float>());
             return;
@@ -88,16 +72,37 @@ struct Y_Handler : Handler<ObjectOptions> {
     }
 };
 
+struct PosHandler : Handler<ObjectOptions> {
+  public:
+    PosHandler() {
+        inner_chain_.add_handler(std::make_unique<X_Handler>());
+        inner_chain_.add_handler(std::make_unique<Y_Handler>());
+    }
+
+    bool should_handle(const std::string& key) const override {
+        return key == "pos";
+    }
+
+    void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
+        inner_chain_.handle_unsafe(obj, value);
+    }
+
+  private:
+    HandlerChain<ObjectOptions> inner_chain_;
+};
+
+class MoveTypeHandler;
+class MoveArgsHandler;
+
 struct MoveHandler : Handler<ObjectOptions> {
   public:
-    MoveHandler()
-        : inner_chain_({std::make_unique<MoveTypeHandler>(), std::make_unique<MoveArgsHandler>()}) {}
+    MoveHandler();
 
     bool should_handle(const std::string& key) const override {
         return key == "move";
     }
 
-    void handle(ObjectOptions& obj, const std::string& _, const nl::json& value) override {
+    void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
         inner_chain_.handle_unsafe(*this, value);
 
         if (!set_args_) {
@@ -124,7 +129,7 @@ struct MoveTypeHandler : public Handler<MoveHandler> {
         return key == "type";
     }
 
-    void handle(MoveHandler& obj, const std::string& key, const nl::json& value) override {
+    void handle(MoveHandler& obj, const std::string&, const nl::json& value) override {
         auto str_value = value.template get<std::string>();
 
         // clang-format off
@@ -154,7 +159,7 @@ struct MoveArgsHandler : public Handler<MoveHandler> {
         return key == "args";
     }
 
-    void handle(MoveHandler& obj, const std::string& _, const nl::json& json) override {
+    void handle(MoveHandler& obj, const std::string&, const nl::json& json) override {
         for (auto& [key, value] : json.items()) {
             if (value.is_number()) {
                 obj.args_[key] = value.template get<float>();
@@ -165,12 +170,20 @@ struct MoveArgsHandler : public Handler<MoveHandler> {
         }
     }
 };
+
+MoveHandler::MoveHandler() {
+    inner_chain_.add_handler(std::make_unique<MoveTypeHandler>());
+    inner_chain_.add_handler(std::make_unique<MoveArgsHandler>());
+}
 }  // namespace
 
-// clang-format off
-HandlerChain<ObjectOptions> ObjectOptionsFactory::handler_chain_({
-    std::make_unique<PosHandler>(),
-    std::make_unique<MoveHandler>(),
-    std::make_unique<PropsHandler<ObjectOptions>>()
-});
-// clang-format on
+HandlerChain<ObjectOptions> ObjectOptionsFactory::handler_chain_ = [] {
+    std::vector<std::unique_ptr<Handler<ObjectOptions>>> res;
+    res.reserve(3);
+
+    res.push_back(std::make_unique<PosHandler>());
+    res.push_back(std::make_unique<MoveHandler>());
+    res.push_back(std::make_unique<PropsHandler<ObjectOptions>>());
+
+    return res;
+}();

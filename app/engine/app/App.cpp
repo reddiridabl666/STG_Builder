@@ -11,11 +11,11 @@ App::App(Window& window, AssetManager<sf::Texture>&& textures, AssetManager<sf::
       levels_(std::move(levels)) {}
 
 bool App::run() {
-    ui_elements_.push_back(std::make_shared<Test>());
+    // ui_elements_.push_back(std::make_shared<Test>());
 
     while (window_.is_open()) {
         draw_objects();
-        window_.draw_ui(ui_elements_);
+        // window_.draw_ui(ui_elements_);
 
         window_.process_events();
         window_.display();
