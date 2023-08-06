@@ -4,6 +4,10 @@
 #include <memory>
 #include <vector>
 
+#ifdef DEBUG
+#include "Debug.hpp"
+#endif
+
 #include "Json.hpp"
 
 template <typename T>
@@ -41,6 +45,9 @@ class HandlerChain {
     }
 
     ErrorPtr handle(T& res, const nl::json& json) const noexcept {
+#ifdef DEBUG
+        LOG(fmt::format("Parsing json: {}", json));
+#endif
         for (auto& [key, value] : json.items()) {
             auto error = handle(res, key, value);
             if (error) {
@@ -51,6 +58,9 @@ class HandlerChain {
     }
 
     void handle_unsafe(T& res, const nl::json& json) const {
+#ifdef DEBUG
+        LOG(fmt::format("Parsing json: {}", json));
+#endif
         for (auto& [key, value] : json.items()) {
             auto error = handle(res, key, value);
             if (error) {

@@ -47,6 +47,8 @@ struct ErrorCode : public Error {
 
 struct ErrorPtr : public Error {
   public:
+    static constexpr nullptr_t OK = nullptr;
+
     explicit ErrorPtr(std::shared_ptr<Error>&& error) : value_(std::move(error)) {}
 
     ErrorPtr(nullptr_t null) : value_(null) {}

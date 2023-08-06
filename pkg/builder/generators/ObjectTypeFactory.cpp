@@ -1,6 +1,10 @@
 #include "ObjectTypeFactory.hpp"
 
 ErrorOr<ObjectTypeFactory::res_type> ObjectTypeFactory::generate(const nl::json& json) const {
+#ifdef DEBUG
+    LOG("Generating object types");
+#endif
+
     res_type res;
 
     for (auto& [key, value] : json.items()) {
@@ -15,6 +19,10 @@ ErrorOr<ObjectTypeFactory::res_type> ObjectTypeFactory::generate(const nl::json&
 }
 
 ErrorOr<ObjectType> ObjectTypeFactory::generate(const std::string& name, const nl::json& json) const {
+#ifdef DEBUG
+    LOG(fmt::format("Generating object type: {}", name));
+#endif
+
     ObjectType res(name);
 
     auto error = handler_chain_.handle(res, json);

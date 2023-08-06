@@ -2,12 +2,11 @@
 
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <deque>
-#include <string>
-#include <unordered_map>
+#include <SFML/System/Clock.hpp>
 #include <vector>
 
 #include "AssetManager.hpp"
+#include "GameField.hpp"
 #include "LevelManager.hpp"
 #include "ObjectTypeFactory.hpp"
 #include "Window.hpp"
@@ -17,12 +16,17 @@ class App {
     App(Window& window, AssetManager<sf::Texture>&& textures, AssetManager<sf::SoundBuffer>&& sounds,
         ObjectTypeFactory::res_type&& types, LevelManager&& levels);
 
-    bool run();
+    ErrorPtr run();
 
   private:
     void draw_objects();
 
-    // void generate_objects();
+    ErrorPtr update(float delta_time);
+    ErrorPtr update_level();
+
+    ErrorOr<GameObject> generate_object(const ObjectOptions& opts);
+
+    ErrorPtr generate_objects();
 
     Window& window_;
 
@@ -32,5 +36,6 @@ class App {
     std::vector<GameObject> objects_;
     ObjectTypeFactory::res_type types_;
 
+    std::shared_ptr<Level> level_;
     LevelManager levels_;
 };

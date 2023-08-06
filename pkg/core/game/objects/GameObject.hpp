@@ -11,8 +11,18 @@
 
 class GameObject : public Updatable, public Displayable {
   public:
-    GameObject(std::unique_ptr<Displayable>&& image, int speed = 50, const Properties& props = {})
-        : props_(props), speed_(speed), image_(std::move(image)) {}
+    enum class Tag {
+        Object,
+        Background,
+        Item,
+        Enemy,
+        EnemyBullet,
+        Player
+    };
+
+    GameObject(std::unique_ptr<Displayable>&& image, int speed = 50, Tag tag = Tag::Object,
+               const Properties& props = {})
+        : tag_(tag), props_(props), speed_(speed), image_(std::move(image)) {}
 
     const std::unique_ptr<Displayable>& image() {
         return image_;
@@ -54,8 +64,17 @@ class GameObject : public Updatable, public Displayable {
         return props_;
     }
 
+    void update(float delta_time) override {
+        move_(*this, delta_time);
+    }
+
+    Tag tag() const {
+        return tag_;
+    }
+
   private:
     // Hitbox hitbox_;
+    Tag tag_;
     Properties props_;
     int speed_;
     std::unique_ptr<Displayable> image_;

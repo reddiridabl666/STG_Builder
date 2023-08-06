@@ -7,7 +7,7 @@ class Player : public GameObject {
   public:
     Player(std::unique_ptr<Displayable>&& image, int speed = 50, const Properties& props = {},
            int player_num = 1)
-        : GameObject(std::move(image), speed, props), player_num_(player) {
+        : GameObject(std::move(image), speed, GameObject::Tag::Player, props), player_num_(player_num) {
         set_movement(movement::user_control(player_num));
     }
 

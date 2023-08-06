@@ -53,10 +53,11 @@ else ()
 endif ()
 
 option(SANITIZE "Sanitizer flags" OFF)
-option(DEBUG "Add debug info" OFF)
+option(DEBUG "Enable debug mode" OFF)
 
 if (DEBUG)
-    target_compile_options(${TARGET} PRIVATE -g)
+    add_compile_options(-g)
+    add_compile_definitions(DEBUG)
 endif()
 
 if (SANITIZE)

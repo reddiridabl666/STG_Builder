@@ -2,6 +2,6 @@
 
 class Updatable {
   public:
-    virtual void update() {}
+    virtual void update(float delta_time) {}
     virtual ~Updatable() = default;
 };
