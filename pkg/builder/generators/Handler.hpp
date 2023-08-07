@@ -26,7 +26,9 @@ struct PropsHandler : public Handler<T> {
         try {
             obj.props.set(key, value.template get<int>());
         } catch (nl::json::type_error& e) {
-            std::clog << e.what();
+#ifdef DEBUG
+            LOG("In key " + key + ": " + e.what());
+#endif
         }
     }
 };
@@ -46,7 +48,7 @@ class HandlerChain {
 
     ErrorPtr handle(T& res, const nl::json& json) const noexcept {
 #ifdef DEBUG
-        LOG(fmt::format("Parsing json: {}", json));
+        LOG(fmt::format("Parsing json: \n{}", json.dump(4)));
 #endif
         for (auto& [key, value] : json.items()) {
             auto error = handle(res, key, value);
@@ -59,7 +61,7 @@ class HandlerChain {
 
     void handle_unsafe(T& res, const nl::json& json) const {
 #ifdef DEBUG
-        LOG(fmt::format("Parsing json: {}", json));
+        LOG(fmt::format("Parsing json: {}", json.dump(4)));
 #endif
         for (auto& [key, value] : json.items()) {
             auto error = handle(res, key, value);

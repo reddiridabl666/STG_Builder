@@ -17,6 +17,10 @@ class Level {
         return field_;
     }
 
+    GameField& field() {
+        return field_;
+    }
+
     auto& objects() {
         return objects_;
     }

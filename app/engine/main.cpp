@@ -1,24 +1,35 @@
 #include <iostream>
 
-#include "App.hpp"
-#include "AssetManager.hpp"
-#include "WindowSFML.hpp"
+#include "AppFactory.hpp"
+#include "Window.hpp"
+
+static const std::string kBase = "/home/leonid/Projects/stg_builder/test_game_data/";
 
 int main() {
-    // WindowSFML window("STG_Builder", 640, 480);
-    // App app(window);
-    // return app.run();
+    Window window("STG_Builder", 1280, 720);
 
-    AssetLoader loader("/home/leonid/Projects/stg_builder/test_game_dat");
-    AssetStorage<sf::Texture> storage;
-    AssetManager<sf::Texture> manager(std::move(loader), std::move(storage));
-
-    auto res = manager.get("image.jpg");
-    if (res) {
-        std::cout << res.value()->getSize().x << ',' << res.value()->getSize().y << std::endl;
-    } else {
-        std::cout << res.error().message() << std::endl;
+    auto game_json = json::read(kBase + "game.json");
+    if (!game_json) {
+        std::cout << game_json.error() << std::endl;
+        return -1;
     }
 
+    auto entities_json = json::read(kBase + "entities.json");
+    if (!entities_json) {
+        std::cout << entities_json.error() << std::endl;
+        return -1;
+    }
+
+    auto app = AppFactory{}.generate(window, *game_json, *entities_json, kBase);
+    if (!app) {
+        std::cout << app.error() << std::endl;
+        return -1;
+    }
+
+    auto err = app->run();
+    if (err) {
+        std::cout << err << std::endl;
+        return -1;
+    }
     return 0;
 }

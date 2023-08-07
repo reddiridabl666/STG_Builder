@@ -14,7 +14,7 @@ struct ObjectOptions {
     void set_props(GameObject& obj) const;
 
     auto operator<=>(const ObjectOptions& other) const {
-        return pos_y <=> other.pos_y;
+        return other.pos_y <=> pos_y;
     }
 
     std::string type;

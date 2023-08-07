@@ -7,7 +7,10 @@
 #include "Debug.hpp"
 #endif
 
-ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const GameField& field, const nl::json& json) const {
+ObjectOptionsFactory::ObjectOptionsFactory(const GameField& field)
+    : handler_chain_(init_handler_chain(field)) {}
+
+ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const nl::json& json) const {
     ObjectOptions res;
 
     auto error = handler_chain_.handle(res, json);
@@ -23,14 +26,14 @@ ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const GameField& field, co
 }
 
 ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
-    const GameField& field, const std::vector<nl::json>& json) const {
+    const std::vector<nl::json>& json) const {
 #ifdef DEBUG
     LOG("Generating object instance options");
 #endif
     res_type res;
 
     for (auto& obj : json) {
-        auto opts = generate(field, obj);
+        auto opts = generate(obj);
         if (!opts) {
             return tl::unexpected(opts.error());
         }
@@ -68,6 +71,7 @@ struct X_Handler : Handler<ObjectOptions> {
         if (str.ends_with('%')) {
             int percent = std::stoi(str.substr(0, str.size() - 1));
             obj.pos_x = position::percent_width(percent)(field_);
+            return;
         }
 
         throw std::runtime_error(fmt::format("Got invalid value for X: '{}'", str));
@@ -94,6 +98,7 @@ struct Y_Handler : Handler<ObjectOptions> {
         if (str.ends_with('%')) {
             int percent = std::stoi(str.substr(0, str.size() - 1));
             obj.pos_y = position::percent_height(percent)(field_);
+            return;
         }
 
         throw std::runtime_error(fmt::format("Got invalid value for Y: '{}'", str));
@@ -206,12 +211,14 @@ MoveHandler::MoveHandler() {
     inner_chain_.add_handler(std::make_unique<MoveTypeHandler>());
     inner_chain_.add_handler(std::make_unique<MoveArgsHandler>());
 }
+
 }  // namespace
 
-HandlerChain<ObjectOptions> init_handler_chain(GameField& field) {
+HandlerChain<ObjectOptions> ObjectOptionsFactory::init_handler_chain(const GameField& field) {
     std::vector<std::unique_ptr<Handler<ObjectOptions>>> res;
-    res.reserve(3);
+    res.reserve(4);
 
+    res.push_back(std::make_unique<TypeHandler>());
     res.push_back(std::make_unique<PosHandler>(field));
     res.push_back(std::make_unique<MoveHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectOptions>>());

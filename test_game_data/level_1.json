@@ -2,14 +2,20 @@
     "name": "The first level",
     "bg": {
         "image": "bg.jpg",
-        "speed": 0
+        "speed": 1,
+        "ratio": {
+            "left": 0.05,
+            "top": 0.05,
+            "width": 0.5,
+            "height": 0.5
+        }
     },
     "entities": [
         {
             "type": "enemy",
             "pos": {
-                "x": "center",
-                "y": 200
+                "x": "50%",
+                "y": 1500
             },
             "move": {
                 "type": "linear",

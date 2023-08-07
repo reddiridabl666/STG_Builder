@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.25)
 project(stg_builder_core)
 
 set(SOURCES
-    window/WindowSFML.cpp
+    window/Window.cpp
     game/collisions/hitbox/Hitbox.cpp
     game/mechanics/Movement.cpp
 )

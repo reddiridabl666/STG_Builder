@@ -65,6 +65,9 @@ class GameObject : public Updatable, public Displayable {
     }
 
     void update(float delta_time) override {
+        if (!move_) {
+            return;
+        }
         move_(*this, delta_time);
     }
 
@@ -72,11 +75,24 @@ class GameObject : public Updatable, public Displayable {
         return tag_;
     }
 
+    void set_name(const std::string& name) {
+        name_ = name;
+    }
+
+    const std::string& name() const {
+        return name_;
+    }
+
   private:
     // Hitbox hitbox_;
+    std::string name_;
     Tag tag_;
     Properties props_;
     int speed_;
     std::unique_ptr<Displayable> image_;
     movement::Func move_;
 };
+
+inline std::ostream& operator<<(std::ostream& out, const GameObject& obj) {
+    return out << obj.name();
+}

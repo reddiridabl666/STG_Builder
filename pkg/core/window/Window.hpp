@@ -1,16 +1,33 @@
 #pragma once
 
-#include "Collection.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 
-class Drawable;
-class UiElement;
+#include "Collection.hpp"
+#include "Drawable.hpp"
+#include "UiElement.hpp"
 
 class Window {
+  private:
+    sf::RenderWindow window_;
+    sf::Clock clock_;
+
   public:
-    [[nodiscard]] virtual bool is_open() const = 0;
-    virtual void process_events() = 0;
-    virtual void draw(const Drawable&) = 0;
-    virtual void draw_ui(const Collection<UiElement>&) = 0;
-    virtual void display() = 0;
-    virtual ~Window() = default;
+    Window(const std::string& name, uint width, uint height, bool is_fullscreen = false, bool vsync = true);
+
+    bool is_open() const;
+    void process_events();
+
+    sf::Vector2u get_size() const;
+
+    void set_view(const sf::View& view);
+
+    void set_default_view();
+
+    void draw(const Drawable&);
+    void draw_ui(const Collection<UiElement>&);
+
+    void display();
+
+    ~Window();
 };

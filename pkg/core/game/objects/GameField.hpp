@@ -1,42 +1,53 @@
 #pragma once
 
+#include <SFML/Graphics/View.hpp>
+
 #include "GameObject.hpp"
 #include "SpriteObject.hpp"
+#include "Window.hpp"
 
-class GameField : public GameObject {
+class GameField : public GameObject {  // TODO: Should it really be a GameObject?
   public:
-    GameField(std::unique_ptr<SpriteObject>&& image, int speed = 50, const Properties::Data& props = {})
+    GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
+              int speed = 50, const Properties::Data& props = {})
         : GameObject(std::move(image), speed, GameObject::Tag::Background, props) {
-        set_movement(movement::linear());
+        set_pos(0, 0);
+
+        float view_height = screen_pos.height * window.get_size().y;
+
+        view_.setCenter(sf::Vector2f{left() + width() / 2, bottom() + view_height / 2});
+        view_.setSize(sf::Vector2f{width(), view_height});
+
+        view_.setViewport(screen_pos);
+        // window.set_view(view_);
     }
 
     sf::Vector2f center() const {
-        return sf::Vector2f{};
+        return view_.getCenter();
     }
 
-    // TODO: Implement everything...
+    void update(float delta_time) override {
+        view_.move(sf::Vector2f{0, -1 * speed() * delta_time});
+    }
 
     float end() const {
-        return height();
+        return top() + view_.getSize().y / 2;
     }
 
-    // These coordinates are independent of actual game field position,
-    // should be calculated somehow using screen width and height
-
     float right() const {
-        return 0;
+        return pos().x + width();
     }
 
     float left() const {
-        return 0;
+        return pos().x;
     }
 
     float top() const {
-        return 0;
+        return pos().y;
     }
 
     float bottom() const {
-        return 0;
+        return pos().y + height();
     }
 
     float height() const {
@@ -46,4 +57,15 @@ class GameField : public GameObject {
     float width() const {
         return get_size().x;
     }
+
+    const sf::View& view() const {
+        return view_;
+    }
+
+    float view_top() const {
+        return view_.getCenter().y - view_.getSize().y;
+    }
+
+  private:
+    sf::View view_;
 };

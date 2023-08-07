@@ -1,6 +1,7 @@
 #include "App.hpp"
 
 #include "GameInfo.hpp"
+#include "Utils.hpp"
 
 App::App(Window& window, AssetManager<sf::Texture>&& textures, AssetManager<sf::SoundBuffer>&& sounds,
          ObjectTypeFactory::res_type&& types, LevelManager&& levels)
@@ -14,14 +15,21 @@ ErrorPtr App::run() {
     // ui_elements_.push_back(std::make_shared<Test>());
 
     sf::Clock timer;
+    sf::Clock log_timer;
 
     while (window_.is_open()) {
-        auto err = update(timer.restart().asMicroseconds());
+        auto err = update(timer.restart().asSeconds());
         if (err) {
             return err;
         }
 
         draw_objects();
+
+        if (log_timer.getElapsedTime().asSeconds() > 1) {
+            std::clog << "Objects in App: " << objects_ << std::endl;
+            std::clog << "View pos: " << level_->field().view().getCenter().y << std::endl;
+            log_timer.restart();
+        }
 
         // window_.draw_ui(ui_elements_);
 
@@ -33,6 +41,8 @@ ErrorPtr App::run() {
 }
 
 void App::draw_objects() {
+    window_.draw(level_->field());
+
     for (const auto& obj : objects_) {
         window_.draw(obj);
     }
@@ -49,6 +59,8 @@ ErrorPtr App::update(float delta_time) {
         return err;
     }
 
+    level_->field().update(delta_time);
+
     for (auto& obj : objects_) {
         obj.update(delta_time);
     }
@@ -61,7 +73,7 @@ ErrorPtr App::update_level() {
         return ErrorPtr::OK;
     }
 
-    auto res = levels_.start_next(textures_);
+    auto res = levels_.start_next(window_, textures_);
     if (!res) {
         return res.error();
     }
@@ -95,13 +107,23 @@ ErrorPtr App::generate_objects() {
         return make_error<InternalError>("No level loaded");
     }
 
-    auto it = level_->objects().begin();
+    while (!level_->objects().empty()) {
+        const auto& opts = level_->objects().front();
 
-    while (it->pos_y - level_->field().top() > kLoadDeltaY) {
-        auto res = generate_object(*it);
+        if (level_->field().view_top() - opts.pos_y > kLoadDeltaY) {
+            // fmt::println("Obj '{}' with pos {} is higher than {}, does not need to be loaded yet",
+            // opts.type, opts.pos_y, level_->field().view_top());
+            break;
+        }
+
+        auto res = generate_object(opts);
         if (!res) {
             return res.error();
         }
+
         objects_.push_back(std::move(*res));
+        level_->objects().pop_front();
     }
+
+    return ErrorPtr::OK;
 }

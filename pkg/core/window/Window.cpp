@@ -1,4 +1,4 @@
-#include "WindowSFML.hpp"
+#include "Window.hpp"
 
 #include <imgui-SFML.h>
 #include <imgui.h>
@@ -6,8 +6,8 @@
 #include "Drawable.hpp"
 #include "UiElement.hpp"
 
-WindowSFML::WindowSFML(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync)
-    : window_(sf::VideoMode(sf::Vector2u{width, height}), name,
+Window::Window(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync)
+    : window_(sf::VideoMode(width, height), name,
               is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default) {
     window_.setVerticalSyncEnabled(vsync);
 
@@ -16,11 +16,11 @@ WindowSFML::WindowSFML(const std::string& name, uint width, uint height, bool is
     }
 }
 
-bool WindowSFML::is_open() const {
+bool Window::is_open() const {
     return window_.isOpen();
 }
 
-void WindowSFML::process_events() {
+void Window::process_events() {
     sf::Event event{};
     while (window_.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(window_, event);
@@ -30,24 +30,38 @@ void WindowSFML::process_events() {
     }
 }
 
-void WindowSFML::draw(const Drawable& obj) {
+sf::Vector2u Window::get_size() const {
+    return window_.getSize();
+}
+
+void Window::set_view(const sf::View& view) {
+    window_.setView(view);
+}
+
+void Window::set_default_view() {
+    set_view(window_.getDefaultView());
+}
+
+void Window::draw(const Drawable& obj) {
     window_.draw(obj.drawable());
 }
 
-void WindowSFML::draw_ui(const Collection<UiElement>& ui_elements) {
-    ImGui::SFML::Update(window_, clock_.restart());
+void Window::draw_ui(const Collection<UiElement>& ui_elements) {
+    // ImGui::SFML::Update(window_, clock_.restart());
 
     for (const auto& obj : ui_elements) {
         obj->draw();
     }
 }
 
-void WindowSFML::display() {
+void Window::display() {
+    ImGui::SFML::Update(window_, clock_.restart());
+
     window_.clear();
     ImGui::SFML::Render(window_);
     window_.display();
 }
 
-WindowSFML::~WindowSFML() {
+Window::~Window() {
     ImGui::SFML::Shutdown();
 }

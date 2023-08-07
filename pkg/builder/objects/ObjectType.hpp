@@ -28,7 +28,7 @@ class ObjectType {
         : name(name), speed(speed), size(size), props(props), images(images), sounds(sounds) {}
 
     ErrorOr<GameObject> create_object(AssetManager<sf::Texture>& textures
-                                      /*AssetManager<sf::Sound>& sounds*/) const;
+                                      /*AssetManager<sf::Sound>& sounds*/);
 
     std::string name;
     int speed;
@@ -38,6 +38,9 @@ class ObjectType {
 
     AssetPaths images;
     AssetPaths sounds;
+
+  private:
+    size_t obj_count = 0;
 
     // collision::Props
     // hitbox options

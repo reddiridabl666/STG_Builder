@@ -12,8 +12,9 @@
 #include "Debug.hpp"
 #endif
 
-ErrorOr<Level> LevelLoader::load_level(AssetManager<sf::Texture>& textures, size_t number) const {
-    auto level_name = fmt::format("{}_{}", prefix, number);
+ErrorOr<Level> LevelLoader::load_level(Window& window, AssetManager<sf::Texture>& textures,
+                                       size_t number) const {
+    auto level_name = fmt::format("{}_{}.json", prefix, number);
 
 #ifdef DEBUG
     LOG(fmt::format("Reading level file: {}", level_name));
@@ -28,13 +29,13 @@ ErrorOr<Level> LevelLoader::load_level(AssetManager<sf::Texture>& textures, size
 #ifdef DEBUG
         LOG("Creating level struct");
 #endif
-        auto field = load_field(textures, j->at("bg"));
+        auto field = load_field(window, textures, j->at("bg"));
         if (!field) {
             return tl::unexpected(field.error());
         }
 
-        ObjectOptionsFactory factory;
-        auto opts = factory.generate(*field, j->at("entities").get<std::vector<nl::json>>());
+        ObjectOptionsFactory factory(*field);
+        auto opts = factory.generate(j->at("entities").get<std::vector<nl::json>>());
         if (!opts) {
             return tl::unexpected(opts.error());
         }
@@ -49,7 +50,8 @@ ErrorOr<Level> LevelLoader::load_level(AssetManager<sf::Texture>& textures, size
     }
 }
 
-ErrorOr<GameField> LevelLoader::load_field(AssetManager<sf::Texture>& textures, nl::json json) const {
+ErrorOr<GameField> LevelLoader::load_field(Window& window, AssetManager<sf::Texture>& textures,
+                                           nl::json json) const {
 #ifdef DEBUG
     LOG("Loading game field");
 #endif
@@ -58,7 +60,12 @@ ErrorOr<GameField> LevelLoader::load_field(AssetManager<sf::Texture>& textures, 
         return tl::unexpected(texture.error());
     }
 
-    auto sprite = std::make_unique<SpriteObject>(texture);
+    auto sprite = std::make_unique<SpriteObject>(std::move(*texture));
 
-    return GameField(std::move(sprite), json.at("speed").template get<int>());
+    return GameField{
+        std::move(sprite),
+        window,
+        json.at("ratio").template get<sf::FloatRect>(),
+        json.at("speed").template get<int>(),
+    };
 }

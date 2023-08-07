@@ -14,21 +14,21 @@ set(IMGUI_VERSION 1.89.6)
 set(IMGUI_SFML_VERSION 2.5)
 
 FetchContent_Declare(
-        SFML
-        GIT_REPOSITORY https://github.com/SFML/SFML
-        GIT_TAG master
+    SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML
+    GIT_TAG 2.6.x
 )
 
 FetchContent_Declare(
-        imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui
-        GIT_TAG master
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui
+    GIT_TAG master
 )
 
 FetchContent_Declare(
-        imgui-sfml
-        GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
-        GIT_TAG master
+    imgui-sfml
+    GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
+    GIT_TAG master
 )
 
 # SFML
@@ -82,4 +82,4 @@ include_directories(pkg/common lib)
 add_subdirectory(pkg/core)
 add_subdirectory(pkg/builder)
 add_subdirectory(pkg/ui)
-add_subdirectory(app)
+add_subdirectory(app/engine)

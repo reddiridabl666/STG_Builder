@@ -10,10 +10,19 @@ set(LIBS
 )
 
 set(INCLUDE_DIRS
-    engine/level
-    engine/app
+    level
+    app
 )
 
-add_executable(${PROJECT_NAME} engine/main.cpp engine/app/App.cpp)
+set (SOURCES
+    app/App.cpp
+    app/AppFactory.cpp
+    main.cpp
+    level/Level.cpp
+    level/LevelLoader.cpp
+    level/LevelManager.cpp
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})

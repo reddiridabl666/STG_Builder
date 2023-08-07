@@ -5,7 +5,7 @@
 
 #include "GameObject.hpp"
 
-namespace Key = sf::Keyboard;
+using Key = sf::Keyboard;
 
 namespace {
 bool keys_are_pressed(const std::initializer_list<Key::Key>& keys) {

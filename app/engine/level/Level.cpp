@@ -13,5 +13,5 @@ Level::Level(const std::string& name, GameField&& field, ObjectOptionsFactory::r
 
 bool Level::has_ended() {
     // TODO: Custom checks?
-    return field_.center().x < field_.end() && Game::info().enemy_count() == 0;
+    return field_.center().y < field_.end() && Game::info().enemy_count() == 0;
 }
