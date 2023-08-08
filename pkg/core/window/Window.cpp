@@ -38,6 +38,10 @@ void Window::set_view(const sf::View& view) {
     window_.setView(view);
 }
 
+void Window::clear() {
+    window_.clear();
+}
+
 void Window::set_default_view() {
     set_view(window_.getDefaultView());
 }
@@ -46,18 +50,11 @@ void Window::draw(const Drawable& obj) {
     window_.draw(obj.drawable());
 }
 
-void Window::draw_ui(const Collection<UiElement>& ui_elements) {
-    // ImGui::SFML::Update(window_, clock_.restart());
-
-    for (const auto& obj : ui_elements) {
-        obj->draw();
-    }
+void Window::update_ui() {
+    ImGui::SFML::Update(window_, clock_.restart());
 }
 
 void Window::display() {
-    ImGui::SFML::Update(window_, clock_.restart());
-
-    window_.clear();
     ImGui::SFML::Render(window_);
     window_.display();
 }

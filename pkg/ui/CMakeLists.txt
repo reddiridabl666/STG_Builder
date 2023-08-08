@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(stg_builder_ui)
 
-set(SOURCES test.cpp)
+set(SOURCES dummy.cpp)
 set(INCLUDE_DIRS .)
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})

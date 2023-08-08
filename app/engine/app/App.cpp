@@ -1,6 +1,7 @@
 #include "App.hpp"
 
 #include "GameInfo.hpp"
+#include "StatBox.hpp"
 #include "Utils.hpp"
 
 App::App(Window& window, AssetManager<sf::Texture>&& textures, AssetManager<sf::SoundBuffer>&& sounds,
@@ -15,7 +16,6 @@ ErrorPtr App::run() {
     // ui_elements_.push_back(std::make_shared<Test>());
 
     sf::Clock timer;
-    sf::Clock log_timer;
 
     while (window_.is_open()) {
         auto err = update(timer.restart().asSeconds());
@@ -23,17 +23,14 @@ ErrorPtr App::run() {
             return err;
         }
 
-        draw_objects();
-
-        if (log_timer.getElapsedTime().asSeconds() > 1) {
-            std::clog << "Objects in App: " << objects_ << std::endl;
-            std::clog << "View pos: " << level_->field().view().getCenter().y << std::endl;
-            log_timer.restart();
-        }
-
-        // window_.draw_ui(ui_elements_);
+        debug_log();
 
         window_.process_events();
+        window_.clear();
+
+        draw_objects();
+        draw_ui();
+
         window_.display();
     }
 
@@ -64,6 +61,9 @@ ErrorPtr App::update(float delta_time) {
     for (auto& obj : objects_) {
         obj.update(delta_time);
     }
+
+    textures_.storage().clear_unused();
+    sounds_.storage().clear_unused();
 
     return ErrorPtr::OK;
 }
@@ -126,4 +126,29 @@ ErrorPtr App::generate_objects() {
     }
 
     return ErrorPtr::OK;
+}
+
+void App::debug_log() {
+    static sf::Clock log_timer;
+
+    if (log_timer.getElapsedTime().asSeconds() > 1) {
+        std::clog << "Objects active: " << objects_ << std::endl;
+        std::clog << "Objects not loaded: " << level_->objects() << std::endl;
+        std::clog << "View pos: " << level_->field().view().getCenter().y << std::endl;
+        std::clog << "Textures loaded:" << textures_.storage() << std::endl << std::endl;
+        log_timer.restart();
+    }
+}
+
+void App::draw_ui() {
+    window_.update_ui();
+
+    // clang-format off
+    StatBox::draw("Debug",
+        StatLine{"Objects active", &objects_},
+        StatLine{"Objects not loaded:", &(level_->objects())},
+        StatLine{"View pos", level_->field().view().getCenter().y},
+        StatLine{"Textures loaded", &textures_.storage()}
+    );
+    // clang-format on
 }

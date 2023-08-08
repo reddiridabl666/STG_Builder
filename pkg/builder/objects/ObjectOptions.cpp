@@ -7,3 +7,7 @@ void ObjectOptions::set_props(GameObject& obj) const {
     obj.set_movement(move);
     obj.props().append(props);
 }
+
+std::ostream& operator<<(std::ostream& out, const ObjectOptions& opts) {
+    return out << opts.type;
+}

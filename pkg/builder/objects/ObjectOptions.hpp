@@ -1,6 +1,9 @@
 #pragma once
 
+#include <fmt/ostream.h>
+
 #include <SFML/System/Vector2.hpp>
+#include <ostream>
 
 #include "GameObject.hpp"
 #include "Movement.hpp"
@@ -25,3 +28,8 @@ struct ObjectOptions {
     float pos_x;
     float pos_y;
 };
+
+std::ostream& operator<<(std::ostream& out, const ObjectOptions& opts);
+
+template <>
+struct fmt::formatter<ObjectOptions> : fmt::ostream_formatter {};

@@ -2,7 +2,7 @@
     "name": "The first level",
     "bg": {
         "image": "bg.jpg",
-        "speed": 1,
+        "speed": 100,
         "ratio": {
             "left": 0.05,
             "top": 0.05,

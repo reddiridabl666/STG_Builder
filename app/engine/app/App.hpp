@@ -28,6 +28,8 @@ class App {
 
     ErrorPtr generate_objects();
 
+    void draw_ui();
+
     Window& window_;
 
     AssetManager<sf::Texture> textures_;
@@ -38,4 +40,6 @@ class App {
 
     std::shared_ptr<Level> level_;
     LevelManager levels_;
+
+    // Collection<UiElement> ui_elements_;
 };

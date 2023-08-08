@@ -19,7 +19,7 @@ class GameField : public GameObject {  // TODO: Should it really be a GameObject
         view_.setSize(sf::Vector2f{width(), view_height});
 
         view_.setViewport(screen_pos);
-        // window.set_view(view_);
+        window.set_view(view_);
     }
 
     sf::Vector2f center() const {

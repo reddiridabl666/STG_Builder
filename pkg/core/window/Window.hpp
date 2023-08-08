@@ -22,10 +22,11 @@ class Window {
 
     void set_view(const sf::View& view);
 
+    void clear();
     void set_default_view();
 
     void draw(const Drawable&);
-    void draw_ui(const Collection<UiElement>&);
+    void update_ui();
 
     void display();
 

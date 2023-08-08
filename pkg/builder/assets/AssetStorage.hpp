@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "Loadable.hpp"
+#include "Utils.hpp"
 
 template <Loadable T>
 class AssetStorage {
@@ -27,11 +28,18 @@ class AssetStorage {
     }
 
     void clear_unused() {
-        std::remove_if(assets_.begin(), assets_.end(), [](const auto& el) {
+        std::erase_if(assets_, [](const auto& el) {
             return el.second.expired();
         });
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, const AssetStorage& storage) {
+        return out << storage.assets_;
     }
 
   private:
     std::unordered_map<std::string, std::weak_ptr<T>> assets_;
 };
+
+template <Loadable T>
+struct fmt::formatter<AssetStorage<T>> : fmt::ostream_formatter {};
