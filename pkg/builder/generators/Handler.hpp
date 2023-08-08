@@ -27,7 +27,7 @@ struct PropsHandler : public Handler<T> {
             obj.props.set(key, value.template get<int>());
         } catch (nl::json::type_error& e) {
 #ifdef DEBUG
-            LOG("In key " + key + ": " + e.what());
+            LOG("In key '" + key + "': " + e.what());
 #endif
         }
     }

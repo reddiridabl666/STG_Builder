@@ -11,12 +11,12 @@
 
 class GameObject : public Updatable, public Displayable {
   public:
-    enum class Tag {
+    enum Tag {
         Object,
         Background,
         Item,
         Enemy,
-        EnemyBullet,
+        Bullet,
         Player
     };
 

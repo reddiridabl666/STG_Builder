@@ -36,11 +36,13 @@ class ObjectType {
 
     Properties props;
 
+    GameObject::Tag tag = GameObject::Tag::Object;
+
     AssetPaths images;
     AssetPaths sounds;
 
   private:
-    size_t obj_count = 0;
+    size_t obj_count_ = 0;
 
     // collision::Props
     // hitbox options

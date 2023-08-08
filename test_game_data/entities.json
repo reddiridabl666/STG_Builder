@@ -1,6 +1,7 @@
 {
     "enemy": {
         "image": "enemy.jpg",
+        "tag": "enemy",
         "size": {
             "x": 20,
             "y": 20

@@ -4,16 +4,14 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Event.hpp"
-
 template <typename T, typename P>
 class Observable {
   public:
-    using Callback = std::function<void(const Event<T, P>&)>;
+    using Callback = std::function<void(const P&)>;
 
     void on(const T& event, const Callback& cb);
     void off(const T& event);
-    void emit(const Event<T, P>& event);
+    void emit(const T& type, const P& payload);
 
   private:
     std::unordered_map<T, std::vector<Callback>> cbs_;
@@ -30,8 +28,8 @@ void Observable<T, P>::off(const T& event_type) {
 }
 
 template <typename T, typename P>
-void Observable<T, P>::emit(const Event<T, P>& event) {
-    for (const auto& cb : cbs_[event.type]) {
-        cb(event);
+void Observable<T, P>::emit(const T& type, const P& payload) {
+    for (const auto& cb : cbs_[type]) {
+        cb(payload);
     }
 }

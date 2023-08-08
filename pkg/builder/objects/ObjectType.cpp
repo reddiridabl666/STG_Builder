@@ -1,6 +1,7 @@
 #include "ObjectType.hpp"
 
 #include "AssetManager.hpp"
+#include "GameInfo.hpp"
 #include "GameObject.hpp"
 #include "SpriteObject.hpp"
 
@@ -12,15 +13,17 @@ ErrorOr<GameObject> ObjectType::create_object(AssetManager<sf::Texture>& texture
 
     auto displayable = std::make_unique<SpriteObject>(std::move(*texture));
 
-    // TODO: managa object tags better
-    GameObject res(std::move(displayable), speed, GameObject::Tag::Object, props);
+    // TODO: manage object tags better
+    GameObject res(std::move(displayable), speed, tag, props);
     res.set_size(size);
-    res.set_name(fmt::format("{}-{}", name, obj_count));
+    res.set_name(fmt::format("{}-{}", name, obj_count_));
+
+    Game::info().emit(Game::Event::ObjectCreated, res.tag());
 
     // set hitbox properties
     // set collision rules
     // set bullet rules
 
-    ++obj_count;
+    ++obj_count_;
     return res;
 }

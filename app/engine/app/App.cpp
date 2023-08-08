@@ -23,8 +23,6 @@ ErrorPtr App::run() {
             return err;
         }
 
-        debug_log();
-
         window_.process_events();
         window_.clear();
 
@@ -56,13 +54,15 @@ ErrorPtr App::update(float delta_time) {
         return err;
     }
 
+    // TODO: clear unused objects
+
     level_->field().update(delta_time);
 
     for (auto& obj : objects_) {
         obj.update(delta_time);
     }
 
-    textures_.storage().clear_unused();
+    textures_.storage().clear_unused();  // TODO: make it a method in AssetManager
     sounds_.storage().clear_unused();
 
     return ErrorPtr::OK;
@@ -128,27 +128,16 @@ ErrorPtr App::generate_objects() {
     return ErrorPtr::OK;
 }
 
-void App::debug_log() {
-    static sf::Clock log_timer;
-
-    if (log_timer.getElapsedTime().asSeconds() > 1) {
-        std::clog << "Objects active: " << objects_ << std::endl;
-        std::clog << "Objects not loaded: " << level_->objects() << std::endl;
-        std::clog << "View pos: " << level_->field().view().getCenter().y << std::endl;
-        std::clog << "Textures loaded:" << textures_.storage() << std::endl << std::endl;
-        log_timer.restart();
-    }
-}
-
 void App::draw_ui() {
     window_.update_ui();
 
     // clang-format off
     StatBox::draw("Debug",
         StatLine{"Objects active", &objects_},
-        StatLine{"Objects not loaded:", &(level_->objects())},
+        StatLine{"Objects not loaded", &(level_->objects())},
         StatLine{"View pos", level_->field().view().getCenter().y},
-        StatLine{"Textures loaded", &textures_.storage()}
+        StatLine{"Textures loaded", &textures_.storage()},
+        StatLine{"Enemies left", Game::info().enemy_count()}
     );
     // clang-format on
 }

@@ -81,14 +81,30 @@ struct SpeedHandler : public Handler<ObjectType> {
         obj.speed = value.template get<int>();
     }
 };
+
+struct TagHandler : public Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "tag";
+    }
+
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        static const std::unordered_map<std::string, GameObject::Tag> map = {
+            {"enemy", GameObject::Tag::Enemy},
+            {"player", GameObject::Tag::Player},
+            {"bullet", GameObject::Tag::Bullet}};
+
+        obj.tag = map.at(value.template get<std::string>());  // TODO: Need to add checks for this exception
+    }
+};
 }  // namespace
 
 HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     std::vector<std::unique_ptr<Handler<ObjectType>>> res;
-    res.reserve(5);
+    res.reserve(6);
 
     res.push_back(std::make_unique<SizeHandler>());
     res.push_back(std::make_unique<SpeedHandler>());
+    res.push_back(std::make_unique<TagHandler>());
     res.push_back(std::make_unique<ImageHandler>());
     res.push_back(std::make_unique<SoundHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectType>>());

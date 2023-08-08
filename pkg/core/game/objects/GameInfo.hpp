@@ -2,16 +2,20 @@
 
 #include <cstddef>
 
-#include "EnemyObject.hpp"
+#include "Observable.hpp"
 
-class Game {
+class Game : public Observable<int, int> {
+  public:
+    enum Event {
+        ObjectCreated,
+        ObjectDestroyed
+    };
+
   private:
-    Game() = default;
+    Game();
 
     size_t enemy_count_ = 0;
-
-    friend EnemyObject::EnemyObject(std::unique_ptr<Displayable>&&, int, const Properties::Data&);
-    friend EnemyObject::~EnemyObject();
+    size_t player_count_ = 0;
 
   public:
     Game(const Game& other) = delete;
@@ -26,5 +30,9 @@ class Game {
 
     size_t enemy_count() {
         return enemy_count_;
+    }
+
+    size_t player_count() {
+        return player_count_;
     }
 };

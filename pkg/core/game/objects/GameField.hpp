@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/View.hpp>
+#include <iostream>
 
 #include "GameObject.hpp"
 #include "SpriteObject.hpp"
@@ -10,16 +11,16 @@ class GameField : public GameObject {  // TODO: Should it really be a GameObject
   public:
     GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
               int speed = 50, const Properties::Data& props = {})
-        : GameObject(std::move(image), speed, GameObject::Tag::Background, props) {
+        : GameObject(std::move(image), speed, GameObject::Tag::Background, props), window_(window) {
         set_pos(0, 0);
 
-        float view_height = screen_pos.height * window.get_size().y;
+        float view_height = screen_pos.height * window_.get_size().y;
 
-        view_.setCenter(sf::Vector2f{left() + width() / 2, bottom() + view_height / 2});
+        view_.setCenter(sf::Vector2f{left() + width() / 2, bottom() - view_height / 2});
         view_.setSize(sf::Vector2f{width(), view_height});
 
         view_.setViewport(screen_pos);
-        window.set_view(view_);
+        window_.set_view(view_);
     }
 
     sf::Vector2f center() const {
@@ -28,6 +29,7 @@ class GameField : public GameObject {  // TODO: Should it really be a GameObject
 
     void update(float delta_time) override {
         view_.move(sf::Vector2f{0, -1 * speed() * delta_time});
+        window_.set_view(view_);
     }
 
     float end() const {
@@ -68,4 +70,5 @@ class GameField : public GameObject {  // TODO: Should it really be a GameObject
 
   private:
     sf::View view_;
+    Window& window_;
 };
