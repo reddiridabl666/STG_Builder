@@ -181,8 +181,7 @@ struct MoveTypeHandler : public Handler<MoveHandler> {
         if (str_value == "circular") {
             obj.set_args_ = [](auto& args) {
                 return movement::circular(
-                    std::get<sf::Vector2f>(args["center"]),
-                    std::get<float>(args["radius"])
+                    std::get<sf::Vector2f>(args["center"])
                 );
             };
         }

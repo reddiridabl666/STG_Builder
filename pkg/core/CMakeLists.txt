@@ -7,6 +7,7 @@ set(SOURCES
     game/collisions/hitbox/Hitbox.cpp
     game/mechanics/Movement.cpp
     game/objects/GameInfo.cpp
+    game/objects/GameField.cpp
 )
 
 set(INCLUDE_DIRS

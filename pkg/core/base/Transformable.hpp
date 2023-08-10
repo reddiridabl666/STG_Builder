@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <algorithm>
 
 #include "LinAlg.hpp"
 
@@ -25,8 +26,15 @@ class Transformable {
         set_pos(sf::Vector2f{x, y});
     }
 
-    void set_size(const sf::Vector2f& size) {
-        transformable().scale(size / get_size());
+    void set_size(const sf::Vector2f& size, bool save_proportions = true) {
+        sf::Vector2f scale = size / get_size();
+
+        if (save_proportions) {
+            auto mult = std::max(scale.x, scale.y);
+            scale = sf::Vector2f{mult, mult};
+        }
+
+        transformable().scale(scale);
     }
 
     virtual sf::Vector2f get_size() const = 0;

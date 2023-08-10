@@ -24,7 +24,15 @@ class ShapeObject : public Displayable {
     }
 
     sf::Vector2f get_size() const override {
-        return sprite_.getTexture()->getSize() * sprite_.getScale();
+        return shape_.getTexture()->getSize() * shape_.getScale();
+    }
+
+    T& shape() {
+        return shape_;
+    }
+
+    const T& shape() const {
+        return shape_;
     }
 
   protected:
@@ -33,7 +41,7 @@ class ShapeObject : public Displayable {
 
 class RectObject : public ShapeObject<sf::RectangleShape> {
   public:
-    RectObject(size_t x = 0, size_t y = 0) : ShapeObject(sf::RectangleShape(sf::Vector2f{x, y})) {}
+    RectObject(float x = 0, float y = 0) : ShapeObject(sf::RectangleShape(sf::Vector2f{x, y})) {}
 
     sf::Vector2f get_size() const override {
         return shape_.getSize();
@@ -42,7 +50,7 @@ class RectObject : public ShapeObject<sf::RectangleShape> {
 
 class CircleObject : public ShapeObject<sf::CircleShape> {
   public:
-    CircleObject(size_t radius = 0) : ShapeObject(sf::CircleShape(radius)) {}
+    CircleObject(float radius = 0) : ShapeObject(sf::CircleShape(radius)) {}
 
     sf::Vector2f get_size() const override {
         auto radius = shape_.getRadius();

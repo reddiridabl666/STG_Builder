@@ -36,10 +36,10 @@ ErrorPtr App::run() {
 }
 
 void App::draw_objects() {
-    window_.draw(level_->field());
+    level_->field().draw(window_);
 
     for (const auto& obj : objects_) {
-        window_.draw(obj);
+        obj.draw(window_);
     }
 }
 

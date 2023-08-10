@@ -12,15 +12,13 @@ ErrorOr<GameObject> ObjectType::create_object(AssetManager<sf::Texture>& texture
     }
 
     auto displayable = std::make_unique<SpriteObject>(std::move(*texture));
+    auto obj_name = fmt::format("{}-{}", name, obj_count_);
 
-    // TODO: manage object tags better
-    GameObject res(std::move(displayable), speed, tag, props);
-    res.set_size(size);
-    res.set_name(fmt::format("{}-{}", name, obj_count_));
+    GameObject res(obj_name, size, std::move(displayable), speed, tag, props);
 
     Game::info().emit(Game::Event::ObjectCreated, res.tag());
 
-    // set hitbox properties
+    // TODO: set hitbox properties
     // set collision rules
     // set bullet rules
 

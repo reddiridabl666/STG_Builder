@@ -2,11 +2,11 @@
     "name": "The first level",
     "bg": {
         "image": "bg.jpg",
-        "speed": 100,
+        "speed": 200,
         "ratio": {
             "left": 0.05,
             "top": 0.05,
-            "width": 0.5,
+            "width": 0.7,
             "height": 0.9
         }
     },
@@ -20,8 +20,8 @@
             "move": {
                 "type": "linear",
                 "args": {
-                    "x": 1,
-                    "y": 2
+                    "x": 100,
+                    "y": 20
                 }
             }
         },
@@ -38,7 +38,7 @@
                         "x": 100,
                         "y": 150
                     },
-                    "radius": 50
+                    "clockwise": 1
                 }
             }
         },

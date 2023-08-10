@@ -24,6 +24,12 @@ class GameObject : public Updatable, public Displayable {
                const Properties& props = {})
         : tag_(tag), props_(props), speed_(speed), image_(std::move(image)) {}
 
+    GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
+               int speed = 50, Tag tag = Tag::Object, const Properties& props = {})
+        : name_(name), tag_(tag), props_(props), speed_(speed), image_(std::move(image)) {
+        set_size(size);
+    }
+
     const std::unique_ptr<Displayable>& image() {
         return image_;
     }
@@ -41,11 +47,11 @@ class GameObject : public Updatable, public Displayable {
     }
 
     void set_movement(const movement::Func& move) {
-        move_ = move;
+        velocity_update_ = move;
     }
 
     void set_movement(movement::Func&& move) {
-        move_ = std::move(move);
+        velocity_update_ = std::move(move);
     }
 
     // Hitbox& hitbox() {
@@ -65,10 +71,10 @@ class GameObject : public Updatable, public Displayable {
     }
 
     void update(float delta_time) override {
-        if (!move_) {
-            return;
+        if (velocity_update_) {
+            velocity_ = velocity_update_(*this, delta_time);
         }
-        move_(*this, delta_time);
+        move(speed_ * velocity_ * delta_time);
     }
 
     Tag tag() const {
@@ -83,14 +89,21 @@ class GameObject : public Updatable, public Displayable {
         return name_;
     }
 
+    const sf::Vector2f& velocity() const {
+        return velocity_;
+    }
+
   private:
     // Hitbox hitbox_;
     std::string name_;
     Tag tag_;
     Properties props_;
+
+    sf::Vector2f velocity_;
     int speed_;
+
     std::unique_ptr<Displayable> image_;
-    movement::Func move_;
+    movement::Func velocity_update_;
 };
 
 inline std::ostream& operator<<(std::ostream& out, const GameObject& obj) {

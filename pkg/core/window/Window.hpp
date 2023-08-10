@@ -4,8 +4,9 @@
 #include <SFML/System.hpp>
 
 #include "Collection.hpp"
-#include "Drawable.hpp"
 #include "UiElement.hpp"
+
+class Drawable;
 
 class Window {
   private:
