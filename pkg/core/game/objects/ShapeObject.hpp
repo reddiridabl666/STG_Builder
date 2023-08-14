@@ -35,6 +35,10 @@ class ShapeObject : public Displayable {
         return shape_;
     }
 
+    sf::FloatRect get_bounds() const override {
+        return shape_.getGlobalBounds();
+    }
+
   protected:
     T shape_;
 };

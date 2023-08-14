@@ -27,6 +27,26 @@ void Window::process_events() {
         if (event.type == sf::Event::Closed) {
             window_.close();
         }
+
+        if (event.type == sf::Event::Resized) {
+            sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
+            window_.setView(sf::View(visibleArea));
+        }
+
+#ifdef DEBUG
+        if (event.type == sf::Event::KeyReleased) {
+            if (event.key.code == sf::Keyboard::Equal) {
+                auto view = window_.getView();
+                view.zoom(0.8);
+                window_.setView(view);
+            }
+            if (event.key.code == sf::Keyboard::Dash) {
+                auto view = window_.getView();
+                view.zoom(1.25);
+                window_.setView(view);
+            }
+        }
+#endif
     }
 }
 
@@ -36,6 +56,10 @@ sf::Vector2u Window::get_size() const {
 
 void Window::set_view(const sf::View& view) {
     window_.setView(view);
+}
+
+sf::View Window::get_view() const {
+    return window_.getView();
 }
 
 void Window::clear() {

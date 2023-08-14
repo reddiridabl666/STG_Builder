@@ -7,6 +7,10 @@
 #include "Debug.hpp"
 #endif
 
+namespace {
+void append_to_res(ObjectOptionsFactory::res_type& res, const nl::json json, ObjectOptions& opts);
+}
+
 ObjectOptionsFactory::ObjectOptionsFactory(const GameField& field)
     : handler_chain_(init_handler_chain(field)) {}
 
@@ -37,13 +41,30 @@ ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
         if (!opts) {
             return tl::unexpected(opts.error());
         }
-        res.push_back(std::move(opts.value()));
+        append_to_res(res, obj, opts.value());
     }
 
     return res;
 }
 
 namespace {
+
+void append_to_res(ObjectOptionsFactory::res_type& res, const nl::json json, ObjectOptions& opts) {
+    if (!json.contains("delta") || !json.contains("count")) {
+        return res.push_back(std::move(opts));
+    }
+
+    size_t count = json.at("count").template get<size_t>();
+    auto delta = json.at("delta").template get<sf::Vector2f>();
+
+    for (size_t i = 0; i < count; ++i) {
+        res.push_back(opts);
+
+        opts.pos_x += delta.x;
+        opts.pos_y += delta.y;
+    }
+}
+
 struct TypeHandler : Handler<ObjectOptions> {
     bool should_handle(const std::string& key) const override {
         return key == "type";
@@ -54,6 +75,44 @@ struct TypeHandler : Handler<ObjectOptions> {
     }
 };
 
+struct RotationHandler : Handler<ObjectOptions> {
+    bool should_handle(const std::string& key) const override {
+        return key == "rotation";
+    }
+
+    void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
+        obj.rotation = value.template get<float>();
+    }
+};
+
+float pos_x(const GameField& field, const nl::json& value) {
+    if (!value.is_string()) {
+        return position::set(value.template get<float>())(field);
+    }
+
+    auto str = value.template get<std::string>();
+    if (str.ends_with('%')) {
+        int percent = std::stoi(str.substr(0, str.size() - 1));
+        return position::percent_width(percent)(field);
+    }
+
+    throw std::runtime_error(fmt::format("Got invalid value for X: '{}'", str));
+}
+
+float pos_y(const GameField& field, const nl::json& value) {
+    if (!value.is_string()) {
+        return position::set(value.template get<float>())(field);
+    }
+
+    auto str = value.template get<std::string>();
+    if (str.ends_with('%')) {
+        int percent = std::stoi(str.substr(0, str.size() - 1));
+        return position::percent_height(percent)(field);
+    }
+
+    throw std::runtime_error(fmt::format("Got invalid value for Y: '{}'", str));
+}
+
 struct X_Handler : Handler<ObjectOptions> {
     X_Handler(const GameField& field) : field_(field) {}
 
@@ -62,19 +121,7 @@ struct X_Handler : Handler<ObjectOptions> {
     }
 
     void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
-        if (!value.is_string()) {
-            obj.pos_x = position::set(value.template get<float>())(field_);
-            return;
-        }
-
-        auto str = value.template get<std::string>();
-        if (str.ends_with('%')) {
-            int percent = std::stoi(str.substr(0, str.size() - 1));
-            obj.pos_x = position::percent_width(percent)(field_);
-            return;
-        }
-
-        throw std::runtime_error(fmt::format("Got invalid value for X: '{}'", str));
+        obj.pos_x = pos_x(field_, value);
     }
 
   private:
@@ -89,19 +136,7 @@ struct Y_Handler : Handler<ObjectOptions> {
     }
 
     void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
-        if (!value.is_string()) {
-            obj.pos_y = position::set(value.template get<float>())(field_);
-            return;
-        }
-
-        auto str = value.template get<std::string>();
-        if (str.ends_with('%')) {
-            int percent = std::stoi(str.substr(0, str.size() - 1));
-            obj.pos_y = position::percent_height(percent)(field_);
-            return;
-        }
-
-        throw std::runtime_error(fmt::format("Got invalid value for Y: '{}'", str));
+        obj.pos_y = pos_y(field_, value);
     }
 
   private:
@@ -181,7 +216,8 @@ struct MoveTypeHandler : public Handler<MoveHandler> {
         if (str_value == "circular") {
             obj.set_args_ = [](auto& args) {
                 return movement::circular(
-                    std::get<sf::Vector2f>(args["center"])
+                    std::get<sf::Vector2f>(args["center"]),
+                    std::get<float>(args["speed"])
                 );
             };
         }
@@ -206,6 +242,22 @@ struct MoveArgsHandler : public Handler<MoveHandler> {
     }
 };
 
+struct ActivityHandler : public Handler<ObjectOptions> {
+  public:
+    ActivityHandler(const GameField& field) : field_(field) {}
+
+    bool should_handle(const std::string& key) const override {
+        return key == "activity_start";
+    }
+
+    void handle(ObjectOptions& obj, const std::string&, const nl::json& json) override {
+        obj.activity_start = pos_y(field_, json);
+    }
+
+  private:
+    const GameField& field_;
+};
+
 MoveHandler::MoveHandler() {
     inner_chain_.add_handler(std::make_unique<MoveTypeHandler>());
     inner_chain_.add_handler(std::make_unique<MoveArgsHandler>());
@@ -215,11 +267,13 @@ MoveHandler::MoveHandler() {
 
 HandlerChain<ObjectOptions> ObjectOptionsFactory::init_handler_chain(const GameField& field) {
     std::vector<std::unique_ptr<Handler<ObjectOptions>>> res;
-    res.reserve(4);
+    res.reserve(6);
 
     res.push_back(std::make_unique<TypeHandler>());
     res.push_back(std::make_unique<PosHandler>(field));
     res.push_back(std::make_unique<MoveHandler>());
+    res.push_back(std::make_unique<ActivityHandler>(field));
+    res.push_back(std::make_unique<RotationHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectOptions>>());
 
     return res;

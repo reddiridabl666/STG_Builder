@@ -7,15 +7,15 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #endif
 
-#include "GameObject.hpp"
+#include "GameObjectBase.hpp"
 #include "ShapeObject.hpp"
 #include "SpriteObject.hpp"
 #include "Window.hpp"
 
-class GameField : public GameObject {  // TODO: Should it really be a GameObject?
+class GameField : public GameObjectBase {
   public:
     GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
-              int speed = 50, const Properties::Data& props = {});
+              int speed = 50);
 
     sf::Vector2f center() const {
         return view_.getCenter();
@@ -64,12 +64,17 @@ class GameField : public GameObject {  // TODO: Should it really be a GameObject
     }
 
     float view_top() const {
-        return view_.getCenter().y - view_.getSize().y;
+        return view_.getCenter().y - view_.getSize().y / 2;
     }
+
+    bool is_in_bounds(const Transformable& obj, float margin = 0) const;
+
+    sf::FloatRect get_bounds(float margin = 0) const;
 
   private:
     sf::View view_;
     Window& window_;
+
 #ifdef DEBUG
     RectObject border_;
 #endif

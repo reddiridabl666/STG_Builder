@@ -22,6 +22,7 @@ class Window {
     sf::Vector2u get_size() const;
 
     void set_view(const sf::View& view);
+    sf::View get_view() const;
 
     void clear();
     void set_default_view();

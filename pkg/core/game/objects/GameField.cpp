@@ -1,11 +1,14 @@
 #include "GameField.hpp"
 
+#include "GameInfo.hpp"
+
 GameField::GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
-                     int speed, const Properties::Data& props)
-    : GameObject(std::move(image), speed, GameObject::Tag::Background, props), window_(window) {
+                     int speed)
+    : GameObjectBase(std::move(image), speed), window_(window) {
     set_pos(0, 0);
 
     float view_height = screen_pos.height * window_.get_size().y;
+    set_width(screen_pos.width * window_.get_size().x);
 
     view_.setCenter(sf::Vector2f{left() + width() / 2, bottom() - view_height / 2});
     view_.setSize(sf::Vector2f{width(), view_height});
@@ -14,6 +17,7 @@ GameField::GameField(std::unique_ptr<SpriteObject>&& image, Window& window, cons
 
     // view_.zoom(1.5);
     window_.set_view(view_);
+
 #ifdef DEBUG
     border_.shape().setSize(view_.getSize());
     border_.shape().setFillColor(sf::Color::Transparent);
@@ -37,7 +41,17 @@ void GameField::update(float delta_time) {
 
 #ifdef DEBUG
 void GameField::draw(Window& window) const {
-    GameObject::draw(window);
+    GameObjectBase::draw(window);
     window.draw(border_);
 }
 #endif
+
+bool GameField::is_in_bounds(const Transformable& obj, float margin) const {
+    // return abs(view_.getCenter().x - obj.pos().x) <= view_.getSize().x / 2 + margin &&
+    //        abs(view_.getCenter().y - obj.pos().y) <= view_.getSize().y / 2 + margin;
+    return get_bounds(margin).intersects(obj.get_bounds());
+}
+
+sf::FloatRect GameField::get_bounds(float margin) const {
+    return sf::FloatRect{left() - margin, view_top() - margin, width() + margin, view_.getSize().y + margin};
+}

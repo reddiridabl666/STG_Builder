@@ -27,6 +27,10 @@ struct ObjectOptions {
 
     float pos_x;
     float pos_y;
+
+    float rotation = 0;
+
+    float activity_start = GameObject::kDefaultActivityStart;
 };
 
 std::ostream& operator<<(std::ostream& out, const ObjectOptions& opts);

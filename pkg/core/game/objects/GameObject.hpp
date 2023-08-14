@@ -3,14 +3,16 @@
 #include <functional>
 #include <memory>
 
-#include "Displayable.hpp"
 #include "Errors.hpp"
+#include "GameObjectBase.hpp"
+#include "Life.hpp"
 #include "Movement.hpp"
 #include "Properties.hpp"
-#include "Updatable.hpp"
 
-class GameObject : public Updatable, public Displayable {
+class GameObject : public GameObjectBase {
   public:
+    static constexpr float kDefaultActivityStart = 0;
+
     enum Tag {
         Object,
         Background,
@@ -20,62 +22,38 @@ class GameObject : public Updatable, public Displayable {
         Player
     };
 
-    GameObject(std::unique_ptr<Displayable>&& image, int speed = 50, Tag tag = Tag::Object,
-               const Properties& props = {})
-        : tag_(tag), props_(props), speed_(speed), image_(std::move(image)) {}
-
     GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
-               int speed = 50, Tag tag = Tag::Object, const Properties& props = {})
-        : name_(name), tag_(tag), props_(props), speed_(speed), image_(std::move(image)) {
-        set_size(size);
-    }
+               int speed = 50, Tag tag = Tag::Object, const Properties& props = {});
 
-    const std::unique_ptr<Displayable>& image() {
-        return image_;
-    }
+    float left() const;
 
-    sf::Drawable& drawable() override {
-        return image_->drawable();
-    }
+    float right() const;
 
-    sf::Transformable& transformable() override {
-        return image_->transformable();
-    }
+    float top() const;
 
-    sf::Vector2f get_size() const override {
-        return image_->get_size();
-    }
+    float bottom() const;
+
+    float height() const;
+
+    float width() const;
 
     void set_movement(const movement::Func& move) {
-        velocity_update_ = move;
+        move_update_ = move;
     }
 
     void set_movement(movement::Func&& move) {
-        velocity_update_ = std::move(move);
+        move_update_ = std::move(move);
     }
 
     // Hitbox& hitbox() {
     //     return hitbox_;
     // }
 
-    void set_speed(int speed) {
-        speed_ = speed;
-    }
-
-    int speed() const {
-        return speed_;
-    }
-
     Properties& props() {
         return props_;
     }
 
-    void update(float delta_time) override {
-        if (velocity_update_) {
-            velocity_ = velocity_update_(*this, delta_time);
-        }
-        move(speed_ * velocity_ * delta_time);
-    }
+    void update(const GameField& field, float delta_time);
 
     Tag tag() const {
         return tag_;
@@ -93,6 +71,51 @@ class GameObject : public Updatable, public Displayable {
         return velocity_;
     }
 
+    void set_velocity(const sf::Vector2f& velocity) {
+        velocity_ = velocity;
+    }
+
+    bool is_alive() const {
+        return alive_;
+    }
+
+    bool is_active() const {
+        return active_;
+    }
+
+    void deactivate() {
+        active_ = false;
+    }
+
+    void activate() {
+        active_ = true;
+    }
+
+    void die() {
+        alive_ = false;
+    }
+
+    void ressurect() {
+        alive_ = true;
+    }
+
+    void set_activity(bool status) {
+        active_ = status;
+    }
+
+    void set_activity_start(float activity_start) {
+        activity_start_ = activity_start;
+    }
+
+    float activity_start() const {
+        return activity_start_;
+    }
+
+    bool is_default_activatable() const {
+        static constexpr float eps = 1e-2;
+        return abs(activity_start_ - kDefaultActivityStart) < eps;
+    }
+
   private:
     // Hitbox hitbox_;
     std::string name_;
@@ -100,10 +123,15 @@ class GameObject : public Updatable, public Displayable {
     Properties props_;
 
     sf::Vector2f velocity_;
-    int speed_;
+    movement::Func move_update_;
+    life::update life_update_ = life::in_bounds();
 
-    std::unique_ptr<Displayable> image_;
-    movement::Func velocity_update_;
+    bool active_ = false;
+    bool alive_ = true;
+
+    float activity_start_ = kDefaultActivityStart;
+
+    void move_(float delta_time);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const GameObject& obj) {

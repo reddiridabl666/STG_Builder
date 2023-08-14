@@ -3,6 +3,7 @@
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Clock.hpp>
+#include <unordered_map>
 #include <vector>
 
 #include "AssetManager.hpp"
@@ -28,6 +29,9 @@ class App {
 
     ErrorPtr generate_objects();
 
+    void clear_dead();
+    void update_object_status();
+
     void draw_ui();
 
     Window& window_;
@@ -35,7 +39,7 @@ class App {
     AssetManager<sf::Texture> textures_;
     AssetManager<sf::SoundBuffer> sounds_;
 
-    std::vector<GameObject> objects_;
+    std::unordered_map<std::string, GameObject> objects_;
     ObjectTypeFactory::res_type types_;
 
     std::shared_ptr<Level> level_;

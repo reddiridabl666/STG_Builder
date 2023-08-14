@@ -2,17 +2,21 @@
 
 #include <cstddef>
 
+#include "GameField.hpp"
 #include "Observable.hpp"
 
-class Game : public Observable<int, int> {
+class Game : public Observable<int, size_t> {
   public:
     enum Event {
         ObjectCreated,
-        ObjectDestroyed
+        ObjectDestroyed,
+        LevelChanged
     };
 
   private:
     Game();
+
+    const GameField* field_;
 
     size_t enemy_count_ = 0;
     size_t player_count_ = 0;
@@ -34,5 +38,9 @@ class Game : public Observable<int, int> {
 
     size_t player_count() {
         return player_count_;
+    }
+
+    const GameField* field() const {
+        return field_;
     }
 };

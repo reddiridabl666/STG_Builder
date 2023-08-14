@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <iostream>
 
 #include "GameField.hpp"
 
@@ -21,7 +22,8 @@ inline Func percent_width(int percent = 50) {
 
 inline Func percent_height(int percent = 50) {
     return [percent](const GameField& field) {
-        return field.bottom() - percent / 100 * field.height();
+        std::cout << "Percent is: " << percent << "\n";
+        return field.bottom() - percent / 100.f * field.height();
     };
 }
 

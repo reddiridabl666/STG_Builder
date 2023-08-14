@@ -38,7 +38,7 @@ ErrorPtr App::run() {
 void App::draw_objects() {
     level_->field().draw(window_);
 
-    for (const auto& obj : objects_) {
+    for (const auto& [_, obj] : objects_) {
         obj.draw(window_);
     }
 }
@@ -54,15 +54,17 @@ ErrorPtr App::update(float delta_time) {
         return err;
     }
 
-    // TODO: clear unused objects
+    update_object_status();
+
+    clear_dead();
 
     level_->field().update(delta_time);
 
-    for (auto& obj : objects_) {
-        obj.update(delta_time);
+    for (auto& [_, obj] : objects_) {
+        obj.update(level_->field(), delta_time);
     }
 
-    textures_.storage().clear_unused();  // TODO: make it a method in AssetManager
+    textures_.storage().clear_unused();
     sounds_.storage().clear_unused();
 
     return ErrorPtr::OK;
@@ -121,11 +123,42 @@ ErrorPtr App::generate_objects() {
             return res.error();
         }
 
-        objects_.push_back(std::move(*res));
+        objects_.emplace(res->name(), std::move(*res));
         level_->objects().pop_front();
     }
 
     return ErrorPtr::OK;
+}
+
+void App::clear_dead() {
+    std::erase_if(objects_, [](auto& el) {
+        if (!el.second.is_alive()) {
+            Game::info().emit(Game::Event::ObjectDestroyed, el.second.tag());
+            return true;
+        }
+        return false;
+    });
+}
+
+static constexpr float kDieMargin = 500;
+
+void App::update_object_status() {
+    for (auto& [_, obj] : objects_) {
+        if (obj.is_active()) {
+            continue;
+        }
+
+        if (obj.name() == "enemy-0") {
+            std::cout << "Start line:" << obj.activity_start() << "\n";
+            std::cout << "Cur center pos:" << level_->field().center().y << "\n";
+        }
+
+        if (obj.is_default_activatable()) {
+            obj.set_activity(level_->field().is_in_bounds(obj));
+        } else {
+            obj.set_activity(level_->field().center().y <= obj.activity_start());
+        }
+    }
 }
 
 void App::draw_ui() {

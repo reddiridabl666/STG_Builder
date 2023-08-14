@@ -27,6 +27,10 @@ class SpriteObject : public Displayable {
         return texture_->getSize() * sprite_.getScale();
     }
 
+    sf::FloatRect get_bounds() const override {
+        return sprite_.getGlobalBounds();
+    }
+
   private:
     std::shared_ptr<sf::Texture> texture_;
     sf::Sprite sprite_;
