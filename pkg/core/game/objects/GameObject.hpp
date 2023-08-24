@@ -4,14 +4,16 @@
 #include <memory>
 
 #include "Errors.hpp"
-#include "GameObjectBase.hpp"
+#include "ImageContainer.hpp"
 #include "Life.hpp"
 #include "Movement.hpp"
 #include "Properties.hpp"
 
-class GameObject : public GameObjectBase {
+class GameObject : public ImageContainer {
   public:
     static constexpr float kDefaultActivityStart = 0;
+    static constexpr float kLoadDelta = 100;
+    static const life::update kDefaultLifeFunc;
 
     enum Tag {
         Object,
@@ -116,22 +118,26 @@ class GameObject : public GameObjectBase {
         return abs(activity_start_ - kDefaultActivityStart) < eps;
     }
 
+    void set_life_update(const life::update& func) {
+        life_update_ = func;
+    }
+
   private:
-    // Hitbox hitbox_;
     std::string name_;
     Tag tag_;
     Properties props_;
 
     sf::Vector2f velocity_;
     movement::Func move_update_;
-    life::update life_update_ = life::in_bounds();
+    life::update life_update_;
 
     bool active_ = false;
     bool alive_ = true;
 
     float activity_start_ = kDefaultActivityStart;
 
-    void move_(float delta_time);
+    void update_position(float delta_time);
+    bool update_activity(const GameField& field);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const GameObject& obj) {

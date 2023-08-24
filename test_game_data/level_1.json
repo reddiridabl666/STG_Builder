@@ -25,6 +25,12 @@
                     "x": 3,
                     "y": -10
                 }
+            },
+            "lives": {
+                "type": "timed",
+                "args": {
+                    "seconds": 5
+                }
             }
         },
         {
@@ -55,6 +61,12 @@
             "delta": {
                 "x": 120,
                 "y": -50
+            },
+            "lives": {
+                "type": "bounds",
+                "args": {
+                    "margin": 50
+                }
             }
         }
     ]

@@ -9,6 +9,7 @@
 #endif
 
 #include "Json.hpp"
+#include "Utils.hpp"
 
 template <typename T>
 struct Handler {
@@ -76,13 +77,15 @@ class HandlerChain {
             if (handler->should_handle(key)) {
                 try {
                     handler->handle(res, key, value);
-                    return nullptr;
+                    return ErrorPtr::OK;
                 } catch (std::exception& e) {
-                    return make_error<InternalError>(e.what());
+                    auto msg = fmt::format("While handling '{}': '{}', got error: {}", key, to_string(value),
+                                           e.what());
+                    return make_error<InternalError>(msg);
                 }
             }
         }
-        return nullptr;
+        return ErrorPtr::OK;
     }
 
   private:

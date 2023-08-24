@@ -5,6 +5,7 @@ project(stg_builder_gen)
 set(SOURCES
     generators/ObjectTypeFactory.cpp
     generators/ObjectOptionsFactory.cpp
+    generators/FuncBuilder.cpp
     assets/AssetProcessor.cpp
     objects/ObjectOptions.cpp
     objects/ObjectType.cpp

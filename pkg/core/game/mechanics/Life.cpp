@@ -7,7 +7,7 @@
 
 namespace life {
 update timed(float seconds) {
-    return [seconds](const GameObject& obj, const GameField&) {
+    return [seconds](const GameObject&, const GameField&) {
         static sf::Clock timer;
         if (timer.getElapsedTime().asSeconds() > seconds) {
             return false;

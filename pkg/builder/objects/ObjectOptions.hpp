@@ -6,6 +6,7 @@
 #include <ostream>
 
 #include "GameObject.hpp"
+#include "Life.hpp"
 #include "Movement.hpp"
 #include "Position.hpp"
 #include "Properties.hpp"
@@ -23,6 +24,8 @@ struct ObjectOptions {
     std::string type;
 
     movement::Func move;
+    life::update life_func = GameObject::kDefaultLifeFunc;
+
     Properties props;
 
     float pos_x;

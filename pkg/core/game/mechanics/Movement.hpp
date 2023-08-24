@@ -7,7 +7,6 @@
 class GameObject;
 
 namespace movement {
-using update = std::function<sf::Vector2f(const GameObject& obj, float delta)>;
 
 struct Func {
   public:
@@ -46,6 +45,8 @@ struct Func {
     // }
 
   private:
+    using update = std::function<sf::Vector2f(const GameObject& obj, float delta)>;
+
     Type type_;
     update func_;
     // update velocity_;

@@ -4,7 +4,7 @@
 
 GameField::GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
                      int speed)
-    : GameObjectBase(std::move(image), speed), window_(window) {
+    : ImageContainer(std::move(image), speed), window_(window) {
     set_pos(0, 0);
 
     float view_height = screen_pos.height * window_.get_size().y;
@@ -35,13 +35,15 @@ void GameField::update(float delta_time) {
     }
 
     view_.move(sf::Vector2f{0, -1 * speed() * delta_time});
+#ifdef DEBUG
     border_.move(sf::Vector2f{0, -1 * speed() * delta_time});
+#endif
     window_.set_view(view_);
 }
 
 #ifdef DEBUG
 void GameField::draw(Window& window) const {
-    GameObjectBase::draw(window);
+    ImageContainer::draw(window);
     window.draw(border_);
 }
 #endif
@@ -54,4 +56,8 @@ bool GameField::is_in_bounds(const Transformable& obj, float margin) const {
 
 sf::FloatRect GameField::get_bounds(float margin) const {
     return sf::FloatRect{left() - margin, view_top() - margin, width() + margin, view_.getSize().y + margin};
+}
+
+sf::FloatRect GameField::get_bounds() const {
+    return get_bounds(0);
 }

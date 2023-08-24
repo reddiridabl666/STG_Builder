@@ -3,11 +3,10 @@
 #include <memory>
 
 #include "Displayable.hpp"
-#include "Updatable.hpp"
 
-class GameObjectBase : public Updatable, public Displayable {
+class ImageContainer : public Displayable {
   public:
-    GameObjectBase(std::unique_ptr<Displayable>&& image, int speed = 50)
+    ImageContainer(std::unique_ptr<Displayable>&& image, int speed = 50)
         : speed_(speed), image_(std::move(image)) {}
 
     const std::unique_ptr<Displayable>& image() {

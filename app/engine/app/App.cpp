@@ -54,15 +54,13 @@ ErrorPtr App::update(float delta_time) {
         return err;
     }
 
-    update_object_status();
-
-    clear_dead();
-
     level_->field().update(delta_time);
 
     for (auto& [_, obj] : objects_) {
         obj.update(level_->field(), delta_time);
     }
+
+    clear_dead();
 
     textures_.storage().clear_unused();
     sounds_.storage().clear_unused();
@@ -102,8 +100,6 @@ ErrorOr<GameObject> App::generate_object(const ObjectOptions& opts) {
     return obj;
 }
 
-static constexpr float kLoadDeltaY = 100;
-
 ErrorPtr App::generate_objects() {
     if (!level_) {
         return make_error<InternalError>("No level loaded");
@@ -112,7 +108,7 @@ ErrorPtr App::generate_objects() {
     while (!level_->objects().empty()) {
         const auto& opts = level_->objects().front();
 
-        if (level_->field().view_top() - opts.pos_y > kLoadDeltaY) {
+        if (level_->field().view_top() - opts.pos_y > GameObject::kLoadDelta) {
             // fmt::println("Obj '{}' with pos {} is higher than {}, does not need to be loaded yet",
             // opts.type, opts.pos_y, level_->field().view_top());
             break;
@@ -138,27 +134,6 @@ void App::clear_dead() {
         }
         return false;
     });
-}
-
-static constexpr float kDieMargin = 500;
-
-void App::update_object_status() {
-    for (auto& [_, obj] : objects_) {
-        if (obj.is_active()) {
-            continue;
-        }
-
-        if (obj.name() == "enemy-0") {
-            std::cout << "Start line:" << obj.activity_start() << "\n";
-            std::cout << "Cur center pos:" << level_->field().center().y << "\n";
-        }
-
-        if (obj.is_default_activatable()) {
-            obj.set_activity(level_->field().is_in_bounds(obj));
-        } else {
-            obj.set_activity(level_->field().center().y <= obj.activity_start());
-        }
-    }
 }
 
 void App::draw_ui() {

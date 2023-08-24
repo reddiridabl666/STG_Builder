@@ -1,7 +1,6 @@
 #include "ObjectOptionsFactory.hpp"
 
-#include <unordered_map>
-#include <variant>
+#include "FuncBuilder.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"
@@ -162,85 +161,80 @@ struct PosHandler : Handler<ObjectOptions> {
     HandlerChain<ObjectOptions> inner_chain_;
 };
 
-class MoveTypeHandler;
-class MoveArgsHandler;
+// class MoveTypeHandler;
+// class MoveArgsHandler;
 
 struct MoveHandler : Handler<ObjectOptions> {
-  public:
-    MoveHandler();
+    //   public:
+    // MoveHandler();
 
     bool should_handle(const std::string& key) const override {
         return key == "move";
     }
 
     void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
-        inner_chain_.handle_unsafe(*this, value);
-
-        if (!set_args_) {
-            obj.move = movement::no_op;
-        }
-
-        obj.move = set_args_(args_);
+        auto move_info = value.template get<FuncInfo<>>();
+        obj.move = FuncBuilder::generate<movement::Func>(move_info);
     }
 
-  private:
-    using args_type = std::unordered_map<std::string, std::variant<sf::Vector2f, float>>;
+    //   private:
+    //     using args_type = std::unordered_map<std::string, std::variant<sf::Vector2f, float>>;
 
-    HandlerChain<MoveHandler> inner_chain_;
+    //     HandlerChain<MoveHandler> inner_chain_;
 
-    std::function<movement::Func(args_type&)> set_args_;
-    args_type args_;
+    //     std::function<movement::Func(args_type&)> set_args_;
+    //     args_type args_;
 
-    friend class MoveTypeHandler;
-    friend class MoveArgsHandler;
+    //     friend class MoveTypeHandler;
+    //     friend class MoveArgsHandler;
 };
 
-struct MoveTypeHandler : public Handler<MoveHandler> {
-    bool should_handle(const std::string& key) const override {
-        return key == "type";
-    }
+// struct MoveTypeHandler : public Handler<MoveHandler> {
+//     bool should_handle(const std::string& key) const override {
+//         return key == "type";
+//     }
 
-    void handle(MoveHandler& obj, const std::string&, const nl::json& value) override {
-        auto str_value = value.template get<std::string>();
+//     void handle(MoveHandler& obj, const std::string&, const nl::json& value) override {
+//         auto str_value = value.template get<std::string>();
 
-        // clang-format off
-        if (str_value == "linear") {
-            obj.set_args_ = [](auto& args) {
-                return movement::linear(
-                    std::get<float>(args["x"]),
-                    std::get<float>(args["y"])
-                );
-            };
-        }
+//         // clang-format off
+//         if (str_value == "linear") {
+//             obj.set_args_ = [](auto& args) {
+//                 return movement::linear(
+//                     std::get<float>(args["x"]),
+//                     std::get<float>(args["y"])
+//                 );
+//             };
+//         }
 
-        if (str_value == "circular") {
-            obj.set_args_ = [](auto& args) {
-                return movement::circular(
-                    std::get<sf::Vector2f>(args["center"]),
-                    std::get<float>(args["speed"])
-                );
-            };
-        }
-        // clang-format on
-    }
-};
+//         if (str_value == "circular") {
+//             obj.set_args_ = [](auto& args) {
+//                 return movement::circular(
+//                     std::get<sf::Vector2f>(args["center"]),
+//                     std::get<float>(args["speed"])
+//                 );
+//             };
+//         }
+//         // clang-format on
+//     }
+// };
 
-struct MoveArgsHandler : public Handler<MoveHandler> {
-    bool should_handle(const std::string& key) const override {
-        return key == "args";
-    }
+// struct MoveArgsHandler : public Handler<MoveHandler> {
+//     bool should_handle(const std::string& key) const override {
+//         return key == "args";
+//     }
 
-    void handle(MoveHandler& obj, const std::string&, const nl::json& json) override {
-        for (auto& [key, value] : json.items()) {
-            if (value.is_number()) {
-                obj.args_[key] = value.template get<float>();
-                continue;
-            }
+//     void handle(MoveHandler& obj, const std::string&, const nl::json& json) override {
+//         for (auto& [key, value] : json.items()) {
+//             if (value.is_number()) {
+//                 obj.args_[key] = value.template get<float>();
+//                 continue;
+//             }
 
-            obj.args_[key] = value.template get<sf::Vector2f>();
-        }
-    }
-};
+//             obj.args_[key] = value.template get<sf::Vector2f>();
+//         }
+//     }
+// };
 
 struct ActivityHandler : public Handler<ObjectOptions> {
   public:
@@ -258,10 +252,10 @@ struct ActivityHandler : public Handler<ObjectOptions> {
     const GameField& field_;
 };
 
-MoveHandler::MoveHandler() {
-    inner_chain_.add_handler(std::make_unique<MoveTypeHandler>());
-    inner_chain_.add_handler(std::make_unique<MoveArgsHandler>());
-}
+// MoveHandler::MoveHandler() {
+//     inner_chain_.add_handler(std::make_unique<MoveTypeHandler>());
+//     inner_chain_.add_handler(std::make_unique<MoveArgsHandler>());
+// }
 
 }  // namespace
 

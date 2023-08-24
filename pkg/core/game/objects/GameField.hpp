@@ -7,12 +7,12 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #endif
 
-#include "GameObjectBase.hpp"
+#include "ImageContainer.hpp"
 #include "ShapeObject.hpp"
 #include "SpriteObject.hpp"
 #include "Window.hpp"
 
-class GameField : public GameObjectBase {
+class GameField : public ImageContainer {
   public:
     GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
               int speed = 50);
@@ -21,7 +21,7 @@ class GameField : public GameObjectBase {
         return view_.getCenter();
     }
 
-    void update(float delta_time) override;
+    void update(float delta_time);
 
 #ifdef DEBUG
     void draw(Window& window) const override;
@@ -69,7 +69,8 @@ class GameField : public GameObjectBase {
 
     bool is_in_bounds(const Transformable& obj, float margin = 0) const;
 
-    sf::FloatRect get_bounds(float margin = 0) const;
+    sf::FloatRect get_bounds(float margin) const;
+    sf::FloatRect get_bounds() const override;
 
   private:
     sf::View view_;
