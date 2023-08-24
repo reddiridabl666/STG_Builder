@@ -4,7 +4,7 @@
 #include "Movement.hpp"
 
 template <>
-movement::Func FuncBuilder::generate(const MoveInfo& info) {
+movement::Func FuncBuilder::generate(const FuncInfo& info) {
     // clang-format off
     if (info.name == "linear") {
         return movement::linear(
@@ -25,13 +25,13 @@ movement::Func FuncBuilder::generate(const MoveInfo& info) {
 }
 
 template <>
-life::update FuncBuilder::generate(const LifeInfo& info) {
+life::update FuncBuilder::generate(const FuncInfo& info) {
     if (info.name == "bounds") {
-        return life::in_bounds(info.args.at("margin"));
+        return life::in_bounds(info.args.at("margin").get<float>());
     }
 
     if (info.name == "timed") {
-        return life::timed(info.args.at("seconds"));
+        return life::timed(info.args.at("seconds").get<float>());
     }
 
     throw std::runtime_error("Unsupported life func type");

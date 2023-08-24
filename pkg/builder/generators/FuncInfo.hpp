@@ -7,14 +7,12 @@
 
 #include "Json.hpp"
 
-template <typename U = std::variant<float, sf::Vector2f>>
 struct FuncInfo {
     std::string name;
     nl::json args;
 };
 
-template <typename U>
-void from_json(const nl::json& j, FuncInfo<U>& func) {
+inline void from_json(const nl::json& j, FuncInfo& func) {
     j.at("type").get_to(func.name);
     j.at("args").get_to(func.args);
 }

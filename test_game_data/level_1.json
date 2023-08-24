@@ -29,7 +29,7 @@
             "lives": {
                 "type": "timed",
                 "args": {
-                    "seconds": 5
+                    "seconds": 2
                 }
             }
         },

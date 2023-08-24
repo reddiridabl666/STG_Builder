@@ -2,12 +2,8 @@
 
 #include "FuncInfo.hpp"
 
-using MoveInfo = FuncInfo<>;
-
-using LifeInfo = FuncInfo<float>;
-
 class FuncBuilder {
   public:
-    template <typename T, typename FuncInfoType>
-    static T generate(const FuncInfoType& info);
+    template <typename T>
+    static T generate(const FuncInfo& info);
 };
