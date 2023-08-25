@@ -21,7 +21,7 @@ bool keys_are_pressed(const std::initializer_list<Key::Key>& keys) {
 
 // TODO: remove hard-coded keys, add gamepad support
 
-int horizontal() {
+[[maybe_unused]] int horizontal() {
     if (keys_are_pressed({Key::A, Key::Left})) {
         return -1;
     }
@@ -33,7 +33,7 @@ int horizontal() {
     return 0;
 }
 
-int vertical() {
+[[maybe_unused]] int vertical() {
     if (keys_are_pressed({Key::W, Key::Up})) {
         return -1;
     }
@@ -68,8 +68,12 @@ Func circular(sf::Vector2f center, float speed) {
 }
 
 Func user_control(int user_num) {
-    return Func(Func::Type::Velocity, [user_num](const GameObject&, float) {
-        return sf::Vector2f{1.f * horizontal(), 1.f * vertical()};
-    });
+    return Func(
+        Func::Type::Velocity,
+        [user_num](const GameObject&, float) {
+            // return sf::Vector2f{};
+            return sf::Vector2f{1.f * horizontal(), 1.f * vertical()};
+        },
+        true);
 }
 }  // namespace movement

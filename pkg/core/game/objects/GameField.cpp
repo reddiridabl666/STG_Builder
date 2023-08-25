@@ -31,6 +31,7 @@ GameField::GameField(std::unique_ptr<SpriteObject>&& image, Window& window, cons
 
 void GameField::update(float delta_time) {
     if (has_ended()) {
+        speed_ = 0;
         return;
     }
 

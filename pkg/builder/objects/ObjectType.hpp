@@ -11,6 +11,8 @@
 #include "GameObject.hpp"
 #include "Properties.hpp"
 
+class Player;
+
 class ObjectType {
   public:
     using AssetPaths = std::vector<std::string>;
@@ -19,6 +21,13 @@ class ObjectType {
 
     ErrorOr<GameObject> create_object(AssetManager<sf::Texture>& textures
                                       /*AssetManager<sf::Sound>& sounds*/);
+
+    // ErrorOr<std::shared_ptr<Player>> create_player(AssetManager<sf::Texture>& textures
+    //                                                /*AssetManager<sf::Sound>& sounds*/,
+    //                                                int player_num = 1);
+    ErrorOr<GameObject> create_player(AssetManager<sf::Texture>& textures
+                                      /*AssetManager<sf::Sound>& sounds*/,
+                                      const GameField& field, int player_num = 1);
 
     std::string name;
     int speed;

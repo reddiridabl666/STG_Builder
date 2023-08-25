@@ -4,20 +4,29 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Clock.hpp>
 #include <unordered_map>
-#include <vector>
 
 #include "AssetManager.hpp"
 #include "GameField.hpp"
 #include "LevelManager.hpp"
 #include "ObjectTypeFactory.hpp"
+#include "Player.hpp"
 #include "Window.hpp"
+
+struct WindowInfo {
+    std::string name;
+    sf::Vector2i size;
+
+    Window make_window() const {
+        return Window(name, size.x, size.y);
+    }
+};
 
 class App {
   public:
-    App(Window& window, AssetManager<sf::Texture>&& textures, AssetManager<sf::SoundBuffer>&& sounds,
-        ObjectTypeFactory::res_type&& types, LevelManager&& levels);
+    App(const WindowInfo& window_info, PlayerList&& players, AssetManager<sf::Texture>&& textures,
+        AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels);
 
-    ErrorPtr run();
+    void run();
 
   private:
     void draw_objects();
@@ -30,17 +39,19 @@ class App {
     ErrorPtr generate_objects();
 
     void clear_dead();
-    void update_object_status();
+    ErrorPtr generate_players();
 
     void draw_ui();
 
-    Window& window_;
+    Window window_;
 
     AssetManager<sf::Texture> textures_;
     AssetManager<sf::SoundBuffer> sounds_;
 
     std::unordered_map<std::string, GameObject> objects_;
     ObjectTypeFactory::res_type types_;
+
+    PlayerList player_types_;
 
     std::shared_ptr<Level> level_;
     LevelManager levels_;

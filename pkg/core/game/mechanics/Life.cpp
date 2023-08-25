@@ -5,7 +5,7 @@
 #include "GameField.hpp"
 #include "GameObject.hpp"
 
-namespace life {
+namespace alive {
 update timed(float seconds) {
     return [seconds](const GameObject&, const GameField&) {
         static sf::Clock timer;
@@ -21,4 +21,4 @@ update in_bounds(float margin) {
         return field.is_in_bounds(obj, margin);
     };
 }
-}  // namespace life
+}  // namespace alive

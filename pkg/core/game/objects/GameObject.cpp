@@ -3,10 +3,51 @@
 #include "GameInfo.hpp"
 
 GameObject::GameObject(const std::string& name, const sf::Vector2f& size,
-                       std::unique_ptr<Displayable>&& image, int speed, Tag tag, const Properties& props)
-    : ImageContainer(std::move(image), speed), name_(name), tag_(tag), props_(props) {
+                       std::unique_ptr<Displayable>&& image, int speed, Tag tag, const Properties& props,
+                       float activity_start, const alive::update& life_func, const movement::Func& move_func,
+                       sf::Vector2f velocity, bool alive, bool active)
+    : ImageContainer(std::move(image), speed),
+      name_(name),
+      tag_(tag),
+      props_(props),
+      velocity_(velocity),
+      move_update_(move_func),
+      life_update_(life_func),
+      active_(active),
+      alive_(alive),
+      activity_start_(activity_start) {
     transformable().setOrigin(get_size() / 2);
     set_size(size);
+}
+
+GameObject::GameObject(GameObject&& other)
+    : GameObject(std::move(other.name_), other.get_size(), std::move(other.image_), other.speed_, other.tag_,
+                 std::move(other.props_), other.activity_start_, std::move(other.life_update_),
+                 std::move(other.move_update_), other.velocity_, other.alive_, other.active_) {}
+
+void GameObject::swap(GameObject& other) {
+    std::swap(name_, other.name_);
+    std::swap(speed_, other.speed_);
+    std::swap(tag_, other.tag_);
+    std::swap(props_, other.props_);
+    std::swap(image_, other.image_);
+
+    std::swap(move_update_, other.move_update_);
+    std::swap(velocity_, other.velocity_);
+    std::swap(alive_, other.alive_);
+    std::swap(active_, other.active_);
+    std::swap(life_update_, other.life_update_);
+    std::swap(activity_start_, other.activity_start_);
+
+    sf::Vector2f tmp = get_size();
+    set_size(other.get_size());
+    other.set_size(tmp);
+}
+
+GameObject& GameObject::operator=(GameObject&& other) {
+    auto tmp = std::move(other);
+    swap(tmp);
+    return *this;
 }
 
 void GameObject::update(const GameField& field, float delta_time) {
@@ -15,10 +56,10 @@ void GameObject::update(const GameField& field, float delta_time) {
     }
 
     alive_ = life_update_(*this, field);
-    update_position(delta_time);
+    update_position(field, delta_time);
 }
 
-void GameObject::update_position(float delta_time) {
+void GameObject::update_position(const GameField& field, float delta_time) {
     if (!move_update_) {
         return;
     }
@@ -29,6 +70,10 @@ void GameObject::update_position(float delta_time) {
 
     velocity_ = move_update_(*this, delta_time);
     move(speed_ * velocity_ * delta_time);
+
+    if (move_update_.moves_with_field()) {
+        move(field.speed() * sf::Vector2f{0, -1} * delta_time);
+    }
 }
 
 bool GameObject::update_activity(const GameField& field) {
@@ -74,4 +119,4 @@ float GameObject::width() const {
     return get_size().x;
 }
 
-const life::update GameObject::kDefaultLifeFunc = life::in_bounds(GameObject::kLoadDelta);
+const alive::update GameObject::kDefaultLifeFunc = alive::in_bounds(GameObject::kLoadDelta);

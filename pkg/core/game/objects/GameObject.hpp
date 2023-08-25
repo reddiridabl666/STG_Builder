@@ -13,7 +13,7 @@ class GameObject : public ImageContainer {
   public:
     static constexpr float kDefaultActivityStart = 0;
     static constexpr float kLoadDelta = 100;
-    static const life::update kDefaultLifeFunc;
+    static const alive::update kDefaultLifeFunc;
 
     enum Tag {
         Object,
@@ -25,7 +25,14 @@ class GameObject : public ImageContainer {
     };
 
     GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
-               int speed = 50, Tag tag = Tag::Object, const Properties& props = {});
+               int speed = 50, Tag tag = Tag::Object, const Properties& props = {},
+               float activity_start = kDefaultActivityStart,
+               const alive::update& life_func = kDefaultLifeFunc,
+               const movement::Func& move_func = movement::no_op, sf::Vector2f velocity = {},
+               bool alive = true, bool active = false);
+
+    GameObject(GameObject&& other);
+    GameObject& operator=(GameObject&& other);
 
     float left() const;
 
@@ -118,7 +125,7 @@ class GameObject : public ImageContainer {
         return abs(activity_start_ - kDefaultActivityStart) < eps;
     }
 
-    void set_life_update(const life::update& func) {
+    void set_life_update(const alive::update& func) {
         life_update_ = func;
     }
 
@@ -129,15 +136,16 @@ class GameObject : public ImageContainer {
 
     sf::Vector2f velocity_;
     movement::Func move_update_;
-    life::update life_update_;
+    alive::update life_update_ = kDefaultLifeFunc;
 
     bool active_ = false;
     bool alive_ = true;
 
     float activity_start_ = kDefaultActivityStart;
 
-    void update_position(float delta_time);
+    void update_position(const GameField& field, float delta_time);
     bool update_activity(const GameField& field);
+    void swap(GameObject& other);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const GameObject& obj) {

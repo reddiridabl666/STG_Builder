@@ -11,9 +11,9 @@ class ObjectTypeFactory {
   public:
     using res_type = std::unordered_map<std::string, ObjectType>;
 
-    ErrorOr<ObjectType> generate(const std::string& name, const nl::json& json) const;
+    static ErrorOr<ObjectType> generate(const std::string& name, const nl::json& json);
 
-    ErrorOr<res_type> generate(const nl::json& json) const;
+    static ErrorOr<res_type> generate(const nl::json& json);
 
   private:
     static HandlerChain<ObjectType> handler_chain_;

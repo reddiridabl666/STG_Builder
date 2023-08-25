@@ -24,7 +24,7 @@ struct ObjectOptions {
     std::string type;
 
     movement::Func move;
-    life::update life_func = GameObject::kDefaultLifeFunc;
+    alive::update life_func;
 
     Properties props;
 

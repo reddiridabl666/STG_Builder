@@ -4,23 +4,22 @@
 #include "StatBox.hpp"
 #include "Utils.hpp"
 
-App::App(Window& window, AssetManager<sf::Texture>&& textures, AssetManager<sf::SoundBuffer>&& sounds,
-         ObjectTypeFactory::res_type&& types, LevelManager&& levels)
-    : window_(window),
+App::App(const WindowInfo& window_info, PlayerList&& players, AssetManager<sf::Texture>&& textures,
+         AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels)
+    : window_(window_info.make_window()),
       textures_(std::move(textures)),
       sounds_(std::move(sounds)),
       types_(std::move(types)),
+      player_types_(std::move(players)),
       levels_(std::move(levels)) {}
 
-ErrorPtr App::run() {
-    // ui_elements_.push_back(std::make_shared<Test>());
-
+void App::run() {
     sf::Clock timer;
 
     while (window_.is_open()) {
         auto err = update(timer.restart().asSeconds());
         if (err) {
-            return err;
+            throw std::runtime_error(err.message());
         }
 
         window_.process_events();
@@ -31,8 +30,6 @@ ErrorPtr App::run() {
 
         window_.display();
     }
-
-    return ErrorPtr::OK;
 }
 
 void App::draw_objects() {
@@ -73,13 +70,15 @@ ErrorPtr App::update_level() {
         return ErrorPtr::OK;
     }
 
+    objects_.clear();
+
     auto res = levels_.start_next(window_, textures_);
     if (!res) {
         return res.error();
     }
 
     level_ = res.value();
-    return ErrorPtr::OK;
+    return generate_players();
 }
 
 ErrorOr<GameObject> App::generate_object(const ObjectOptions& opts) {
@@ -109,8 +108,6 @@ ErrorPtr App::generate_objects() {
         const auto& opts = level_->objects().front();
 
         if (level_->field().view_top() - opts.pos_y > GameObject::kLoadDelta) {
-            // fmt::println("Obj '{}' with pos {} is higher than {}, does not need to be loaded yet",
-            // opts.type, opts.pos_y, level_->field().view_top());
             break;
         }
 
@@ -134,6 +131,20 @@ void App::clear_dead() {
         }
         return false;
     });
+}
+
+ErrorPtr App::generate_players() {
+    size_t idx = 1;
+    for (auto& gen : player_types_) {
+        auto player = gen.create_player(textures_, level_->field(), idx);
+        if (!player) {
+            return player.error();
+        }
+        objects_.emplace(player->name(), std::move(*player));
+        ++idx;
+    }
+
+    return ErrorPtr::OK;
 }
 
 void App::draw_ui() {

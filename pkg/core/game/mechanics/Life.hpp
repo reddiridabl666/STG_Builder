@@ -5,10 +5,14 @@
 class GameObject;
 class GameField;
 
-namespace life {
+namespace alive {
 using update = std::function<bool(const GameObject&, const GameField&)>;
 
 update timed(float seconds);
 
 update in_bounds(float margin = 0);
-}  // namespace life
+
+inline const update always = [](auto&, auto&) {
+    return true;
+};
+}  // namespace alive

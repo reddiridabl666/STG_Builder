@@ -22,7 +22,8 @@ struct Func {
     // Func(T&& func, U&& initial) : func_(std::forward<T>(func)), initial_(std::forward<U>(initial)) {}
 
     template <typename T>
-    Func(Type type, T&& func) : type_(type), func_(std::forward<T>(func)) {}
+    Func(Type type, T&& func, bool moves_with_field = false)
+        : type_(type), func_(std::forward<T>(func)), moves_with_field_(moves_with_field) {}
 
     sf::Vector2f operator()(GameObject& obj, float delta) {
         return func_(obj, delta);
@@ -34,6 +35,10 @@ struct Func {
 
     Type type() const {
         return type_;
+    }
+
+    bool moves_with_field() const {
+        return moves_with_field_;
     }
 
     // const update& velocity_func() const {
@@ -49,6 +54,8 @@ struct Func {
 
     Type type_;
     update func_;
+
+    bool moves_with_field_ = false;
     // update velocity_;
     // update pos_;
 };

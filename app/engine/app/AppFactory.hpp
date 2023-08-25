@@ -4,6 +4,5 @@
 
 class AppFactory {
   public:
-    ErrorOr<App> generate(Window& window, const nl::json& game, const nl::json& entities,
-                          const std::string& level_prefix) const;
+    App generate(const nl::json& game, const nl::json& entities, const std::string& level_prefix) const;
 };

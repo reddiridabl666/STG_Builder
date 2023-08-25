@@ -179,7 +179,7 @@ struct LifeHandler : Handler<ObjectOptions> {
 
     void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
         auto life_info = value.template get<FuncInfo>();
-        obj.life_func = FuncBuilder::generate<life::update>(life_info);
+        obj.life_func = FuncBuilder::generate<alive::update>(life_info);
     }
 };
 

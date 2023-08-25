@@ -25,14 +25,14 @@ movement::Func FuncBuilder::generate(const FuncInfo& info) {
 }
 
 template <>
-life::update FuncBuilder::generate(const FuncInfo& info) {
+alive::update FuncBuilder::generate(const FuncInfo& info) {
     if (info.name == "bounds") {
-        return life::in_bounds(info.args.at("margin").get<float>());
+        return alive::in_bounds(info.args.at("margin").get<float>());
     }
 
     if (info.name == "timed") {
-        return life::timed(info.args.at("seconds").get<float>());
+        return alive::timed(info.args.at("seconds").get<float>());
     }
 
-    throw std::runtime_error("Unsupported life func type");
+    throw std::runtime_error("Unsupported alive func type");
 }
