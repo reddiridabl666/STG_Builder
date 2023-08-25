@@ -2,7 +2,6 @@
 
 #include <SFML/Window/Joystick.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <iostream>
 
 #include "GameObject.hpp"
 #include "LinAlg.hpp"
@@ -10,7 +9,7 @@
 using Key = sf::Keyboard;
 
 namespace {
-bool keys_are_pressed(const std::initializer_list<Key::Key>& keys) {
+bool keys_are_pressed(const KeyList& keys) {
     for (auto key : keys) {
         if (Key::isKeyPressed(key)) {
             return true;
@@ -21,24 +20,24 @@ bool keys_are_pressed(const std::initializer_list<Key::Key>& keys) {
 
 // TODO: remove hard-coded keys, add gamepad support
 
-[[maybe_unused]] int horizontal() {
-    if (keys_are_pressed({Key::A, Key::Left})) {
+int horizontal(const KeyControls& keys, const JoyControls&) {
+    if (keys_are_pressed(keys.left)) {
         return -1;
     }
 
-    if (keys_are_pressed({Key::D, Key::Right})) {
+    if (keys_are_pressed(keys.right)) {
         return 1;
     }
 
     return 0;
 }
 
-[[maybe_unused]] int vertical() {
-    if (keys_are_pressed({Key::W, Key::Up})) {
+int vertical(const KeyControls& keys, const JoyControls&) {
+    if (keys_are_pressed(keys.up)) {
         return -1;
     }
 
-    if (keys_are_pressed({Key::S, Key::Down})) {
+    if (keys_are_pressed(keys.down)) {
         return 1;
     }
 
@@ -67,12 +66,12 @@ Func circular(sf::Vector2f center, float speed) {
                 });
 }
 
-Func user_control(int user_num) {
+Func user_control(int user_num, const KeyControls& keys, const JoyControls& joy) {
     return Func(
         Func::Type::Velocity,
-        [user_num](const GameObject&, float) {
+        [user_num, keys, joy](const GameObject&, float) {
             // return sf::Vector2f{};
-            return sf::Vector2f{1.f * horizontal(), 1.f * vertical()};
+            return sf::Vector2f{1.f * horizontal(keys, joy), 1.f * vertical(keys, joy)};
         },
         true);
 }

@@ -86,7 +86,7 @@ ErrorOr<GameObject> App::generate_object(const ObjectOptions& opts) {
         return unexpected_error<InternalError>(fmt::format("Object type '{}' not found", opts.type));
     }
 
-    auto obj = types_.at(opts.type).create_object(textures_);
+    auto obj = types_.at(opts.type).create_object(opts, textures_);
     if (!obj) {
         return tl::unexpected(obj.error());
     }
@@ -95,7 +95,6 @@ ErrorOr<GameObject> App::generate_object(const ObjectOptions& opts) {
         return unexpected_error<InternalError>("No level loaded");
     }
 
-    opts.set_props(*obj);
     return obj;
 }
 
@@ -135,8 +134,8 @@ void App::clear_dead() {
 
 ErrorPtr App::generate_players() {
     size_t idx = 1;
-    for (auto& gen : player_types_) {
-        auto player = gen.create_player(textures_, level_->field(), idx);
+    for (auto& [gen, opts] : player_types_) {
+        auto player = gen.create_player(textures_, level_->field(), opts);
         if (!player) {
             return player.error();
         }

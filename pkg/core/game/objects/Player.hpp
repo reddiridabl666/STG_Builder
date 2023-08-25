@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Controls.hpp"
 #include "GameObject.hpp"
 #include "Movement.hpp"
 
@@ -21,5 +22,12 @@ class Player : public GameObject {
     int player_num_;
 };
 
-using PlayerList = std::vector<ObjectType>;
-// using PlayerList = std::vector<std::shared_ptr<Player>>;
+struct PlayerOptions {
+    int num;
+    KeyControls keys = kDefaultKeyControls;
+    JoyControls joy = kDefaultJoyControls;
+};
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(PlayerOptions, keys, joy)
+
+using PlayerList = std::vector<std::pair<ObjectType, PlayerOptions>>;

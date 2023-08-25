@@ -9,9 +9,11 @@
 #include "Asset.hpp"
 #include "AssetManager.hpp"
 #include "GameObject.hpp"
+#include "ObjectOptions.hpp"
 #include "Properties.hpp"
 
 class Player;
+struct PlayerOptions;
 
 class ObjectType {
   public:
@@ -19,15 +21,12 @@ class ObjectType {
 
     ObjectType(const std::string& name = "") : name(name) {}
 
-    ErrorOr<GameObject> create_object(AssetManager<sf::Texture>& textures
+    ErrorOr<GameObject> create_object(const ObjectOptions& opts, AssetManager<sf::Texture>& textures
                                       /*AssetManager<sf::Sound>& sounds*/);
 
-    // ErrorOr<std::shared_ptr<Player>> create_player(AssetManager<sf::Texture>& textures
-    //                                                /*AssetManager<sf::Sound>& sounds*/,
-    //                                                int player_num = 1);
     ErrorOr<GameObject> create_player(AssetManager<sf::Texture>& textures
                                       /*AssetManager<sf::Sound>& sounds*/,
-                                      const GameField& field, int player_num = 1);
+                                      const GameField& field, const PlayerOptions& opts);
 
     std::string name;
     int speed;

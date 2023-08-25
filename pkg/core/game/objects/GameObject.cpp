@@ -81,10 +81,10 @@ bool GameObject::update_activity(const GameField& field) {
         return true;
     }
 
-    if (name() == "enemy-0") {
-        std::cout << "Start line:" << activity_start() << "\n";
-        std::cout << "Cur center pos:" << field.center().y << "\n";
-    }
+    // if (name() == "enemy-0") {
+    //     std::cout << "Start line:" << activity_start() << "\n";
+    //     std::cout << "Cur center pos:" << field.center().y << "\n";
+    // }
 
     if (is_default_activatable()) {
         set_activity(field.is_in_bounds(*this));

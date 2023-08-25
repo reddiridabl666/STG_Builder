@@ -18,6 +18,26 @@
             "x": 100,
             "y": 60
         },
+        "opts": {
+            "keys": {
+                "left": [
+                    "Left",
+                    "A"
+                ],
+                "right": [
+                    "Right",
+                    "D"
+                ],
+                "up": [
+                    "Up",
+                    "W"
+                ],
+                "down": [
+                    "Down",
+                    "S"
+                ]
+            }
+        },
         "speed": 300,
         "hitbox": {
             "type": "rect",

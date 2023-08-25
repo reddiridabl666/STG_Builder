@@ -34,13 +34,23 @@ App AppFactory::generate(const nl::json& game, const nl::json& entities, const s
 }
 
 namespace {
-PlayerList::value_type generate_player(const nl::json& player_json) {
+PlayerOptions generate_options(const nl::json& player_json, int player_num) {
+    if (!player_json.contains("opts")) {
+        return PlayerOptions{.num = player_num};
+    }
+
+    auto res = player_json.at("opts").template get<PlayerOptions>();
+    res.num = player_num;
+    return res;
+}
+
+PlayerList::value_type generate_player(const nl::json& player_json, int player_num = 1) {
     auto player_type = ObjectTypeFactory::generate("player", player_json);
     if (!player_type) {
         throw std::runtime_error(player_type.error().message());
     }
 
-    return *player_type;
+    return std::pair(*player_type, generate_options(player_json, player_num));
 }
 
 PlayerList generate_players(const nl::json& game) {
@@ -58,8 +68,10 @@ PlayerList generate_players(const nl::json& game) {
 
     res.reserve(players_json.size());
 
+    size_t idx = 1;
     for (const auto& [_, value] : players_json.items()) {
-        res.push_back(generate_player(value));
+        res.push_back(generate_player(value, idx));
+        ++idx;
     }
 
     return res;

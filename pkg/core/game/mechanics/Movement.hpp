@@ -4,6 +4,8 @@
 #include <concepts>
 #include <functional>
 
+#include "Controls.hpp"
+
 class GameObject;
 
 namespace movement {
@@ -66,6 +68,7 @@ Func linear(float x = 0, float y = -1);
 
 Func circular(sf::Vector2f center, float);  // find a way to pass obj here
 
-Func user_control(int user_num = 1);
+Func user_control(int user_num = 1, const KeyControls& keys = kDefaultKeyControls,
+                  const JoyControls& joy = kDefaultJoyControls);
 
 }  // namespace movement
