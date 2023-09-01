@@ -3,7 +3,7 @@
 #include "AppFactory.hpp"
 #include "Window.hpp"
 
-static const std::string kBase = "/home/leonid/Projects/stg_builder/test_game_data/";
+static const std::string kBase = "/home/leonid/Projects/stg_builder/test_games/test_game/";
 
 int main() {
     auto game_json = json::read(kBase + "game.json");

@@ -1,5 +1,6 @@
 {
     "name": "My first game",
+    "description": "All features are being tested in this game",
     "size": {
         "x": 1280,
         "y": 720

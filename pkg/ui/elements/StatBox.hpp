@@ -8,6 +8,7 @@
 
 #include "UiElement.hpp"
 
+namespace ui {
 template <typename T>
 struct StatLine {
     std::string prefix;
@@ -37,3 +38,4 @@ class StatBox {
         ImGui::End();
     }
 };
+}  // namespace ui

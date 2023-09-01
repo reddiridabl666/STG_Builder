@@ -4,7 +4,6 @@
 #include <imgui.h>
 
 #include "Drawable.hpp"
-#include "UiElement.hpp"
 
 Window::Window(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync)
     : window_(sf::VideoMode(width, height), name,

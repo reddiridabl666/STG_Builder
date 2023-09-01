@@ -4,7 +4,6 @@
 #include <SFML/System.hpp>
 
 #include "Collection.hpp"
-#include "UiElement.hpp"
 
 class Drawable;
 

@@ -1,8 +1,8 @@
 #include "App.hpp"
 
 #include "GameInfo.hpp"
-#include "StatBox.hpp"
 #include "Utils.hpp"
+#include "ui/StatBox.hpp"
 
 App::App(const WindowInfo& window_info, PlayerList&& players, AssetManager<sf::Texture>&& textures,
          AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels)
@@ -150,12 +150,12 @@ void App::draw_ui() {
     window_.update_ui();
 
     // clang-format off
-    StatBox::draw("Debug",
-        StatLine{"Objects active", &objects_},
-        StatLine{"Objects not loaded", &(level_->objects())},
-        StatLine{"View pos", level_->field().view().getCenter().y},
-        StatLine{"Textures loaded", &textures_.storage()},
-        StatLine{"Enemies left", Game::info().enemy_count()}
+    ui::StatBox::draw("Debug",
+        ui::StatLine{"Objects active", &objects_},
+        ui::StatLine{"Objects not loaded", &(level_->objects())},
+        ui::StatLine{"View pos", level_->field().view().getCenter().y},
+        ui::StatLine{"Textures loaded", &textures_.storage()},
+        ui::StatLine{"Enemies left", Game::info().enemy_count()}
     );
     // clang-format on
 }

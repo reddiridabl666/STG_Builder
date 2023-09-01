@@ -16,13 +16,13 @@ set(IMGUI_SFML_VERSION 2.5)
 FetchContent_Declare(
     SFML
     GIT_REPOSITORY https://github.com/SFML/SFML
-    GIT_TAG 2.6.x
+    GIT_TAG 11b7374
 )
 
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui
-    GIT_TAG master
+    GIT_TAG f7eea63
 )
 
 FetchContent_Declare(
@@ -74,12 +74,10 @@ endif()
 
 find_package(fmt 10.0.0)
 
-link_libraries(fmt::fmt)
-link_libraries(ImGui-SFML::ImGui-SFML)
+include_directories(lib)
+link_libraries(fmt::fmt ImGui-SFML::ImGui-SFML)
 
-include_directories(pkg/common lib)
+add_subdirectory(pkg)
 
-add_subdirectory(pkg/core)
-add_subdirectory(pkg/builder)
-add_subdirectory(pkg/ui)
 add_subdirectory(app/engine)
+add_subdirectory(app/builder)

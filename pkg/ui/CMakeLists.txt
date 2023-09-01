@@ -2,9 +2,21 @@ cmake_minimum_required(VERSION 3.25)
 
 project(stg_builder_ui)
 
-set(SOURCES dummy.cpp)
-set(INCLUDE_DIRS .)
+set(SOURCES
+    elements/GameInfo.cpp
+    common/ImguiUtils.cpp
+)
+
+set(INCLUDE_DIRS
+    ..
+)
+
+set(LIBS
+    stg_builder_common
+    stg_builder_core
+)
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE stg_builder_core ImGui-SFML::ImGui-SFML)
+target_include_directories(${PROJECT_NAME} PUBLIC common)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBS})
