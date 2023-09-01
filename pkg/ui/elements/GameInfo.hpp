@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <string>
 
+#include "Button.hpp"
 #include "Common.hpp"
 #include "Json.hpp"
 #include "UiElement.hpp"
@@ -21,16 +22,4 @@ struct GameInfo : public Element {
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(GameInfo, name, description, levels, last_updated);
-
-struct GameInfoBox : public Element {
-  public:
-    GameInfoBox() = default;
-
-    explicit GameInfoBox(std::vector<GameInfo>&& games, const ImVec2& size, const ImVec2& pos = {});
-
-    void draw(const Window&) const override;
-
-  private:
-    mutable std::vector<GameInfo> games_;
-};
 }  // namespace ui

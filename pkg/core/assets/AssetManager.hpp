@@ -9,6 +9,8 @@
 template <Loadable T>
 class AssetManager {
   public:
+    AssetManager(const std::string& dir) : loader_{dir}, storage_() {}
+
     AssetManager(AssetLoader&& loader, AssetStorage<T>&& storage)
         : loader_(std::move(loader)), storage_(std::move(storage)) {}
 

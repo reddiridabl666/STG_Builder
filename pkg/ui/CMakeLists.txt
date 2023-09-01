@@ -4,6 +4,7 @@ project(stg_builder_ui)
 
 set(SOURCES
     elements/GameInfo.cpp
+    elements/Box.cpp
     common/ImguiUtils.cpp
 )
 

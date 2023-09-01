@@ -1,20 +1,38 @@
 #include "App.hpp"
 
 #include <SFML/System/Clock.hpp>
-#include <filesystem>
 
 #include "Json.hpp"
 #include "Messages.hpp"
+#include "ui/elements/Button.hpp"
+#include "ui/elements/GameInfo.hpp"
+#include "ui/elements/LangChanger.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"
 #endif
+namespace builder {
 
-namespace {
 namespace fs = std::filesystem;
 
-std::vector<ui::GameInfo> load_games(const fs::path& games_dir) {
-    std::vector<ui::GameInfo> res;
+App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
+    : window_(name, width, height),
+      state_(State::MainMenu),
+      games_dir_(games_dir),
+      textures_(games_dir),
+      games_(load_games(games_dir_), ImVec2{400, 400}, window_.get_center()) {}
+
+std::vector<std::unique_ptr<ui::Element>> App::load_games(const fs::path& games_dir) {
+    Lang::set(Lang::EN);
+
+    std::vector<std::unique_ptr<ui::Element>> res;
+
+    res.push_back(std::make_unique<ui::ImageButton>(
+        std::bind(message, Message::CreateGame), *textures_.get("plus_invert.png"), ImVec2{50, 50},
+        [] {
+            fmt::println("Button pressed");
+        },
+        ImVec2{0, 70}));
 
     if (!fs::is_directory(games_dir)) {
         return res;
@@ -34,31 +52,19 @@ std::vector<ui::GameInfo> load_games(const fs::path& games_dir) {
 #ifdef DEBUG
         LOG(fmt::format("Found game: {}", game->at("name").template get<std::string>()));
 #endif
-        res.push_back(game->template get<ui::GameInfo>());
+        res.push_back(std::make_unique<ui::GameInfo>(game->template get<ui::GameInfo>()));
     }
 
 #ifdef DEBUG
     for (size_t i = 0; i < 2; ++i) {
-        res.push_back(ui::GameInfo{
-            "Another game",
-            "Just for UI testing",
-        });
+        res.push_back(std::make_unique<ui::GameInfo>("Another game", "Just for UI testing"));
     }
 #endif
 
     return res;
 }
-}  // namespace
-
-namespace builder {
-App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
-    : window_(name, width, height), state_(State::MainMenu), games_dir_(games_dir) {}
 
 void App::run() {
-    auto center = ImVec2{window_.get_size().x / 2.f, window_.get_size().y / 2.f};
-    games_ = ui::GameInfoBox(load_games(games_dir_), ImVec2{400, 400}, center);
-    Lang::set(Lang::EN);
-
     sf::Clock timer;
 
     while (window_.is_open()) {
@@ -67,7 +73,7 @@ void App::run() {
 
         window_.update_ui();
 
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
 
         state_action();
 
@@ -80,6 +86,8 @@ void App::main_menu() {
 }
 
 void App::state_action() {
+    ui::LangChanger::draw(ImVec2{1200, 660}, ImVec2{30, 30});
+
     switch (state_) {
         case State::MainMenu:
             return main_menu();

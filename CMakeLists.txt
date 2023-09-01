@@ -55,6 +55,8 @@ endif ()
 option(SANITIZE "Sanitizer flags" OFF)
 option(DEBUG "Enable debug mode" OFF)
 
+add_compile_definitions(IMGUI_DEFINE_MATH_OPERATORS)
+
 if (DEBUG)
     add_compile_options(-g)
     add_compile_definitions(DEBUG)

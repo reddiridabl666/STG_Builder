@@ -16,6 +16,7 @@ set(INCLUDE_DIRS
     window
     events
     base
+    assets
     game/objects
     game/mechanics
     game/collisions

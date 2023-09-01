@@ -4,6 +4,7 @@
 #include <SFML/System.hpp>
 
 #include "Collection.hpp"
+#include "LinAlg.hpp"
 
 class Drawable;
 
@@ -22,6 +23,10 @@ class Window {
 
     void set_view(const sf::View& view);
     sf::View get_view() const;
+
+    sf::Vector2f get_center() const {
+        return get_size() / 2.f;
+    }
 
     void clear();
     void set_default_view();

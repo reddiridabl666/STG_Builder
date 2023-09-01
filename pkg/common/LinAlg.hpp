@@ -15,7 +15,7 @@ auto operator*(const sf::Vector2<U>& vec, T val) {
 
 template <typename T, typename U>
 auto operator/(const sf::Vector2<U>& vec, T val) {
-    return sf::Vector2<U>{vec.x / val, vec.y / val};
+    return sf::Vector2<decltype(vec.x / val)>{vec.x / val, vec.y / val};
 }
 
 template <typename T, typename U>
