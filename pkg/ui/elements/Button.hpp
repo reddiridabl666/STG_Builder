@@ -28,6 +28,10 @@ class ImageButton : public Element {
         ImGui::Text(text_());
         ImGui::EndChild();
 
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+        }
+
         if (cb_ && ImGui::IsItemClicked()) {
             cb_();
         }

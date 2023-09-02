@@ -49,7 +49,9 @@ std::vector<std::unique_ptr<ui::Element>> App::load_games(const fs::path& games_
 #ifdef DEBUG
         LOG(fmt::format("Found game: {}", game->at("name").template get<std::string>()));
 #endif
-        res.push_back(std::make_unique<ui::GameInfo>(game->template get<ui::GameInfo>()));
+        auto game_info = std::make_unique<ui::GameInfo>(game->template get<ui::GameInfo>());
+        game_info->set_cb(game_choice(dir.path().stem()));
+        res.push_back(std::move(game_info));
     }
 
 #ifdef DEBUG
@@ -184,6 +186,9 @@ void App::on_state_start(State state) {
                                                            window_.get_center()));
             return;
         case State::GameMenu:
+#ifdef DEBUG
+            LOG(fmt::format("Game chosen: {}", current_game_.string()));
+#endif
             ui_.emplace("back", back_button());
             return;
         case State::LevelEditor:

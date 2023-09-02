@@ -18,6 +18,8 @@ void Box::draw(const Window& window) const {
         elem->set_size(ImVec2{ImGui::GetContentRegionAvail().x, elem->get_size().y});
         elem->draw(window);
         ImGui::PopID();
+
+        ImGui::NewLine();
     }
 
     ImGui::End();

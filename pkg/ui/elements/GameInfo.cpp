@@ -15,6 +15,13 @@ void GameInfo::draw(const Window&) const {
     ImGui::Text("Last updated: %s", time_to_str(last_updated).c_str());
 
     ImGui::EndGroupPanel();
-    ImGui::NewLine();
+
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    }
+
+    if (ImGui::IsItemClicked()) {
+        cb_();
+    }
 }
 }  // namespace ui
