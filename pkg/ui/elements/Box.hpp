@@ -12,7 +12,15 @@ struct Box : public Element {
 
     void draw(const Window&) const override;
 
+    size_t size() const {
+        return elems_.size();
+    }
+
+    void push_back(std::unique_ptr<Element>&& elem) {
+        elems_.push_back(std::move(elem));
+    }
+
   private:
-    mutable std::vector<std::unique_ptr<Element>> elems_;
+    std::vector<std::unique_ptr<Element>> elems_;
 };
 }  // namespace ui

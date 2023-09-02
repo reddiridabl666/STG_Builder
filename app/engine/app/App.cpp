@@ -2,7 +2,7 @@
 
 #include "GameInfo.hpp"
 #include "Utils.hpp"
-#include "ui/StatBox.hpp"
+#include "ui/elements/StatBox.hpp"
 
 App::App(const WindowInfo& window_info, PlayerList&& players, AssetManager<sf::Texture>&& textures,
          AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels)

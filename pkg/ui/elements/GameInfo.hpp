@@ -10,11 +10,14 @@
 
 namespace ui {
 struct GameInfo : public Element {
+    static constexpr const char* kDefaultDesc = "Description does here";
+
     GameInfo() = default;
-    GameInfo(const std::string& name, const std::string& desc) : name(name), description(desc) {}
+    GameInfo(const std::string& name, const std::string& desc = kDefaultDesc)
+        : name(name), description(desc) {}
 
     std::string name = "";
-    std::string description = "";
+    std::string description = kDefaultDesc;
     size_t levels = 0;
     time_t last_updated = time(nullptr);
 

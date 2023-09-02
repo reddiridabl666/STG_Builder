@@ -28,7 +28,10 @@ enum class Message {
     Games,
     Exit,
     CreateGame,
-    CreateLevel
+    CreateLevel,
+    Back,
+    UnexpectedError,
+    Close,
 };
 
 const char* message(Message type);

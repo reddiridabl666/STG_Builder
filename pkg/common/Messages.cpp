@@ -11,6 +11,10 @@ const char* message(Message type) {
         {Message::Games, {U8("Ваши игры"), "Your games"}},
         {Message::CreateGame, {U8("Создать игру"), "New Game"}},
         {Message::CreateLevel, {U8("Создать уровень"), "New Level"}},
+        {Message::Back, {U8("Назад"), "Back"}},
+        {Message::UnexpectedError, {U8("Непредвиденная ошибка"), "Unexpected error"}},
+        {Message::Close, {U8("Закрыть"), "Close"}},
+
     };
 
     return messages[type][Lang::current()];

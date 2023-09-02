@@ -82,6 +82,10 @@ void Window::display() {
     window_.display();
 }
 
+void Window::close() {
+    window_.close();
+}
+
 Window::~Window() {
     ImGui::SFML::Shutdown();
 }

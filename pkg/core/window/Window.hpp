@@ -36,5 +36,6 @@ class Window {
 
     void display();
 
+    void close();
     ~Window();
 };

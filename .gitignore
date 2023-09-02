@@ -3,3 +3,4 @@ _build
 .idea
 imgui.ini
 cmake-build-debug
+test_games/New Game*

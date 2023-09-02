@@ -1,3 +1,4 @@
+#include "Messages.hpp"
 #include "app/App.hpp"
 
 static const std::string kBase = "/home/leonid/Projects/stg_builder/test_games";
