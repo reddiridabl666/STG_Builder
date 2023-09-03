@@ -19,17 +19,16 @@ namespace builder {
 
 App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
     : window_(name, width, height), states_{}, games_dir_(games_dir), textures_(games_dir) {
+    Lang::set(Lang::EN);
     schedule_state_change(State::MainMenu);
 }
 
 std::vector<std::unique_ptr<ui::Element>> App::load_games(const fs::path& games_dir) {
-    Lang::set(Lang::EN);
-
     std::vector<std::unique_ptr<ui::Element>> res;
 
     res.push_back(std::make_unique<ui::ImageButton>(std::bind(message, Message::CreateGame),
-                                                    *textures_.get("plus_invert.png"), ImVec2{50, 50},
-                                                    new_game(), ImVec2{0, 70}));
+                                                    *textures_.get("plus.png"), ImVec2{50, 50}, new_game(),
+                                                    true, ImVec2{0, 70}));
 
     if (!fs::is_directory(games_dir)) {
         return res;
@@ -218,10 +217,12 @@ std::unique_ptr<ui::Element> App::back_button() {
         throw std::runtime_error("Missing image: back.png");
     }
 
-    return std::make_unique<ui::ImageButton>(std::bind(message, Message::Back), std::move(*texture),
-                                             ImVec2{50, 50}, [this] {
-                                                 schedule_state_change(State::Back);
-                                             });
+    return std::make_unique<ui::ImageButton>(
+        std::bind(message, Message::Back), std::move(*texture), ImVec2{50, 50},
+        [this] {
+            schedule_state_change(State::Back);
+        },
+        false, ImVec2{}, ImVec2{20, 20});
 }
 
 void App::set_state(App::State state) {

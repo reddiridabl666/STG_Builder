@@ -16,12 +16,6 @@ void GameInfo::draw(const Window&) const {
 
     ImGui::EndGroupPanel();
 
-    if (ImGui::IsItemHovered()) {
-        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    }
-
-    if (ImGui::IsItemClicked()) {
-        cb_();
-    }
+    check_mouse();
 }
 }  // namespace ui
