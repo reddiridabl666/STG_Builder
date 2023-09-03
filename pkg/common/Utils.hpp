@@ -1,7 +1,5 @@
 #pragma once
 
-#include <fmt/ostream.h>
-
 #include <ctime>
 #include <deque>
 #include <ostream>
@@ -52,12 +50,3 @@ std::ostream& operator<<(std::ostream& out, const std::unordered_map<T, U>& map)
     }
     return out << ']';
 }
-
-template <typename T, typename U>
-struct fmt::formatter<std::unordered_map<T, U>> : fmt::ostream_formatter {};
-
-template <typename T>
-struct fmt::formatter<std::vector<T>> : fmt::ostream_formatter {};
-
-template <typename T>
-struct fmt::formatter<std::deque<T>> : fmt::ostream_formatter {};

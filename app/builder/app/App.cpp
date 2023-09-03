@@ -10,6 +10,7 @@
 #include "ui/elements/Button.hpp"
 #include "ui/elements/GameInfo.hpp"
 #include "ui/elements/LangChanger.hpp"
+#include "ui/elements/LevelInfo.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"
@@ -17,26 +18,28 @@
 
 namespace builder {
 
+static constexpr const char* kImagesPath = "assets/images";
+
 App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
     : window_(name, width, height), states_{}, games_dir_(games_dir), textures_(games_dir) {
     Lang::set(Lang::EN);
     schedule_state_change(State::MainMenu);
 }
 
-std::vector<std::unique_ptr<ui::Element>> App::load_games(const fs::path& games_dir) {
-    std::vector<std::unique_ptr<ui::Element>> res;
+ui::Box::Items App::load_games() {
+    ui::Box::Items res;
 
-    res.push_back(std::make_unique<ui::ImageButton>(std::bind(message, Message::CreateGame),
-                                                    *textures_.get("plus.png"), ImVec2{50, 50}, new_game(),
-                                                    true, ImVec2{0, 70}));
+    res.push_back(std::make_unique<ui::ImageButton>(
+        message_func(Message::CreateGame), textures_.get_or("plus.png", kFallbackImage), ImVec2{50, 50},
+        new_game(), true, ImVec2{}, ImVec2{0, 70}));
 
-    if (!fs::is_directory(games_dir)) {
+    if (!fs::is_directory(games_dir_)) {
         return res;
     }
 
     res.reserve(4);
 
-    for (const auto& dir : fs::directory_iterator(games_dir)) {
+    for (const auto& dir : fs::directory_iterator(games_dir_)) {
         if (!dir.is_directory()) {
             continue;
         }
@@ -60,6 +63,50 @@ std::vector<std::unique_ptr<ui::Element>> App::load_games(const fs::path& games_
 #endif
 
     games_num_ = res.size() - 1;
+
+    return res;
+}
+
+ui::Box::Items App::load_levels() {
+    fs::path game_dir = games_dir_ / current_game_;
+
+    ui::Box::Items res;
+    res.reserve(4);
+
+    res.push_back(std::make_unique<ui::ImageButton>(
+        message_func(Message::CreateLevel), textures_.get_or("plus.png", kFallbackImage), ImVec2{50, 50},
+        [] {
+            fmt::println("Clicked!");
+        },
+        true, ImVec2{}, ImVec2{0, 70}));
+
+    size_t num_pos = sizeof("level");
+
+    for (const auto& file : fs::directory_iterator(game_dir)) {
+        auto filename = file.path().filename().string();
+        if (!filename.starts_with("level") || !(file.path().extension() == ".json")) {
+            continue;
+        }
+
+        size_t num = std::stoi(filename.substr(num_pos, filename.find(".") - num_pos));
+        auto level = json::read(game_dir / filename);
+
+        if (!level) {
+            throw std::runtime_error(level.error().message());
+        }
+
+        auto bg_image = [&level] -> std::string {
+            try {
+                return level->at("/bg/image"_json_pointer).template get<std::string>();
+            } catch (...) {
+                return kFallbackImage;
+            }
+        }();
+
+        res.push_back(std::make_unique<ui::LevelInfo>(
+            level->at("name").template get<std::string>(), num,
+            textures_.get_or(game_dir.filename() / kImagesPath / bg_image, kFallbackImage), ImVec2{50, 50}));
+    }
 
     return res;
 }
@@ -152,7 +199,7 @@ void App::main_loop(const std::function<void()>& cb) {
 }
 
 void App::draw_ui() {
-    ui::LangChanger::draw(ImVec2{1200, 660}, ImVec2{30, 30});
+    ui::LangChanger::draw(ImVec2{1230, 10}, ImVec2{30, 30});
 
     for (const auto& [_, elem] : ui_) {
         elem->draw(window_);
@@ -181,14 +228,22 @@ void App::on_state_start(State state) {
     switch (state) {
         case State::MainMenu:
             ui_.erase("back");
-            ui_.emplace("games", std::make_unique<ui::Box>(load_games(games_dir_), ImVec2{400, 400},
-                                                           window_.get_center()));
+            ui_.emplace("exit", std::make_unique<ui::Button>(
+                                    message_func(Message::Exit),
+                                    [this] {
+                                        window_.close();
+                                    },
+                                    false, ImVec2{1230, 680}));
+            ui_.emplace("games", std::make_unique<ui::Box>(message_func(Message::Games), load_games(),
+                                                           ImVec2{400, 400}, window_.get_center()));
             return;
         case State::GameMenu:
 #ifdef DEBUG
             LOG(fmt::format("Game chosen: {}", current_game_.string()));
 #endif
             ui_.emplace("back", back_button());
+            ui_.emplace("levels", std::make_unique<ui::Box>(message_func(Message::Levels), load_levels(),
+                                                            ImVec2{400, 400}, window_.get_center()));
             return;
         case State::LevelEditor:
             return;
@@ -201,8 +256,10 @@ void App::on_state_end(State state) {
     switch (state) {
         case State::MainMenu:
             ui_.erase("games");
+            ui_.erase("exit");
             return;
         case State::GameMenu:
+            ui_.erase("levels");
             return;
         case State::LevelEditor:
             return;
@@ -212,17 +269,12 @@ void App::on_state_end(State state) {
 }
 
 std::unique_ptr<ui::Element> App::back_button() {
-    auto texture = textures_.get("back.png");
-    if (!texture) {
-        throw std::runtime_error("Missing image: back.png");
-    }
-
     return std::make_unique<ui::ImageButton>(
-        std::bind(message, Message::Back), std::move(*texture), ImVec2{50, 50},
+        message_func(Message::Back), textures_.get_or("back.png", kFallbackImage), ImVec2{50, 50},
         [this] {
             schedule_state_change(State::Back);
         },
-        false, ImVec2{}, ImVec2{20, 20});
+        false, ImVec2{20, 20});
 }
 
 void App::set_state(App::State state) {

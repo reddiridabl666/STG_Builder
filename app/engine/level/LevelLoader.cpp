@@ -46,7 +46,7 @@ ErrorOr<Level> LevelLoader::load_level(Window& window, AssetManager<sf::Texture>
             std::move(*opts),
         };
     } catch (std::exception& e) {
-        return unexpected_error<InternalError>(e.what());
+        return Error::New(e.what());
     }
 }
 

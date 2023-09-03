@@ -47,7 +47,7 @@ class HandlerChain {
         handlers_.push_back(std::move(handler));
     }
 
-    ErrorPtr handle(T& res, const nl::json& json) const noexcept {
+    Error handle(T& res, const nl::json& json) const noexcept {
 #ifdef DEBUG
         LOG(fmt::format("Parsing json: \n{}", json.dump(4)));
 #endif
@@ -72,12 +72,12 @@ class HandlerChain {
         }
     }
 
-    ErrorPtr handle(T& res, const std::string& key, const nl::json& value) const noexcept {
+    Error handle(T& res, const std::string& key, const nl::json& value) const noexcept {
         for (auto& handler : handlers_) {
             if (handler->should_handle(key)) {
                 try {
                     handler->handle(res, key, value);
-                    return ErrorPtr::OK;
+                    return Error::OK;
                 } catch (std::exception& e) {
                     auto msg = fmt::format("While handling '{}': '{}', got error: {}", key, to_string(value),
                                            e.what());
@@ -85,7 +85,7 @@ class HandlerChain {
                 }
             }
         }
-        return ErrorPtr::OK;
+        return Error::OK;
     }
 
   private:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <functional>
 #include <string>
 #include <unordered_map>
 
@@ -26,6 +27,7 @@ class Lang {
 
 enum class Message {
     Games,
+    Levels,
     Exit,
     CreateGame,
     CreateLevel,
@@ -35,3 +37,7 @@ enum class Message {
 };
 
 const char* message(Message type);
+
+inline std::function<const char*()> message_func(Message type) {
+    return std::bind(message, type);
+}

@@ -29,6 +29,8 @@ class App {
     void run() noexcept;
 
   private:
+    static constexpr const char* kFallbackImage = "fallback.png";
+
     void main_loop(const std::function<void()>& cb);
 
     void draw_ui();
@@ -45,7 +47,8 @@ class App {
 
     std::unique_ptr<ui::Element> back_button();
 
-    std::vector<std::unique_ptr<ui::Element>> load_games(const std::filesystem::path& games_dir);
+    ui::Box::Items load_games();
+    ui::Box::Items load_levels();
 
     std::function<void()> game_choice(const fs::path& current_game);
     std::function<void()> new_game();

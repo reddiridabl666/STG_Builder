@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -8,7 +9,9 @@
 namespace ui {
 struct Box : public Element {
   public:
-    Box(std::vector<std::unique_ptr<Element>>&& elems, const ImVec2& size, const ImVec2& pos = {});
+    using Items = std::vector<std::unique_ptr<Element>>;
+
+    Box(const std::function<const char*()>& name, Items&& elems, const ImVec2& size, const ImVec2& pos = {});
 
     void draw(const Window&) const override;
 
@@ -16,11 +19,12 @@ struct Box : public Element {
         return elems_.size();
     }
 
-    void push_back(std::unique_ptr<Element>&& elem) {
+    void push_back(Items::value_type&& elem) {
         elems_.push_back(std::move(elem));
     }
 
   private:
-    std::vector<std::unique_ptr<Element>> elems_;
+    std::function<const char*()> name_;
+    Items elems_;
 };
 }  // namespace ui

@@ -25,8 +25,7 @@ struct AssetLoader {
         bool res = asset->loadFromFile(base_folder + "/" + path);
 
         if (!res) {
-            return unexpected_error<InternalError>(
-                fmt::format("Failure loading asset {}/{}", base_folder, path));
+            return Error::New(fmt::format("Failure loading asset {}/{}", base_folder, path));
         }
         return asset;
     }

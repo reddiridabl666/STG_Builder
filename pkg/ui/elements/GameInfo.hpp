@@ -12,7 +12,7 @@
 namespace ui {
 struct GameInfo : public Element, public Clickable {
   public:
-    static constexpr const char* kDefaultDesc = "Description does here";
+    static constexpr const char* kDefaultDesc = "Description goes here";
 
     GameInfo() = default;
     GameInfo(const std::string& name, const std::string& desc = kDefaultDesc)

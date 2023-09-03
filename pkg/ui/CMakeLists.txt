@@ -4,12 +4,16 @@ project(stg_builder_ui)
 
 set(SOURCES
     elements/GameInfo.cpp
+    elements/Button.cpp
+    elements/LevelInfo.cpp
     elements/Box.cpp
     common/ImguiUtils.cpp
 )
 
 set(INCLUDE_DIRS
     ..
+    common
+    mixin
 )
 
 set(LIBS
@@ -19,5 +23,4 @@ set(LIBS
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
-target_include_directories(${PROJECT_NAME} PUBLIC common)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBS})

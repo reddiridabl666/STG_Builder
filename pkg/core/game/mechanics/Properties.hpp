@@ -18,13 +18,6 @@ struct Properties {
         return values_.contains(key);
     }
 
-    tl::expected<std::reference_wrapper<Value<>>, NoKeyError> operator[](const std::string& key) noexcept {
-        if (!has(key)) {
-            return tl::unexpected(NoKeyError(key));
-        }
-        return std::ref(values_[key]);
-    }
-
     Value<>& at(const std::string& key) {
         return values_.at(key);
     }

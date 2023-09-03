@@ -22,7 +22,7 @@ class AssetStorage {
 
     ErrorOr<std::shared_ptr<T>> get(const std::string& filename) const noexcept {
         if (!exists(filename)) {
-            return unexpected_error<NoKeyError>(filename);
+            return Error::NoKey(filename);
         }
         return assets_.at(filename).lock();
     }
@@ -40,6 +40,3 @@ class AssetStorage {
   private:
     std::unordered_map<std::string, std::weak_ptr<T>> assets_;
 };
-
-template <Loadable T>
-struct fmt::formatter<AssetStorage<T>> : fmt::ostream_formatter {};

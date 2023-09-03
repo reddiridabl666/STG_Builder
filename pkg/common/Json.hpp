@@ -21,7 +21,7 @@ inline ErrorOr<nl::json> read(const std::string& path) {
     std::ifstream file(path);
 
     if (!file) {
-        return unexpected_error<InternalError>(fmt::format("No such file: {}", path));
+        return Error::New(fmt::format("No such file: {}", path));
     }
 
     nl::json res;
@@ -30,7 +30,7 @@ inline ErrorOr<nl::json> read(const std::string& path) {
         file >> res;
         return res;
     } catch (nl::json::exception& e) {
-        return unexpected_error<InternalError>(e.what());
+        return Error::New(e.what());
         // TODO: return different errors?
     }
 }

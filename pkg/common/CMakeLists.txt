@@ -4,6 +4,7 @@ project(stg_builder_common)
 
 set(SOURCES
     Messages.cpp
+    Errors.cpp
 )
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})

@@ -4,14 +4,15 @@
 #include "Messages.hpp"
 
 namespace ui {
-Box::Box(std::vector<std::unique_ptr<Element>>&& elems, const ImVec2& size, const ImVec2& pos)
-    : Element(pos, size), elems_(std::move(elems)) {}
+Box::Box(const VariableText& name, std::vector<std::unique_ptr<Element>>&& elems, const ImVec2& size,
+         const ImVec2& pos)
+    : Element(pos, size), name_(name), elems_(std::move(elems)) {}
 
 void Box::draw(const Window& window) const {
     ImGui::SetNextWindowPos(get_pos(), 0, ImVec2{0.5, 0.5});
     ImGui::SetNextWindowSizeConstraints(ImVec2{0, 0}, get_size());
 
-    ImGui::Begin(message(Message::Games), nullptr, kStaticWindow | ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Begin(name_(), nullptr, kStaticWindow | ImGuiWindowFlags_AlwaysAutoResize);
 
     for (auto& elem : elems_) {
         ImGui::PushID(&elem);

@@ -31,15 +31,15 @@ class App {
   private:
     void draw_objects();
 
-    ErrorPtr update(float delta_time);
-    ErrorPtr update_level();
+    Error update(float delta_time);
+    Error update_level();
 
     ErrorOr<GameObject> generate_object(const ObjectOptions& opts);
 
-    ErrorPtr generate_objects();
+    Error generate_objects();
 
     void clear_dead();
-    ErrorPtr generate_players();
+    Error generate_players();
 
     void draw_ui();
 

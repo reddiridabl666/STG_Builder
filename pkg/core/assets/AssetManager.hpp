@@ -22,7 +22,7 @@ class AssetManager {
         return storage_;
     }
 
-    auto get(const std::string& filename) {
+    ErrorOr<std::shared_ptr<T>> get(const std::string& filename) {
         if (auto asset = storage_.get(filename)) {
             return asset;
         }
@@ -33,6 +33,18 @@ class AssetManager {
         }
 
         return asset;
+    }
+
+    std::shared_ptr<T> get_or(const std::string& filename, const std::string& fallback) {
+        auto res = get(filename)
+                       .or_else([this, fallback](auto) {
+                           return get(fallback);
+                       })
+                       .or_else([fallback](auto) {
+                           throw std::runtime_error("Missing fallback asset: " + fallback);
+                       });
+
+        return *res;
     }
 
   private:

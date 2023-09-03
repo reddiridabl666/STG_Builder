@@ -40,7 +40,7 @@ void App::draw_objects() {
     }
 }
 
-ErrorPtr App::update(float delta_time) {
+Error App::update(float delta_time) {
     auto err = update_level();
     if (err) {
         return err;
@@ -62,12 +62,12 @@ ErrorPtr App::update(float delta_time) {
     textures_.storage().clear_unused();
     sounds_.storage().clear_unused();
 
-    return ErrorPtr::OK;
+    return Error::OK;
 }
 
-ErrorPtr App::update_level() {
+Error App::update_level() {
     if (level_ && !level_->has_ended()) {
-        return ErrorPtr::OK;
+        return Error::OK;
     }
 
     objects_.clear();
@@ -83,7 +83,7 @@ ErrorPtr App::update_level() {
 
 ErrorOr<GameObject> App::generate_object(const ObjectOptions& opts) {
     if (!types_.contains(opts.type)) {
-        return unexpected_error<InternalError>(fmt::format("Object type '{}' not found", opts.type));
+        return Error::New(fmt::format("Object type '{}' not found", opts.type));
     }
 
     auto obj = types_.at(opts.type).create_object(opts, textures_);
@@ -92,13 +92,13 @@ ErrorOr<GameObject> App::generate_object(const ObjectOptions& opts) {
     }
 
     if (!level_) {
-        return unexpected_error<InternalError>("No level loaded");
+        return Error::New("No level loaded");
     }
 
     return obj;
 }
 
-ErrorPtr App::generate_objects() {
+Error App::generate_objects() {
     if (!level_) {
         return make_error<InternalError>("No level loaded");
     }
@@ -119,7 +119,7 @@ ErrorPtr App::generate_objects() {
         level_->objects().pop_front();
     }
 
-    return ErrorPtr::OK;
+    return Error::OK;
 }
 
 void App::clear_dead() {
@@ -132,7 +132,7 @@ void App::clear_dead() {
     });
 }
 
-ErrorPtr App::generate_players() {
+Error App::generate_players() {
     size_t idx = 1;
     for (auto& [gen, opts] : player_types_) {
         auto player = gen.create_player(textures_, level_->field(), opts);
@@ -143,7 +143,7 @@ ErrorPtr App::generate_players() {
         ++idx;
     }
 
-    return ErrorPtr::OK;
+    return Error::OK;
 }
 
 void App::draw_ui() {

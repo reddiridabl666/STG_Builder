@@ -22,7 +22,7 @@ ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const nl::json& json) cons
     }
 
     if (res.type == "") {
-        return unexpected_error<KeyError>("type");
+        return Error::NoKey("type");
     }
 
     return res;
