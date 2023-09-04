@@ -75,7 +75,8 @@ ui::Box::Items App::load_levels() {
 
     res.push_back(std::make_unique<ui::ImageButton>(
         message_func(Message::CreateLevel), textures_.get_or("plus.png", kFallbackImage), ImVec2{50, 50},
-        [] {
+        [this] {
+            schedule_state_change(State::LevelEditor);
             fmt::println("Clicked!");
         },
         true, ImVec2{}, ImVec2{0, 70}));
@@ -157,7 +158,7 @@ std::function<void()> App::new_game() {
 
 void App::run() noexcept try {
     main_loop([this] {
-        // ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
         resolve_state_change();
         draw_ui();
     });
