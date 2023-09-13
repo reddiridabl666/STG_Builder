@@ -6,7 +6,9 @@
 #include <vector>
 
 #include "AssetManager.hpp"
+#include "GameBuilder.hpp"
 #include "Observable.hpp"
+#include "StateManager.hpp"
 #include "Window.hpp"
 #include "ui/elements/Box.hpp"
 
@@ -35,13 +37,6 @@ class App {
 
     void draw_ui();
 
-    void schedule_state_change(State state);
-    void resolve_state_change();
-
-    void set_state(State state);
-    void set_prev_state();
-    State state() const;
-
     void on_state_start(State state);
     void on_state_end(State state);
 
@@ -49,17 +44,19 @@ class App {
 
     ui::Box::Items load_games();
     ui::Box::Items load_levels();
+    std::unique_ptr<ui::Element> make_menu();
 
     std::function<void()> game_choice(const fs::path& current_game);
     std::function<void()> new_game();
 
     Window window_;
-    std::stack<State> states_;
-    State next_state_ = State::Undefined;
+    StateManager<State> state_;
 
     fs::path games_dir_;
     fs::path current_game_;
     size_t games_num_;
+
+    GameBuilder builder_;
 
     AssetManager<sf::Texture> textures_;
     std::unordered_map<std::string, std::unique_ptr<ui::Element>> ui_;

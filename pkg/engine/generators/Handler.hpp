@@ -57,7 +57,7 @@ class HandlerChain {
                 return error;
             }
         }
-        return nullptr;
+        return Error::OK;
     }
 
     void handle_unsafe(T& res, const nl::json& json) const {
@@ -81,7 +81,7 @@ class HandlerChain {
                 } catch (std::exception& e) {
                     auto msg = fmt::format("While handling '{}': '{}', got error: {}", key, to_string(value),
                                            e.what());
-                    return make_error<InternalError>(msg);
+                    return Error(msg);
                 }
             }
         }

@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <tl/expected.hpp>
@@ -33,5 +34,10 @@ inline ErrorOr<nl::json> read(const std::string& path) {
         return Error::New(e.what());
         // TODO: return different errors?
     }
+}
+
+inline void create(const std::filesystem::path& path, const nl::json& json = "{}"_json) {
+    std::ofstream file(path);
+    file << std::setw(4) << json;
 }
 }  // namespace json

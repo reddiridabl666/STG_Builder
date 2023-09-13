@@ -16,7 +16,7 @@ class Button : public Element, public Clickable {
            const ImVec2& size = {})
         : Element(pos, size), Clickable(std::forward<Cb>(cb)), text_(text), child_(child) {}
 
-    void draw(const Window&) const override;
+    void draw(const Window&) override;
 
   protected:
     static constexpr auto kBtnFlags =
@@ -33,7 +33,7 @@ class ImageButton : public Button {
                 Cb&& cb, bool child = false, const ImVec2& pos = {}, const ImVec2& size = {})
         : Button(text, std::forward<Cb>(cb), child, pos, size), image_(std::move(texture), img_size) {}
 
-    void draw(const Window&) const override;
+    void draw(const Window&) override;
 
   private:
     Image image_;

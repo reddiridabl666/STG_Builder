@@ -15,7 +15,12 @@ const char* message(Message type) {
         {Message::Back, {U8("Назад"), "Back"}},
         {Message::UnexpectedError, {U8("Непредвиденная ошибка"), "Unexpected error"}},
         {Message::Close, {U8("Закрыть"), "Close"}},
-
+        {Message::Name, {U8("Название"), "Name"}},
+        {Message::Desc, {U8("Описание"), "Description"}},
+        {Message::GameField, {U8("Настройки игрового поля"), "Game field options"}},
+        {Message::SideMenu, {U8("Настройки бокового меню"), "Side menu options"}},
+        {Message::GameOpts, {U8("Настройки игры"), "Game"}},
+        {Message::Menu, {U8("Меню"), "Menu"}},
     };
 
     return messages[type][Lang::current()];

@@ -8,7 +8,7 @@ Box::Box(const VariableText& name, std::vector<std::unique_ptr<Element>>&& elems
          const ImVec2& pos)
     : Element(pos, size), name_(name), elems_(std::move(elems)) {}
 
-void Box::draw(const Window& window) const {
+void Box::draw(const Window& window) {
     ImGui::SetNextWindowPos(get_pos(), 0, ImVec2{0.5, 0.5});
     ImGui::SetNextWindowSizeConstraints(ImVec2{0, 0}, get_size());
 

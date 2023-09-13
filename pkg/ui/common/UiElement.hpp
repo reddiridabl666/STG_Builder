@@ -5,6 +5,7 @@
 
 #include <SFML/System/Vector2.hpp>
 
+#include "Common.hpp"
 #include "Window.hpp"
 
 namespace ui {
@@ -15,7 +16,7 @@ class Element {
         set_size(size);
     }
 
-    virtual void draw(const Window&) const = 0;
+    virtual void draw(const Window&) = 0;
     virtual ~Element() = default;
 
     const ImVec2& get_pos() const {

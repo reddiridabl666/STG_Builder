@@ -13,7 +13,7 @@ struct Box : public Element {
 
     Box(const std::function<const char*()>& name, Items&& elems, const ImVec2& size, const ImVec2& pos = {});
 
-    void draw(const Window&) const override;
+    void draw(const Window&) override;
 
     size_t size() const {
         return elems_.size();

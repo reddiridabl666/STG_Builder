@@ -6,7 +6,7 @@
 #include "Utils.hpp"
 
 namespace ui {
-void LevelInfo::draw(const Window &) const {
+void LevelInfo::draw(const Window&) {
     ImGui::BeginGroupPanel(fmt::format("Level {}", num_).c_str(), get_size());
 
     bg_.draw();

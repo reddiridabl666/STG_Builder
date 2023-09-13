@@ -1,6 +1,7 @@
 #include "ImguiUtils.hpp"
 
-#include "imgui_internal.h"
+#include <imgui_internal.h>
+#include <misc/cpp/imgui_stdlib.h>
 
 static ImVector<ImRect> s_GroupPanelLabelStack;
 
@@ -128,4 +129,17 @@ void ImGui::EndGroupPanel() {
     ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
     ImGui::EndGroup();
+}
+
+void ImGui::InputLeftLabel(const char* label, std::string* input, ImGuiInputFlags flags) {
+    ImGui::Text(label);
+    ImGui::SameLine();
+    ImGui::InputText("##", input, flags);
+}
+
+void ImGui::InputLeftLabelMultiline(const char* label, std::string* input, const ImVec2& size,
+                                    ImGuiInputFlags flags) {
+    ImGui::Text(label);
+    ImGui::SameLine();
+    ImGui::InputTextMultiline("##", input, size, flags);
 }

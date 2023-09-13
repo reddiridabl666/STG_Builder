@@ -5,7 +5,7 @@
 
 namespace ui {
 
-void Button::draw(const Window &) const {
+void Button::draw(const Window&) {
     if (!child_) {
         ImGui::SetNextWindowSize(get_size());
         ImGui::SetNextWindowPos(get_pos());
@@ -20,7 +20,7 @@ void Button::draw(const Window &) const {
     }
 }
 
-void ImageButton::draw(const Window &) const {
+void ImageButton::draw(const Window&) {
     if (!child_) {
         ImGui::SetNextWindowSize(get_size());
         ImGui::SetNextWindowPos(get_pos());

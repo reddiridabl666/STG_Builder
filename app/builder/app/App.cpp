@@ -7,10 +7,13 @@
 
 #include "Json.hpp"
 #include "Messages.hpp"
+#include "TimedAction.hpp"
 #include "ui/elements/Button.hpp"
 #include "ui/elements/GameInfo.hpp"
 #include "ui/elements/LangChanger.hpp"
 #include "ui/elements/LevelInfo.hpp"
+#include "ui/elements/Menu.hpp"
+#include "ui/elements/Tabs.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"
@@ -21,9 +24,18 @@ namespace builder {
 static constexpr const char* kImagesPath = "assets/images";
 
 App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
-    : window_(name, width, height), states_{}, games_dir_(games_dir), textures_(games_dir) {
+    : window_(name, width, height),
+      state_(
+          [this](State state) {
+              return on_state_start(state);
+          },
+          [this](State state) {
+              return on_state_end(state);
+          }),
+      games_dir_(games_dir),
+      textures_(games_dir) {
     Lang::set(Lang::EN);
-    schedule_state_change(State::MainMenu);
+    state_.schedule_state_change(State::MainMenu);
 }
 
 ui::Box::Items App::load_games() {
@@ -76,8 +88,8 @@ ui::Box::Items App::load_levels() {
     res.push_back(std::make_unique<ui::ImageButton>(
         message_func(Message::CreateLevel), textures_.get_or("plus.png", kFallbackImage), ImVec2{50, 50},
         [this] {
-            schedule_state_change(State::LevelEditor);
-            fmt::println("Clicked!");
+            builder_.new_level();
+            state_.schedule_state_change(State::LevelEditor);
         },
         true, ImVec2{}, ImVec2{0, 70}));
 
@@ -106,25 +118,31 @@ ui::Box::Items App::load_levels() {
 
         res.push_back(std::make_unique<ui::LevelInfo>(
             level->at("name").template get<std::string>(), num,
-            textures_.get_or(game_dir.filename() / kImagesPath / bg_image, kFallbackImage), ImVec2{50, 50}));
+            textures_.get_or(game_dir.filename() / kImagesPath / bg_image, kFallbackImage), ImVec2{50, 50},
+            [this, num] {
+                builder_.choose_level(num);
+                state_.schedule_state_change(State::LevelEditor);
+            }));
     }
 
     return res;
 }
 
+std::unique_ptr<ui::Element> App::make_menu() {
+    std::vector<ui::Menu::Tab> tabs;
+    tabs.reserve(1);
+    tabs.push_back(ui::MainTab(builder_.game()));
+    return std::make_unique<ui::Menu>(std::move(tabs), message_func(Message::Menu));
+}
+
 std::function<void()> App::game_choice(const fs::path& current_game) {
     return [this, current_game] {
-        schedule_state_change(State::GameMenu);
+        state_.schedule_state_change(State::GameMenu);
         current_game_ = current_game;
     };
 }
 
 namespace {
-void create_json_file(const fs::path& path, const nl::json& json = "{}"_json) {
-    std::ofstream file(path);
-    file << std::setw(4) << json;
-}
-
 void create_game_files(const fs::path& game) {
     if (!fs::create_directory(game)) {
         throw std::runtime_error("Game directory creation failure");
@@ -139,9 +157,9 @@ void create_game_files(const fs::path& game) {
         {"description", ui::GameInfo::kDefaultDesc},
     };
 
-    create_json_file(game / "game.json", game_json);
+    json::create(game / "game.json", game_json);
 
-    create_json_file(game / "entities.json");
+    json::create(game / "entities.json");
 }
 }  // namespace
 
@@ -152,19 +170,27 @@ std::function<void()> App::new_game() {
 
         create_game_files(games_dir_ / current_game_);
 
-        schedule_state_change(State::GameMenu);
+        state_.schedule_state_change(State::GameMenu);
     };
 }
 
 void App::run() noexcept try {
-    main_loop([this] {
+    TimedAction saver(
+        [this] {
+            builder_.save();
+        },
+        10);
+
+    main_loop([this, &saver] {
         ImGui::ShowDemoWindow();
-        resolve_state_change();
+        state_.resolve_state_change();
         draw_ui();
+        saver.action();
     });
 } catch (const std::exception& e) {
     ImGui::ErrorCheckEndFrameRecover(nullptr);
     window_.display();
+    builder_.save();
 
     main_loop([&e, this, pop_up = false] mutable {
         if (!pop_up) {
@@ -207,24 +233,6 @@ void App::draw_ui() {
     }
 }
 
-void App::schedule_state_change(State state) {
-    next_state_ = state;
-}
-
-void App::resolve_state_change() {
-    if (next_state_ == State::Undefined) {
-        return;
-    }
-
-    if (next_state_ == State::Back) {
-        set_prev_state();
-    } else {
-        set_state(next_state_);
-    }
-
-    next_state_ = State::Undefined;
-}
-
 void App::on_state_start(State state) {
     switch (state) {
         case State::MainMenu:
@@ -245,8 +253,10 @@ void App::on_state_start(State state) {
             ui_.emplace("back", back_button());
             ui_.emplace("levels", std::make_unique<ui::Box>(message_func(Message::Levels), load_levels(),
                                                             ImVec2{400, 400}, window_.get_center()));
+            builder_ = GameBuilder::init(games_dir_ / current_game_);
             return;
         case State::LevelEditor:
+            ui_.emplace("menu", make_menu());
             return;
         default:
             return;
@@ -263,6 +273,8 @@ void App::on_state_end(State state) {
             ui_.erase("levels");
             return;
         case State::LevelEditor:
+            ui_.erase("menu");
+            builder_.save();
             return;
         default:
             return;
@@ -273,31 +285,8 @@ std::unique_ptr<ui::Element> App::back_button() {
     return std::make_unique<ui::ImageButton>(
         message_func(Message::Back), textures_.get_or("back.png", kFallbackImage), ImVec2{50, 50},
         [this] {
-            schedule_state_change(State::Back);
+            state_.schedule_state_change(State::Back);
         },
         false, ImVec2{20, 20});
-}
-
-void App::set_state(App::State state) {
-    if (!states_.empty()) {
-        on_state_end(states_.top());
-    }
-
-    on_state_start(state);
-    states_.push(state);
-}
-
-void App::set_prev_state() {
-    if (states_.size() <= 1) {
-        return;
-    }
-
-    on_state_end(states_.top());
-    states_.pop();
-    on_state_start(states_.top());
-}
-
-App::State App::state() const {
-    return states_.top();
 }
 }  // namespace builder

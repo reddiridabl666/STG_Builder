@@ -23,7 +23,7 @@ struct GameInfo : public Element, public Clickable {
     size_t levels = 0;
     time_t last_updated = time(nullptr);
 
-    void draw(const Window&) const override;
+    void draw(const Window&) override;
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(GameInfo, name, description, levels, last_updated);

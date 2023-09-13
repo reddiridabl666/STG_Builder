@@ -7,7 +7,7 @@
 #include "Utils.hpp"
 
 namespace ui {
-void GameInfo::draw(const Window&) const {
+void GameInfo::draw(const Window&) {
     ImGui::BeginGroupPanel(name.c_str(), get_size());
 
     ImGui::Text(description.c_str());

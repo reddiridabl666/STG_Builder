@@ -34,6 +34,12 @@ enum class Message {
     Back,
     UnexpectedError,
     Close,
+    Name,
+    Desc,
+    GameField,
+    SideMenu,
+    GameOpts,
+    Menu,
 };
 
 const char* message(Message type);

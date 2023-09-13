@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include <functional>
+
 namespace ui {
 using VariableText = std::function<const char*()>;
 
