@@ -28,7 +28,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     imgui-sfml
     GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
-    GIT_TAG master
+    GIT_TAG de565ac
 )
 
 # SFML

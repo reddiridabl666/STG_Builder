@@ -12,11 +12,13 @@ set(LIBS
 set(INCLUDE_DIRS
     level
     app
+    game
 )
 
 set (SOURCES
     app/App.cpp
     app/AppFactory.cpp
+    game/Game.cpp
     main.cpp
     level/Level.cpp
     level/LevelLoader.cpp

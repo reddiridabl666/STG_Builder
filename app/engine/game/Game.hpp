@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Audio/SoundBuffer.hpp>
+
 #include "AssetManager.hpp"
 #include "GameField.hpp"
 #include "LevelManager.hpp"
@@ -9,13 +11,16 @@
 
 class Game {
   public:
-    Game(const Window& window, PlayerList&& players, AssetManager<sf::Texture>& textures,
+    Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>& textures,
          AssetManager<sf::SoundBuffer>& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels);
 
+    Error render(float delta_time);
+
   private:
+    Error update(float delta_time);
+
     void draw_objects();
 
-    Error update(float delta_time);
     Error update_level();
 
     ErrorOr<GameObject> generate_object(const ObjectOptions& opts);
@@ -27,7 +32,7 @@ class Game {
 
     void draw_ui();
 
-    const Window& window_;
+    Window& window_;
 
     AssetManager<sf::Texture>& textures_;
     AssetManager<sf::SoundBuffer>& sounds_;
@@ -38,4 +43,5 @@ class Game {
     PlayerList player_types_;
 
     std::shared_ptr<Level> level_;
+    LevelManager levels_;
 };
