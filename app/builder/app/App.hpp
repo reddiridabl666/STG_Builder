@@ -30,6 +30,8 @@ class App {
 
     void run() noexcept;
 
+    ~App();
+
   private:
     static constexpr const char* kFallbackImage = "fallback.png";
 

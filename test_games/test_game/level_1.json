@@ -1,73 +1,67 @@
 {
-    "name": "The first level",
     "bg": {
         "image": "bg.jpg",
-        "speed": 100,
-        "ratio": {
-            "left": 0.05,
-            "top": 0.05,
-            "width": 0.5,
-            "height": 0.9
-        }
+        "speed": 100
     },
     "entities": [
         {
-            "type": "enemy",
-            "rotation": 60,
             "activity_start": "50%",
+            "lives": {
+                "args": {
+                    "seconds": 2
+                },
+                "type": "timed"
+            },
+            "move": {
+                "args": {
+                    "x": 3,
+                    "y": -10
+                },
+                "type": "linear"
+            },
             "pos": {
                 "x": "50%",
                 "y": "-10%"
             },
-            "move": {
-                "type": "linear",
-                "args": {
-                    "x": 3,
-                    "y": -10
-                }
-            },
-            "lives": {
-                "type": "timed",
-                "args": {
-                    "seconds": 2
-                }
-            }
+            "rotation": 60,
+            "type": "enemy"
         },
         {
-            "type": "enemy",
-            "pos": {
-                "x": 150,
-                "y": 300
-            },
             "move": {
-                "type": "circular",
                 "args": {
                     "center": {
                         "x": 200,
                         "y": 250
                     },
                     "speed": 3
-                }
-            }
+                },
+                "type": "circular"
+            },
+            "pos": {
+                "x": 150,
+                "y": 300
+            },
+            "type": "enemy"
         },
         {
-            "type": "enemy",
-            "rotation": 180,
             "count": 4,
-            "pos": {
-                "x": -50,
-                "y": 600
-            },
             "delta": {
                 "x": 120,
                 "y": -50
             },
             "lives": {
-                "type": "bounds",
                 "args": {
                     "margin": 50
-                }
-            }
+                },
+                "type": "bounds"
+            },
+            "pos": {
+                "x": -50,
+                "y": 600
+            },
+            "rotation": 180,
+            "type": "enemy"
         }
-    ]
+    ],
+    "name": "The first level"
 }

@@ -30,8 +30,8 @@ struct TimedAction {
   protected:
     sf::Clock clock_;
     std::atomic<bool> is_running_ = false;
-    float seconds_;
     std::function<void()> cb_;
+    float seconds_;
 };
 
 struct AsyncAction : public TimedAction {

@@ -26,10 +26,10 @@ struct StateManager {
 template <typename State>
 void StateManager<State>::set_state(State state) {
     if (!states_.empty()) {
-        on_state_end(states_.top());
+        on_state_end_(states_.top());
     }
 
-    on_state_start(state);
+    on_state_start_(state);
     states_.push(state);
 }
 

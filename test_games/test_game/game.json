@@ -1,10 +1,7 @@
 {
-    "name": "My first game",
     "description": "All features are being tested in this game",
-    "size": {
-        "x": 1280,
-        "y": 720
-    },
+    "fps": 60,
+    "fullscreen": true,
     "levels": 1,
     "menu": {
         "ratio": 0.3,
@@ -13,14 +10,25 @@
             "score"
         ]
     },
+    "name": "My first game",
     "player": {
-        "image": "player.png",
-        "size": {
-            "x": 100,
-            "y": 60
+        "bullets": {},
+        "hitbox": {
+            "color": "green",
+            "show": "true",
+            "size": {
+                "x": 5,
+                "y": 5
+            },
+            "type": "rect"
         },
+        "image": "player.png",
         "opts": {
             "keys": {
+                "down": [
+                    "Down",
+                    "S"
+                ],
                 "left": [
                     "Left",
                     "A"
@@ -32,23 +40,23 @@
                 "up": [
                     "Up",
                     "W"
-                ],
-                "down": [
-                    "Down",
-                    "S"
                 ]
             }
         },
-        "speed": 300,
-        "hitbox": {
-            "type": "rect",
-            "size": {
-                "x": 5,
-                "y": 5
-            },
-            "show": "true",
-            "color": "green"
+        "size": {
+            "x": 100,
+            "y": 60
         },
-        "bullets": {}
+        "speed": 300
+    },
+    "size": {
+        "x": 1280,
+        "y": 720
+    },
+    "field_size": {
+        "height": 0.9,
+        "left": 0.05,
+        "top": 0.05,
+        "width": 0.5
     }
 }

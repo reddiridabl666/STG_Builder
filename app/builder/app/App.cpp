@@ -174,42 +174,51 @@ std::function<void()> App::new_game() {
     };
 }
 
-void App::run() noexcept try {
+void App::run() noexcept {
     TimedAction saver(
         [this] {
             builder_.save();
         },
         10);
 
-    main_loop([this, &saver] {
-        ImGui::ShowDemoWindow();
-        state_.resolve_state_change();
-        draw_ui();
-        saver.action();
-    });
-} catch (const std::exception& e) {
-    ImGui::ErrorCheckEndFrameRecover(nullptr);
-    window_.display();
-    builder_.save();
+    try {
+        saver.run();
 
-    main_loop([&e, this, pop_up = false] mutable {
-        if (!pop_up) {
-            ImGui::OpenPopup(message(Message::UnexpectedError));
-            pop_up = true;
-        }
+        main_loop([this, &saver] {
+            ImGui::ShowDemoWindow();
+            state_.resolve_state_change();
+            draw_ui();
+            saver.action();
+        });
+    } catch (const std::exception& e) {
+        ImGui::ErrorCheckEndFrameRecover(nullptr);
+        window_.display();
+        saver.stop();
 
-        if (ImGui::BeginPopupModal(message(Message::UnexpectedError), nullptr,
-                                   ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize)) {
-            ImGui::Text(e.what());
-            ImGui::NewLine();
-
-            if (ImGui::Button(message(Message::Close))) {
-                window_.close();
+        main_loop([&e, this, pop_up = false] mutable {
+            if (!pop_up) {
+                ImGui::OpenPopup(message(Message::UnexpectedError));
+                pop_up = true;
             }
 
-            ImGui::EndPopup();
-        }
-    });
+            if (ImGui::BeginPopupModal(message(Message::UnexpectedError), nullptr,
+                                       ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize)) {
+                ImGui::Text(e.what());
+                ImGui::NewLine();
+
+                if (ImGui::Button(message(Message::Close))) {
+                    window_.close();
+                }
+
+                ImGui::EndPopup();
+            }
+        });
+    }
+}
+
+App::~App() {
+    ui_.clear();
+    builder_.save();
 }
 
 void App::main_loop(const std::function<void()>& cb) {

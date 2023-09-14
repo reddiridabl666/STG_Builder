@@ -2,6 +2,10 @@
 
 #include <fstream>
 
+#ifdef DEBUG
+#include "Debug.hpp"
+#endif
+
 namespace builder {
 GameBuilder GameBuilder::init(const fs::path& game_dir) {
     auto game = json::read(game_dir / kGame);
@@ -9,7 +13,7 @@ GameBuilder GameBuilder::init(const fs::path& game_dir) {
         throw std::runtime_error(game.error().message());
     }
 
-    auto entities = json::read(game_dir / kGame);
+    auto entities = json::read(game_dir / kEntities);
     if (!entities) {
         throw std::runtime_error(entities.error().message());
     }
@@ -33,6 +37,10 @@ GameBuilder GameBuilder::init(const fs::path& game_dir) {
 }
 
 void GameBuilder::save() const {
+#ifdef DEBUG
+    LOG("Saving game " + game_dir_.string());
+#endif
+
     json::create(game_dir_ / kGame, game_);
     json::create(game_dir_ / kEntities, entities_);
 

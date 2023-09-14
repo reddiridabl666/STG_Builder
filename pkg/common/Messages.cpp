@@ -20,7 +20,13 @@ const char* message(Message type) {
         {Message::GameField, {U8("Настройки игрового поля"), "Game field options"}},
         {Message::SideMenu, {U8("Настройки бокового меню"), "Side menu options"}},
         {Message::GameOpts, {U8("Настройки игры"), "Game"}},
+        {Message::ScreenOpts, {U8("Настройки экрана"), "Screen options"}},
+        {Message::WindowSize, {U8("Размер окна"), "Window size"}},
+        {Message::Fullscreen, {U8("Полноэкранный режим"), "Fullscreen"}},
+        {Message::FPS, {U8("Кадры в секунду"), "Frames per second"}},
+        {Message::GameFieldSize, {U8("Отступы и размер игрового поля"), "Game field offset and size"}},
         {Message::Menu, {U8("Меню"), "Menu"}},
+        {Message::LevelOpts, {U8("Настройки уровня"), "Level"}},
     };
 
     return messages[type][Lang::current()];

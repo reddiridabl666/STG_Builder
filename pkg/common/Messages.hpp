@@ -37,9 +37,15 @@ enum class Message {
     Name,
     Desc,
     GameField,
+    GameFieldSize,
     SideMenu,
     GameOpts,
+    ScreenOpts,
+    FPS,
+    WindowSize,
+    Fullscreen,
     Menu,
+    LevelOpts,
 };
 
 const char* message(Message type);

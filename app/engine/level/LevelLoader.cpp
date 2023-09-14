@@ -14,7 +14,7 @@
 
 ErrorOr<Level> LevelLoader::load_level(Window& window, AssetManager<sf::Texture>& textures,
                                        size_t number) const {
-    auto level_name = fmt::format("{}_{}.json", prefix, number);
+    auto level_name = fmt::format("{}_{}.json", prefix_, number);
 
 #ifdef DEBUG
     LOG(fmt::format("Reading level file: {}", level_name));

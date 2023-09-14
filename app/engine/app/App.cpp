@@ -100,7 +100,7 @@ ErrorOr<GameObject> App::generate_object(const ObjectOptions& opts) {
 
 Error App::generate_objects() {
     if (!level_) {
-        return make_error<InternalError>("No level loaded");
+        return Error("No level loaded");
     }
 
     while (!level_->objects().empty()) {
@@ -125,7 +125,7 @@ Error App::generate_objects() {
 void App::clear_dead() {
     std::erase_if(objects_, [](auto& el) {
         if (!el.second.is_alive()) {
-            Game::info().emit(Game::Event::ObjectDestroyed, el.second.tag());
+            GameState::get().emit(GameState::Event::ObjectDestroyed, el.second.tag());
             return true;
         }
         return false;
@@ -155,7 +155,7 @@ void App::draw_ui() {
         ui::StatLine{"Objects not loaded", &(level_->objects())},
         ui::StatLine{"View pos", level_->field().view().getCenter().y},
         ui::StatLine{"Textures loaded", &textures_.storage()},
-        ui::StatLine{"Enemies left", Game::info().enemy_count()}
+        ui::StatLine{"Enemies left", GameState::get().enemy_count()}
     );
     // clang-format on
 }

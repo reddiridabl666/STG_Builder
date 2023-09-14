@@ -55,6 +55,4 @@ class App {
 
     std::shared_ptr<Level> level_;
     LevelManager levels_;
-
-    // Collection<UiElement> ui_elements_;
 };

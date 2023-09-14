@@ -19,7 +19,7 @@ ErrorOr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
                    opts.life_func, opts.move);
     opts.set_props(res);
 
-    Game::info().emit(Game::Event::ObjectCreated, res.tag());
+    GameState::get().emit(GameState::Event::ObjectCreated, res.tag());
 
     // TODO: set hitbox properties
     // set collision rules
@@ -44,7 +44,7 @@ ErrorOr<GameObject> ObjectType::create_player(AssetManager<sf::Texture>& texture
 
     res.set_pos(field.center().x, field.bottom() - size.y);
 
-    Game::info().emit(Game::Event::ObjectCreated, res.tag());
+    GameState::get().emit(GameState::Event::ObjectCreated, res.tag());
 
     return res;
 }

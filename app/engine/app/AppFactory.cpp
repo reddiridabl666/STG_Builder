@@ -27,7 +27,8 @@ App AppFactory::generate(const nl::json& game, const nl::json& entities, const s
         .size = game.at("size").template get<sf::Vector2i>(),
     };
 
-    LevelManager levels(game.at("levels").get<int>(), LevelLoader{base_dir + "/level"});
+    LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
+    LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
 
     return App(window_info, generate_players(game), std::move(textures), std::move(sounds),
                std::move(types.value()), std::move(levels));
