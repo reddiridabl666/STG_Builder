@@ -3,24 +3,17 @@
 #include "Game.hpp"
 #include "Window.hpp"
 
-struct WindowInfo {
-    std::string name;
-    sf::Vector2i size;
-
-    Window make_window() const {
-        return Window(name, size.x, size.y);
-    }
-};
-
+namespace engine {
 class App {
   public:
-    App(const WindowInfo& window_info, Game&& game);
+    App(Window& window, Game&& game);
 
     void run();
 
   private:
     void draw_ui();
 
-    Window window_;
+    Window& window_;
     Game game_;
 };
+}  // namespace engine

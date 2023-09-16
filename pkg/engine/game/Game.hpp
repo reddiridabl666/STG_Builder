@@ -9,12 +9,17 @@
 #include "Player.hpp"
 #include "Window.hpp"
 
+namespace engine {
 class Game {
   public:
-    Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>& textures,
-         AssetManager<sf::SoundBuffer>& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels);
+    Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
+         AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels);
 
     Error render(float delta_time);
+
+    auto& textures() {
+        return textures_;
+    }
 
   private:
     Error update(float delta_time);
@@ -34,8 +39,8 @@ class Game {
 
     Window& window_;
 
-    AssetManager<sf::Texture>& textures_;
-    AssetManager<sf::SoundBuffer>& sounds_;
+    AssetManager<sf::Texture> textures_;
+    AssetManager<sf::SoundBuffer> sounds_;
 
     std::unordered_map<std::string, GameObject> objects_;
     ObjectTypeFactory::res_type types_;
@@ -45,3 +50,4 @@ class Game {
     std::shared_ptr<Level> level_;
     LevelManager levels_;
 };
+}  // namespace engine

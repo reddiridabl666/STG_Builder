@@ -17,12 +17,7 @@ set(INCLUDE_DIRS
 
 set (SOURCES
     app/App.cpp
-    app/AppFactory.cpp
-    game/Game.cpp
     main.cpp
-    level/Level.cpp
-    level/LevelLoader.cpp
-    level/LevelManager.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

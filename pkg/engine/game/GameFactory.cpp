@@ -1,4 +1,4 @@
-#include "AppFactory.hpp"
+#include "GameFactory.hpp"
 
 #include <stdexcept>
 
@@ -6,11 +6,13 @@
 #include "Debug.hpp"
 #endif
 
+namespace engine {
 namespace {
 PlayerList generate_players(const nl::json& game);
 }  // namespace
 
-App AppFactory::generate(const nl::json& game, const nl::json& entities, const std::string& base_dir) const {
+Game GameFactory::generate(Window& window, const nl::json& game, const nl::json& entities,
+                           const std::string& base_dir) {
     auto types = ObjectTypeFactory::generate(entities);
     if (!types) {
         throw std::runtime_error(types.error().message());
@@ -22,16 +24,11 @@ App AppFactory::generate(const nl::json& game, const nl::json& entities, const s
     AssetManager<sf::SoundBuffer> sounds(AssetLoader{base_dir + "/assets/sounds"},
                                          AssetStorage<sf::SoundBuffer>{});
 
-    WindowInfo window_info{
-        .name = game.at("name").template get<std::string>(),
-        .size = game.at("size").template get<sf::Vector2i>(),
-    };
-
     LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
     LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
 
-    return App(window_info, generate_players(game), std::move(textures), std::move(sounds),
-               std::move(types.value()), std::move(levels));
+    return Game(window, generate_players(game), std::move(textures), std::move(sounds),
+                std::move(types.value()), std::move(levels));
 }
 
 namespace {
@@ -78,3 +75,5 @@ PlayerList generate_players(const nl::json& game) {
     return res;
 }
 }  // namespace
+
+}  // namespace engine

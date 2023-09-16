@@ -1,5 +1,7 @@
 #include "LevelManager.hpp"
 
+namespace engine {
+
 ErrorOr<std::shared_ptr<Level>> LevelManager::start_next(Window& window,
                                                          AssetManager<sf::Texture>& textures) {
     if (cur_num_ == level_num_) {
@@ -14,3 +16,4 @@ ErrorOr<std::shared_ptr<Level>> LevelManager::start_next(Window& window,
     ++cur_num_;
     return std::make_shared<Level>(std::move(level.value()));
 }
+}  // namespace engine

@@ -130,8 +130,11 @@ ui::Box::Items App::load_levels() {
 
 std::unique_ptr<ui::Element> App::make_menu() {
     std::vector<ui::Menu::Tab> tabs;
-    tabs.reserve(1);
+    tabs.reserve(2);
+
     tabs.push_back(ui::MainTab(builder_.game()));
+    tabs.push_back(ui::LevelTab(builder_.current_level()));
+
     return std::make_unique<ui::Menu>(std::move(tabs), message_func(Message::Menu));
 }
 

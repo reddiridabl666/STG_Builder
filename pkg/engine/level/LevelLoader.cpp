@@ -12,6 +12,7 @@
 #include "Debug.hpp"
 #endif
 
+namespace engine {
 ErrorOr<Level> LevelLoader::load_level(Window& window, AssetManager<sf::Texture>& textures,
                                        size_t number) const {
     auto level_name = fmt::format("{}_{}.json", prefix_, number);
@@ -65,7 +66,8 @@ ErrorOr<GameField> LevelLoader::load_field(Window& window, AssetManager<sf::Text
     return GameField{
         std::move(sprite),
         window,
-        json.at("ratio").template get<sf::FloatRect>(),
+        field_size_,
         json.at("speed").template get<int>(),
     };
 }
+}  // namespace engine

@@ -2,6 +2,7 @@
 
 #include "GameInfo.hpp"
 
+namespace engine {
 void Level::prepare_objects() {
     std::sort(objects_.begin(), objects_.end());
 }
@@ -15,3 +16,4 @@ bool Level::has_ended() {
     // TODO: Custom checks?
     return field_.has_ended() && GameState::get().enemy_count() == 0;
 }
+}  // namespace engine

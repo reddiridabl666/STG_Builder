@@ -3,6 +3,8 @@
 #include "GameField.hpp"
 #include "ObjectOptionsFactory.hpp"
 
+namespace engine {
+
 class Level {
   public:
     Level(const std::string& name, GameField&& field, ObjectOptionsFactory::res_type&& objects);
@@ -32,3 +34,4 @@ class Level {
     GameField field_;
     ObjectOptionsFactory::res_type objects_;
 };
+}  // namespace engine

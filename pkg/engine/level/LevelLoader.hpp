@@ -8,6 +8,8 @@
 template <Loadable T>
 class AssetManager;
 
+namespace engine {
+
 class LevelLoader {
   public:
     LevelLoader(const std::string& prefix, const sf::FloatRect& field_size)
@@ -16,8 +18,9 @@ class LevelLoader {
     ErrorOr<Level> load_level(Window& window, AssetManager<sf::Texture>& textures, size_t number) const;
 
   private:
-    sf::FloatRect field_size_;
     std::string prefix_;
+    sf::FloatRect field_size_;
 
     ErrorOr<GameField> load_field(Window& window, AssetManager<sf::Texture>& textures, nl::json json) const;
 };
+}  // namespace engine

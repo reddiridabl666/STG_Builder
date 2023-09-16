@@ -2,6 +2,7 @@
 
 #include "LevelLoader.hpp"
 
+namespace engine {
 class LevelManager {
   public:
     LevelManager(size_t level_num, LevelLoader&& loader)
@@ -15,3 +16,4 @@ class LevelManager {
 
     LevelLoader loader_;
 };
+}  // namespace engine

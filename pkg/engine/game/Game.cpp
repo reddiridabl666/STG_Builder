@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Game.hpp"
 
 #include "AssetManager.hpp"
@@ -8,11 +6,12 @@
 #include "Utils.hpp"
 #include "ui/elements/StatBox.hpp"
 
-Game::Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>& textures,
-           AssetManager<sf::SoundBuffer>& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels)
+namespace engine {
+Game::Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
+           AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels)
     : window_(window),
-      textures_(textures),
-      sounds_(sounds),
+      textures_(std::move(textures)),
+      sounds_(std::move(sounds)),
       types_(std::move(types)),
       player_types_(std::move(players)),
       levels_(std::move(levels)) {}
@@ -154,3 +153,4 @@ void Game::draw_ui() {
     );
     // clang-format on
 }
+}  // namespace engine

@@ -1,7 +1,9 @@
 #include <iostream>
 
-#include "AppFactory.hpp"
+#include "App.hpp"
+#include "GameFactory.hpp"
 #include "Window.hpp"
+#include "WindowInfo.hpp"
 
 static const std::string kBase = "../../../test_games/test_game/";
 
@@ -19,7 +21,12 @@ int main() {
     }
 
     try {
-        auto app = AppFactory{}.generate(*game_json, *entities_json, kBase);
+        auto window = WindowInfo::from_json(*game_json).make_window();
+
+        auto app = engine::App{
+            window,
+            engine::GameFactory::generate(window, *game_json, *entities_json, kBase),
+        };
         app.run();
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;

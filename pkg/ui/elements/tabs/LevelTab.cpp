@@ -13,14 +13,23 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FieldOptions, speed, image)
 
 struct LevelTabContents : public Element {
   public:
+    LevelTabContents(nl::json& json) : data(json) {}
+
     std::string name;
     FieldOptions field;
+    nl::json& data;
 
     void draw(const Window&) override {
         ImGui::InputText(message(Message::Name), &name);
 
+        ImGui::SeparatorText(message(Message::GameField));
         ImGui::InputText("Background", &field.image);
         ImGui::InputFloat("Speed", &field.speed);
+    }
+
+    ~LevelTabContents() {
+        data["name"] = name;
+        data["bg"] = field;
     }
 };
 }  // namespace

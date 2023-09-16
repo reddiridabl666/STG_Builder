@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "GameFactory.hpp"
+
 #ifdef DEBUG
 #include "Debug.hpp"
 #endif
@@ -61,4 +63,9 @@ void GameBuilder::new_level() {
     json::create(game_dir_ / level_filename(current_level_), level);
     levels_.push_back(std::move(level));
 }
+
+std::unique_ptr<engine::Game> GameBuilder::create_engine(Window& window) {
+    return std::make_unique<engine::Game>(engine::GameFactory::generate(window, game_, entities_, game_dir_));
+}
+
 }  // namespace builder

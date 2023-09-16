@@ -6,8 +6,8 @@
 #include "Utils.hpp"
 #include "ui/elements/StatBox.hpp"
 
-App::App(const WindowInfo& window_info, Game&& game)
-    : window_(window_info.make_window()), game_(std::move(game)) {}
+namespace engine {
+App::App(Window& window, Game&& game) : window_(window), game_(std::move(game)) {}
 
 void App::run() {
     sf::Clock timer;
@@ -26,3 +26,4 @@ void App::run() {
         window_.display();
     }
 }
+}  // namespace engine

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "AssetManager.hpp"
+#include "Game.hpp"
 #include "GameBuilder.hpp"
 #include "Observable.hpp"
 #include "StateManager.hpp"
@@ -59,6 +60,7 @@ class App {
     size_t games_num_;
 
     GameBuilder builder_;
+    std::unique_ptr<engine::Game> game_ = nullptr;
 
     AssetManager<sf::Texture> textures_;
     std::unordered_map<std::string, std::unique_ptr<ui::Element>> ui_;

@@ -8,6 +8,11 @@ set(SOURCES
     generators/FuncBuilder.cpp
     objects/ObjectOptions.cpp
     objects/ObjectType.cpp
+    level/Level.cpp
+    level/LevelLoader.cpp
+    level/LevelManager.cpp
+    game/Game.cpp
+    game/GameFactory.cpp
 )
 
 set(INCLUDE_DIRS
@@ -15,8 +20,15 @@ set(INCLUDE_DIRS
     assets
     generators
     objects
+    game
+    level
+)
+
+set(LIBS
+    stg_builder_core
+    stg_builder_ui
 )
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE stg_builder_core)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})

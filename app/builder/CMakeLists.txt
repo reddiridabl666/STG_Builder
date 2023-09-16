@@ -10,6 +10,7 @@ set(SOURCES
 
 set(INCLUDE_DIRS
     app
+    utils
 )
 
 set(LIBS
