@@ -8,6 +8,7 @@
 #include "Json.hpp"
 #include "Messages.hpp"
 #include "TimedAction.hpp"
+#include "ui/Fonts.hpp"
 #include "ui/elements/Button.hpp"
 #include "ui/elements/ErrorPopup.hpp"
 #include "ui/elements/GameInfo.hpp"
@@ -21,6 +22,8 @@
 #endif
 
 namespace builder {
+
+// static ImFont* kRoboto;
 
 static constexpr const char* kImagesPath = "assets/images";
 
@@ -121,7 +124,7 @@ ui::Box::Items App::load_levels() {
             level->at("name").template get<std::string>(), num,
             textures_.get_or(game_dir.filename() / kImagesPath / bg_image, kFallbackImage), ImVec2{50, 50},
             [this, num] {
-                builder_.choose_level(num);
+                builder_.choose_level(num - 1);
                 state_.schedule_state_change(State::LevelEditor);
             }));
     }
@@ -174,6 +177,20 @@ void App::run() noexcept {
 
     try {
         saver.run();
+
+        auto io = ImGui::GetIO();
+        io.Fonts->Clear();
+
+        io.Fonts->AddFontFromFileTTF((games_dir_ / "Roboto-Regular.ttf").c_str(), 14, nullptr,
+                                     io.Fonts->GetGlyphRangesCyrillic());
+        bool ok = ImGui::SFML::UpdateFontTexture();
+        if (!ok) {
+            throw std::runtime_error("error loading font");
+        }
+
+        // window_.frame([this] {
+        //     ui::set_font(kRoboto);
+        // });
 
         window_.main_loop([this, &saver] {
             ImGui::ShowDemoWindow();

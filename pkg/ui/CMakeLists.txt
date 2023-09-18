@@ -15,6 +15,7 @@ set(SOURCES
 
 set(INCLUDE_DIRS
     ..
+    .
     common
     mixin
     elements

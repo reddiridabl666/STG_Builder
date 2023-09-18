@@ -15,12 +15,14 @@ class Window {
     sf::Clock clock_;
 
   public:
-    Window(const std::string& name, uint width, uint height, bool is_fullscreen = false, bool vsync = true);
+    Window(const std::string& name, uint width, uint height, bool is_fullscreen = false, bool vsync = true,
+           bool default_font = true);
 
     bool is_open() const;
     void process_events();
 
     void main_loop(const std::function<void()>& cb);
+    void frame(const std::function<void()>& cb);
 
     sf::Vector2u get_size() const;
 

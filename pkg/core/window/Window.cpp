@@ -5,12 +5,13 @@
 
 #include "Drawable.hpp"
 
-Window::Window(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync)
+Window::Window(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync,
+               bool default_font)
     : window_(sf::VideoMode(width, height), name,
               is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default) {
     window_.setVerticalSyncEnabled(vsync);
 
-    if (!ImGui::SFML::Init(window_)) {
+    if (!ImGui::SFML::Init(window_, default_font)) {
         throw std::runtime_error("Imgui SFML Init failure\n");
     }
 }
@@ -51,15 +52,19 @@ void Window::process_events() {
 
 void Window::main_loop(const std::function<void()>& cb) {
     while (is_open()) {
-        process_events();
-        clear();
-
-        update_ui();
-
-        cb();
-
-        display();
+        frame(cb);
     }
+}
+
+void Window::frame(const std::function<void()>& cb) {
+    process_events();
+    clear();
+
+    update_ui();
+
+    cb();
+
+    display();
 }
 
 sf::Vector2u Window::get_size() const {

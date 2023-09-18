@@ -82,9 +82,9 @@ void GameBuilder::choose_level(size_t num) {
 }
 
 void GameBuilder::new_level() {
-    current_level_ = levels_.size() + 1;
+    current_level_ = levels_.size();
     auto level = R"({"name":"New level"})"_json;
-    json::create(game_dir_ / level_filename(current_level_), level);
+    json::create(game_dir_ / level_filename(current_level_ + 1), level);
     levels_.push_back(std::move(level));
 }
 
