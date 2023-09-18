@@ -53,11 +53,16 @@ struct MainTabContents : public Element {
     }
 
     ~MainTabContents() {
-        data["name"] = name;
-        data["description"] = description;
-        data["fullscreen"] = is_fullscreen;
-        data["fps"] = fps;
-        data["size"] = size;
+        try {
+            data["name"] = name;
+            data["description"] = description;
+            data["fullscreen"] = is_fullscreen;
+            data["field_size"] = field_size;
+            data["fps"] = fps;
+            data["size"] = size;
+        } catch (std::exception& e) {
+            fmt::println("{}", e.what());
+        }
     }
 
   private:
@@ -80,12 +85,15 @@ int normalize_fps(int fps) {
 Menu::Tab MainTab(nl::json& json) {
     auto tab = std::make_unique<MainTabContents>(json);
 
-    tab->name = json.at("name").template get<std::string>();
-    tab->description = json.at("description").template get<std::string>();
-    tab->is_fullscreen = json.at("fullscreen").template get<bool>();
-    tab->fps = normalize_fps(json.at("fps").template get<int>());
-    tab->size = json.at("size").template get<sf::Vector2i>();
-    tab->field_size = json.at("field_size").template get<sf::FloatRect>();
+    try {
+        tab->name = json.at("name").template get<std::string>();
+        tab->description = json.at("description").template get<std::string>();
+        tab->is_fullscreen = json.at("fullscreen").template get<bool>();
+        tab->fps = normalize_fps(json.at("fps").template get<int>());
+        tab->size = json.at("size").template get<sf::Vector2i>();
+        tab->field_size = json.at("field_size").template get<sf::FloatRect>();
+    } catch (...) {
+    }
 
     return Menu::Tab(std::move(tab), message_func(Message::GameOpts));
 }

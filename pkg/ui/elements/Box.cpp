@@ -10,7 +10,7 @@ Box::Box(const VariableText& name, std::vector<std::unique_ptr<Element>>&& elems
 
 void Box::draw(const Window& window) {
     ImGui::SetNextWindowPos(get_pos(), 0, ImVec2{0.5, 0.5});
-    ImGui::SetNextWindowSizeConstraints(ImVec2{0, 0}, get_size());
+    ImGui::SetNextWindowSizeConstraints(ImVec2{get_size().x, 0}, get_size());
 
     ImGui::Begin(name_(), nullptr, kStaticWindow | ImGuiWindowFlags_AlwaysAutoResize);
 

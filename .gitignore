@@ -4,3 +4,4 @@ _build
 imgui.ini
 cmake-build-debug
 test_games/New Game*
+test_games/.backup

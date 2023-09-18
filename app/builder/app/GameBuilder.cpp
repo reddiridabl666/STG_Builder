@@ -3,13 +3,14 @@
 #include <fstream>
 
 #include "GameFactory.hpp"
+#include "ui/elements/GameInfo.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"
 #endif
 
 namespace builder {
-GameBuilder GameBuilder::init(const fs::path& game_dir) {
+void GameBuilder::init(const fs::path& game_dir) {
     auto game = json::read(game_dir / kGame);
     if (!game) {
         throw std::runtime_error(game.error().message());
@@ -35,10 +36,33 @@ GameBuilder GameBuilder::init(const fs::path& game_dir) {
         levels.push_back(std::move(*level));
     }
 
-    return GameBuilder(game_dir, std::move(*game), std::move(*entities), std::move(levels));
+    *this = GameBuilder(game_dir, std::move(*game), std::move(*entities), std::move(levels));
+}
+
+void GameBuilder::new_game(const fs::path& game) const {
+    if (!fs::create_directory(game)) {
+        throw std::runtime_error("Game directory creation failure");
+    }
+
+    if (!fs::create_directories(game / "assets/images")) {
+        throw std::runtime_error("Assets directory creation failure");
+    }
+
+    nl::json game_json{
+        {"name", game.stem().string()},
+        {"description", ui::GameInfo::kDefaultDesc},
+    };
+
+    json::create(game / "game.json", game_json);
+
+    json::create(game / "entities.json");
 }
 
 void GameBuilder::save() const {
+    if (game_dir_ == "") {
+        return;
+    }
+
 #ifdef DEBUG
     LOG("Saving game " + game_dir_.string());
 #endif
@@ -64,8 +88,25 @@ void GameBuilder::new_level() {
     levels_.push_back(std::move(level));
 }
 
+void GameBuilder::backup(const fs::path& path) {
+    auto backup_path = game_dir_.parent_path() / ".backup";
+    fs::create_directory(backup_path);
+    fs::copy(path, backup_path / path.filename());
+}
+
 std::unique_ptr<engine::Game> GameBuilder::create_engine(Window& window) {
     return std::make_unique<engine::Game>(engine::GameFactory::generate(window, game_, entities_, game_dir_));
 }
 
+void GameBuilder::delete_game() {
+    // backup(game_dir_);
+    fs::remove_all(game_dir_);
+    game_dir_ = "";
+}
+
+void GameBuilder::delete_level() {
+    // backup(game_dir_);
+    fs::remove(level_filename(current_level_));
+    levels_.erase(levels_.begin() + current_level_);  // TODO: Dangerous
+}
 }  // namespace builder

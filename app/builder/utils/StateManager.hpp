@@ -12,11 +12,12 @@ struct StateManager {
     void schedule_state_change(State state);
     void resolve_state_change();
 
-    void set_state(State state);
-    void set_prev_state();
     State state() const;
 
   private:
+    void set_state(State state);
+    void set_prev_state();
+
     std::stack<State> states_;
     State next_state_ = State::Undefined;
     Cb on_state_start_;

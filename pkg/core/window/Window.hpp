@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include <functional>
 
 #include "Collection.hpp"
 #include "LinAlg.hpp"
@@ -18,6 +19,8 @@ class Window {
 
     bool is_open() const;
     void process_events();
+
+    void main_loop(const std::function<void()>& cb);
 
     sf::Vector2u get_size() const;
 

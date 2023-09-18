@@ -1,12 +1,12 @@
 {
     "enemy": {
         "image": "enemy.png",
-        "tag": "enemy",
+        "score": 100,
         "size": {
             "x": 80,
             "y": 80
         },
         "speed": 50,
-        "score": 100
+        "tag": "enemy"
     }
 }

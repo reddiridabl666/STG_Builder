@@ -21,7 +21,9 @@ class GameBuilder {
           entities_(std::move(entities)),
           levels_(std::move(levels)) {}
 
-    static GameBuilder init(const fs::path& game_dir);
+    void init(const fs::path& game_dir);
+
+    void new_game(const fs::path& game) const;
 
     void save() const;
 
@@ -33,6 +35,9 @@ class GameBuilder {
     nl::json& game() {
         return game_;
     }
+
+    void delete_game();
+    void delete_level();
 
     nl::json& entities() {
         return entities_;
@@ -53,6 +58,8 @@ class GameBuilder {
     static std::string level_filename(size_t num) {
         return fmt::format("level_{}.json", num);
     }
+
+    void backup(const fs::path& path);
 
     fs::path game_dir_;
     nl::json game_;

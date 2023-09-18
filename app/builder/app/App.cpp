@@ -9,6 +9,7 @@
 #include "Messages.hpp"
 #include "TimedAction.hpp"
 #include "ui/elements/Button.hpp"
+#include "ui/elements/ErrorPopup.hpp"
 #include "ui/elements/GameInfo.hpp"
 #include "ui/elements/LangChanger.hpp"
 #include "ui/elements/LevelInfo.hpp"
@@ -125,6 +126,14 @@ ui::Box::Items App::load_levels() {
             }));
     }
 
+    res.push_back(std::make_unique<ui::ImageButton>(
+        message_func(Message::Delete), textures_.get_or("delete.png", kFallbackImage), ImVec2{30, 30},
+        [this] {
+            builder_.delete_game();
+            state_.schedule_state_change(State::Back);
+        },
+        true, ImVec2{}, ImVec2{0, 48}));
+
     return res;
 }
 
@@ -145,33 +154,12 @@ std::function<void()> App::game_choice(const fs::path& current_game) {
     };
 }
 
-namespace {
-void create_game_files(const fs::path& game) {
-    if (!fs::create_directory(game)) {
-        throw std::runtime_error("Game directory creation failure");
-    }
-
-    if (!fs::create_directories(game / "assets/images")) {
-        throw std::runtime_error("Assets directory creation failure");
-    }
-
-    nl::json game_json{
-        {"name", game.stem().string()},
-        {"description", ui::GameInfo::kDefaultDesc},
-    };
-
-    json::create(game / "game.json", game_json);
-
-    json::create(game / "entities.json");
-}
-}  // namespace
-
 std::function<void()> App::new_game() {
     return [this] {
         ++games_num_;
         current_game_ = fmt::format("New Game {}", games_num_);
 
-        create_game_files(games_dir_ / current_game_);
+        builder_.new_game(games_dir_ / current_game_);
 
         state_.schedule_state_change(State::GameMenu);
     };
@@ -187,54 +175,24 @@ void App::run() noexcept {
     try {
         saver.run();
 
-        main_loop([this, &saver] {
+        window_.main_loop([this, &saver] {
             ImGui::ShowDemoWindow();
             state_.resolve_state_change();
             draw_ui();
             saver.action();
         });
     } catch (const std::exception& e) {
-        ImGui::ErrorCheckEndFrameRecover(nullptr);
-        window_.display();
         saver.stop();
-
-        main_loop([&e, this, pop_up = false] mutable {
-            if (!pop_up) {
-                ImGui::OpenPopup(message(Message::UnexpectedError));
-                pop_up = true;
-            }
-
-            if (ImGui::BeginPopupModal(message(Message::UnexpectedError), nullptr,
-                                       ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize)) {
-                ImGui::Text(e.what());
-                ImGui::NewLine();
-
-                if (ImGui::Button(message(Message::Close))) {
-                    window_.close();
-                }
-
-                ImGui::EndPopup();
-            }
-        });
+        ui::ErrorPopup(window_, e.what());
+    } catch (...) {
+        saver.stop();
+        ui::ErrorPopup(window_, message(Message::UnexpectedError));
     }
 }
 
 App::~App() {
     ui_.clear();
     builder_.save();
-}
-
-void App::main_loop(const std::function<void()>& cb) {
-    while (window_.is_open()) {
-        window_.process_events();
-        window_.clear();
-
-        window_.update_ui();
-
-        cb();
-
-        window_.display();
-    }
 }
 
 void App::draw_ui() {
@@ -265,7 +223,7 @@ void App::on_state_start(State state) {
             ui_.emplace("back", back_button());
             ui_.emplace("levels", std::make_unique<ui::Box>(message_func(Message::Levels), load_levels(),
                                                             ImVec2{400, 400}, window_.get_center()));
-            builder_ = GameBuilder::init(games_dir_ / current_game_);
+            builder_.init(games_dir_ / current_game_);
             return;
         case State::LevelEditor:
             ui_.emplace("menu", make_menu());

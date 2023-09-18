@@ -10,6 +10,7 @@ const char* message(Message type) {
         {Message::Exit, {U8("Выход"), "Quit"}},
         {Message::Games, {U8("Ваши игры"), "Your games"}},
         {Message::Levels, {U8("Ваши уровни"), "Your levels"}},
+        {Message::Delete, {U8("Удалить"), "Delete"}},
         {Message::CreateGame, {U8("Создать игру"), "New Game"}},
         {Message::CreateLevel, {U8("Создать уровень"), "New Level"}},
         {Message::Back, {U8("Назад"), "Back"}},
@@ -27,6 +28,8 @@ const char* message(Message type) {
         {Message::GameFieldSize, {U8("Отступы и размер игрового поля"), "Game field offset and size"}},
         {Message::Menu, {U8("Меню"), "Menu"}},
         {Message::LevelOpts, {U8("Настройки уровня"), "Level"}},
+        {Message::Speed, {U8("Скорость"), "Speed"}},
+        {Message::Image, {U8("Изображение"), "Image"}},
     };
 
     return messages[type][Lang::current()];

@@ -36,8 +36,6 @@ class App {
   private:
     static constexpr const char* kFallbackImage = "fallback.png";
 
-    void main_loop(const std::function<void()>& cb);
-
     void draw_ui();
 
     void on_state_start(State state);

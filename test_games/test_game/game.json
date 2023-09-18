@@ -1,5 +1,11 @@
 {
     "description": "All features are being tested in this game",
+    "field_size": {
+        "height": 0.8999999761581421,
+        "left": 0.05000000074505806,
+        "top": 0.05000000074505806,
+        "width": 0.5
+    },
     "fps": 60,
     "fullscreen": true,
     "levels": 1,
@@ -52,11 +58,5 @@
     "size": {
         "x": 1280,
         "y": 720
-    },
-    "field_size": {
-        "height": 0.9,
-        "left": 0.05,
-        "top": 0.05,
-        "width": 0.5
     }
 }

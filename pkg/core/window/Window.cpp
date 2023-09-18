@@ -49,6 +49,19 @@ void Window::process_events() {
     }
 }
 
+void Window::main_loop(const std::function<void()>& cb) {
+    while (is_open()) {
+        process_events();
+        clear();
+
+        update_ui();
+
+        cb();
+
+        display();
+    }
+}
+
 sf::Vector2u Window::get_size() const {
     return window_.getSize();
 }

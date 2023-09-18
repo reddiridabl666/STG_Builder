@@ -29,6 +29,7 @@ enum class Message {
     Games,
     Levels,
     Exit,
+    Delete,
     CreateGame,
     CreateLevel,
     Back,
@@ -46,6 +47,8 @@ enum class Message {
     Fullscreen,
     Menu,
     LevelOpts,
+    Speed,
+    Image
 };
 
 const char* message(Message type);

@@ -5,11 +5,11 @@
 namespace ui {
 namespace {
 struct FieldOptions {
-    float speed;
-    std::string image;
+    float speed = 0;
+    std::string image = "";
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FieldOptions, speed, image)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(FieldOptions, speed, image);
 
 struct LevelTabContents : public Element {
   public:
@@ -23,22 +23,30 @@ struct LevelTabContents : public Element {
         ImGui::InputText(message(Message::Name), &name);
 
         ImGui::SeparatorText(message(Message::GameField));
-        ImGui::InputText("Background", &field.image);
-        ImGui::InputFloat("Speed", &field.speed);
+        ImGui::InputText(message(Message::Image), &field.image);
+        ImGui::InputFloat(message(Message::Speed), &field.speed);
     }
 
     ~LevelTabContents() {
-        data["name"] = name;
-        data["bg"] = field;
+        try {
+            data["name"] = name;
+            data["bg"] = field;
+        } catch (std::exception& e) {
+            fmt::println("{}", e.what());
+        }
     }
 };
 }  // namespace
 
-Menu::Tab ui::LevelTab(nl::json& json) {
+Menu::Tab LevelTab(nl::json& json) {
     auto tab = std::make_unique<LevelTabContents>(json);
 
-    tab->name = json.at("name").template get<std::string>();
-    tab->field = json.at("bg").template get<FieldOptions>();
+    try {
+        tab->name = json.at("name").template get<std::string>();
+        tab->field = json.at("bg").template get<FieldOptions>();
+    } catch (std::exception& e) {
+        fmt::println("{}", e.what());
+    }
 
     return Menu::Tab(std::move(tab), message_func(Message::LevelOpts));
 }
