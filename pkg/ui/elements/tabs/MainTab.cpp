@@ -6,6 +6,10 @@
 #include "Json.hpp"
 #include "Messages.hpp"
 
+#ifdef DEBUG
+#include "Debug.hpp"
+#endif
+
 namespace ui {
 
 namespace {
@@ -35,7 +39,13 @@ struct MainTabContents : public Element {
         ImGui::InputTextMultiline(message(Message::Desc), &description);
 
         ImGui::SeparatorText(message(Message::GameField));
-        ImGui::InputFloat4(message(Message::GameFieldSize), (float*)&field_size);
+        ImGui::Text(message(Message::GameFieldHint));
+
+        ImGui::SizeInput(message(Message::Size), &field_size.width, &field_size.height);
+
+        ImGui::VecInput(message(Message::Offset), message(Message::LeftEdge), message(Message::TopEdge),
+                        &field_size.left, &field_size.top);
+
         ImGui::NewLine();
 
         ImGui::SeparatorText(message(Message::ScreenOpts));
@@ -60,8 +70,11 @@ struct MainTabContents : public Element {
             data["field_size"] = field_size;
             data["fps"] = fps;
             data["size"] = size;
+            data["last_updated"] = time(nullptr);
         } catch (std::exception& e) {
-            fmt::println("{}", e.what());
+#ifdef DEBUG
+            LOG(e.what());
+#endif
         }
     }
 

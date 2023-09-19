@@ -2,6 +2,10 @@
 
 #include "Messages.hpp"
 
+#ifdef DEBUG
+#include "Debug.hpp"
+#endif
+
 namespace ui {
 namespace {
 struct FieldOptions {
@@ -17,7 +21,6 @@ struct LevelTabContents : public Element {
 
     std::string name;
     FieldOptions field;
-    nl::json& data;
 
     void draw(const Window&) override {
         ImGui::InputText(message(Message::Name), &name);
@@ -31,10 +34,16 @@ struct LevelTabContents : public Element {
         try {
             data["name"] = name;
             data["bg"] = field;
+            data["last_updated"] = time(nullptr);
         } catch (std::exception& e) {
-            fmt::println("{}", e.what());
+#ifdef DEBUG
+            LOG(e.what());
+#endif
         }
     }
+
+  private:
+    nl::json& data;
 };
 }  // namespace
 

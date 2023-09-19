@@ -1,12 +1,13 @@
 {
     "enemy": {
+        "health": 50.0,
         "image": "enemy.png",
-        "score": 100,
+        "score": 100.0,
         "size": {
-            "x": 80,
-            "y": 80
+            "x": 80.0,
+            "y": 80.0
         },
-        "speed": 50,
+        "speed": 50.0,
         "tag": "enemy"
     }
 }

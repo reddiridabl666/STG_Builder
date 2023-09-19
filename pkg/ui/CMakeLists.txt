@@ -7,8 +7,8 @@ set(SOURCES
     elements/Button.cpp
     elements/Menu.cpp
     elements/LevelInfo.cpp
-    elements/Box.cpp
     elements/tabs/MainTab.cpp
+    elements/tabs/EntitiesTab.cpp
     elements/tabs/LevelTab.cpp
     common/ImguiUtils.cpp
 )

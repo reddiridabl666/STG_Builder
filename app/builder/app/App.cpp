@@ -23,8 +23,6 @@
 
 namespace builder {
 
-// static ImFont* kRoboto;
-
 static constexpr const char* kImagesPath = "assets/images";
 
 App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
@@ -42,8 +40,8 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
     state_.schedule_state_change(State::MainMenu);
 }
 
-ui::Box::Items App::load_games() {
-    ui::Box::Items res;
+ui::DefaultBox::Items App::load_games() {
+    ui::DefaultBox::Items res;
 
     res.push_back(std::make_unique<ui::ImageButton>(
         message_func(Message::CreateGame), textures_.get_or("plus.png", kFallbackImage), ImVec2{50, 50},
@@ -83,10 +81,10 @@ ui::Box::Items App::load_games() {
     return res;
 }
 
-ui::Box::Items App::load_levels() {
+ui::DefaultBox::Items App::load_levels() {
     fs::path game_dir = games_dir_ / current_game_;
 
-    ui::Box::Items res;
+    ui::DefaultBox::Items res;
     res.reserve(4);
 
     res.push_back(std::make_unique<ui::ImageButton>(
@@ -126,7 +124,8 @@ ui::Box::Items App::load_levels() {
             [this, num] {
                 builder_.choose_level(num - 1);
                 state_.schedule_state_change(State::LevelEditor);
-            }));
+            },
+            json::get<int>(*level, "last_updated", time(nullptr))));
     }
 
     res.push_back(std::make_unique<ui::ImageButton>(
@@ -142,10 +141,11 @@ ui::Box::Items App::load_levels() {
 
 std::unique_ptr<ui::Element> App::make_menu() {
     std::vector<ui::Menu::Tab> tabs;
-    tabs.reserve(2);
+    tabs.reserve(3);
 
     tabs.push_back(ui::MainTab(builder_.game()));
     tabs.push_back(ui::LevelTab(builder_.current_level()));
+    tabs.push_back(ui::EntitiesTab(textures_, builder_.entities()));
 
     return std::make_unique<ui::Menu>(std::move(tabs), message_func(Message::Menu));
 }
@@ -178,19 +178,7 @@ void App::run() noexcept {
     try {
         saver.run();
 
-        auto io = ImGui::GetIO();
-        io.Fonts->Clear();
-
-        io.Fonts->AddFontFromFileTTF((games_dir_ / "Roboto-Regular.ttf").c_str(), 14, nullptr,
-                                     io.Fonts->GetGlyphRangesCyrillic());
-        bool ok = ImGui::SFML::UpdateFontTexture();
-        if (!ok) {
-            throw std::runtime_error("error loading font");
-        }
-
-        // window_.frame([this] {
-        //     ui::set_font(kRoboto);
-        // });
+        ui::set_default_font(games_dir_ / "Roboto-Regular.ttf", 16);
 
         window_.main_loop([this, &saver] {
             ImGui::ShowDemoWindow();
@@ -230,16 +218,17 @@ void App::on_state_start(State state) {
                                         window_.close();
                                     },
                                     false, ImVec2{1230, 680}));
-            ui_.emplace("games", std::make_unique<ui::Box>(message_func(Message::Games), load_games(),
-                                                           ImVec2{400, 400}, window_.get_center()));
+            ui_.emplace("games", std::make_unique<ui::DefaultBox>(message_func(Message::Games), load_games(),
+                                                                  ImVec2{400, 400}, window_.get_center()));
             return;
         case State::GameMenu:
 #ifdef DEBUG
             LOG(fmt::format("Game chosen: {}", current_game_.string()));
 #endif
             ui_.emplace("back", back_button());
-            ui_.emplace("levels", std::make_unique<ui::Box>(message_func(Message::Levels), load_levels(),
-                                                            ImVec2{400, 400}, window_.get_center()));
+            ui_.emplace("levels",
+                        std::make_unique<ui::DefaultBox>(message_func(Message::Levels), load_levels(),
+                                                         ImVec2{400, 400}, window_.get_center()));
             builder_.init(games_dir_ / current_game_);
             return;
         case State::LevelEditor:

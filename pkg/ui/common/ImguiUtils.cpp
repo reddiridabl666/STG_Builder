@@ -3,7 +3,23 @@
 #include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+#include "Messages.hpp"
+
 static ImVector<ImRect> s_GroupPanelLabelStack;
+
+void ImGui::VecInput(const char* name, const char* x_name, const char* y_name, float* x, float* y) {
+    ImGui::SeparatorText(name);
+    ImGui::InputFloat(x_name, x);
+    ImGui::InputFloat(y_name, y);
+}
+
+void ImGui::SizeInput(const char* name, float* x, float* y) {
+    ImGui::VecInput(name, message(Message::Width), message(Message::Height), x, y);
+}
+
+void ImGui::PosInput(const char* name, float* x, float* y) {
+    ImGui::VecInput(name, "x", "y", x, y);
+}
 
 void ImGui::BeginGroupPanel(const char* name, const ImVec2& size) {
     ImGui::BeginGroup();
@@ -129,17 +145,4 @@ void ImGui::EndGroupPanel() {
     ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
     ImGui::EndGroup();
-}
-
-void ImGui::InputLeftLabel(const char* label, std::string* input, ImGuiInputFlags flags) {
-    ImGui::Text(label);
-    ImGui::SameLine();
-    ImGui::InputText("##", input, flags);
-}
-
-void ImGui::InputLeftLabelMultiline(const char* label, std::string* input, const ImVec2& size,
-                                    ImGuiInputFlags flags) {
-    ImGui::Text(label);
-    ImGui::SameLine();
-    ImGui::InputTextMultiline("##", input, size, flags);
 }

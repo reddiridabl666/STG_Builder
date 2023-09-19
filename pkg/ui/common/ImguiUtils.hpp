@@ -8,7 +8,8 @@
 namespace ImGui {
 void BeginGroupPanel(const char* name, const ImVec2& size = ImVec2(0.0f, 0.0f));
 void EndGroupPanel();
-void InputLeftLabel(const char* label, std::string* input, ImGuiInputFlags flags = 0);
-void InputLeftLabelMultiline(const char* label, std::string* input, const ImVec2& size = {},
-                             ImGuiInputFlags flags = 0);
+
+void VecInput(const char* name, const char* x_name, const char* y_name, float* x, float* y);
+void SizeInput(const char* name, float* x, float* y);
+void PosInput(const char* name, float* x, float* y);
 }  // namespace ImGui

@@ -34,8 +34,6 @@ class App {
     ~App();
 
   private:
-    static constexpr const char* kFallbackImage = "fallback.png";
-
     void draw_ui();
 
     void on_state_start(State state);
@@ -43,8 +41,8 @@ class App {
 
     std::unique_ptr<ui::Element> back_button();
 
-    ui::Box::Items load_games();
-    ui::Box::Items load_levels();
+    ui::DefaultBox::Items load_games();
+    ui::DefaultBox::Items load_levels();
     std::unique_ptr<ui::Element> make_menu();
 
     std::function<void()> game_choice(const fs::path& current_game);

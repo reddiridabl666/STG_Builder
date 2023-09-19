@@ -41,4 +41,13 @@ inline void create(const std::filesystem::path& path, const nl::json& json = "{}
     std::ofstream file(path);
     file << std::setw(4) << json;
 }
+
+template <typename T>
+T get(nl::json& json, const std::string& key, const T& default_value = T{}) {
+    try {
+        return json.at(key).template get<T>();
+    } catch (...) {
+        return default_value;
+    }
+}
 }  // namespace json

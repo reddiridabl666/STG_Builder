@@ -6,6 +6,8 @@
 #include "AssetLoader.hpp"
 #include "AssetStorage.hpp"
 
+static constexpr const char* kFallbackImage = "fallback.png";
+
 template <Loadable T>
 class AssetManager {
   public:
@@ -37,10 +39,10 @@ class AssetManager {
 
     std::shared_ptr<T> get_or(const std::string& filename, const std::string& fallback) {
         auto res = get(filename)
-                       .or_else([this, fallback](auto) {
+                       .or_else([this, &fallback](auto) {
                            return get(fallback);
                        })
-                       .or_else([fallback](auto) {
+                       .or_else([&fallback](auto) {
                            throw std::runtime_error("Missing fallback asset: " + fallback);
                        });
 

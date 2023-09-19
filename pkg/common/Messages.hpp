@@ -30,11 +30,13 @@ enum class Message {
     Levels,
     Exit,
     Delete,
+    Tag,
     CreateGame,
     CreateLevel,
     Back,
     UnexpectedError,
     Close,
+    AddStat,
     Name,
     Desc,
     GameField,
@@ -48,7 +50,16 @@ enum class Message {
     Menu,
     LevelOpts,
     Speed,
-    Image
+    Image,
+    Offset,
+    Size,
+    LeftEdge,
+    TopEdge,
+    Height,
+    Width,
+    GameFieldHint,
+    ObjectTypes,
+    Stats
 };
 
 const char* message(Message type);
