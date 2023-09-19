@@ -9,6 +9,7 @@ set(SOURCES
     elements/LevelInfo.cpp
     elements/tabs/MainTab.cpp
     elements/tabs/EntitiesTab.cpp
+    elements/tabs/EntityEntry.cpp
     elements/tabs/LevelTab.cpp
     common/ImguiUtils.cpp
 )

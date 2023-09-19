@@ -145,7 +145,7 @@ std::unique_ptr<ui::Element> App::make_menu() {
 
     tabs.push_back(ui::MainTab(builder_.game()));
     tabs.push_back(ui::LevelTab(builder_.current_level()));
-    tabs.push_back(ui::EntitiesTab(textures_, builder_.entities()));
+    tabs.push_back(ui::EntitiesTab(current_game_, textures_, builder_.entities()));
 
     return std::make_unique<ui::Menu>(std::move(tabs), message_func(Message::Menu));
 }
@@ -173,7 +173,7 @@ void App::run() noexcept {
         [this] {
             builder_.save();
         },
-        10);
+        20);
 
     try {
         saver.run();
@@ -227,7 +227,7 @@ void App::on_state_start(State state) {
 #endif
             ui_.emplace("back", back_button());
             ui_.emplace("levels",
-                        std::make_unique<ui::DefaultBox>(message_func(Message::Levels), load_levels(),
+                        std::make_unique<ui::DefaultBox>(message_func(Message::YourLevels), load_levels(),
                                                          ImVec2{400, 400}, window_.get_center()));
             builder_.init(games_dir_ / current_game_);
             return;

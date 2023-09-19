@@ -28,11 +28,14 @@ class Lang {
 enum class Message {
     Games,
     Levels,
+    YourLevels,
+    Level,
     Exit,
     Delete,
     Tag,
     CreateGame,
     CreateLevel,
+    CreateObjectType,
     Back,
     UnexpectedError,
     Close,
@@ -59,7 +62,8 @@ enum class Message {
     Width,
     GameFieldHint,
     ObjectTypes,
-    Stats
+    Stats,
+    LastUpdated
 };
 
 const char* message(Message type);

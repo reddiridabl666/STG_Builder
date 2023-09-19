@@ -1,8 +1,20 @@
 {
+    "New object 1": {
+        "description": "Description goes here",
+        "image": "",
+        "size": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "speed": 0.0,
+        "tag": ""
+    },
     "enemy": {
+        "description": "Simple enemy type",
         "health": 50.0,
         "image": "enemy.png",
         "score": 100.0,
+        "shots": 10.0,
         "size": {
             "x": 80.0,
             "y": 80.0
