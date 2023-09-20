@@ -74,6 +74,11 @@ void EntityEntry::draw(const Window&) {
         }
 
         ImGui::End();
+
+        if (!shown_) {
+            old_name_ = name;
+            // TODO: Save object type somehow
+        }
     }
 }
 }  // namespace ui

@@ -8,13 +8,15 @@
 
 namespace engine {
 Game::Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
-           AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels)
+           AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels,
+           int fps)
     : window_(window),
       textures_(std::move(textures)),
       sounds_(std::move(sounds)),
       types_(std::move(types)),
       player_types_(std::move(players)),
-      levels_(std::move(levels)) {}
+      levels_(std::move(levels)),
+      fps_(fps) {}
 
 Error Game::render(float delta_time) {
     auto err = update(delta_time);
@@ -29,8 +31,32 @@ Error Game::render(float delta_time) {
 }
 
 void Game::render_debug() {
-    update_debug();
     draw_objects();
+}
+
+void Game::reload_objects() {
+    if (!level_) {
+        return;
+    }
+
+    objects_.clear();
+
+    for (auto& opts : level_->objects()) {
+        auto obj = generate_object(opts);
+        if (!obj) {
+            throw std::runtime_error("Error generating objects");
+        }
+
+        objects_.emplace(obj->name(), std::move(*obj));
+    }
+}
+
+GameObject* Game::object_by_pos(const sf::Vector2f& pos) {
+    auto it = rtree_.contains(pos);
+    if (it != rtree_.end()) {
+        return &objects_.at(it->second);
+    }
+    return nullptr;
 }
 
 void Game::scroll(float value) {
@@ -62,6 +88,10 @@ Error Game::choose_level(size_t num) {
 }
 
 void Game::draw_objects() {
+    if (!level_) {
+        return;
+    }
+
     level_->field().draw(window_);
 
     for (const auto& [_, obj] : objects_) {
@@ -92,16 +122,6 @@ Error Game::update(float delta_time) {
     sounds_.storage().clear_unused();
 
     return Error::OK;
-}
-
-void Game::update_debug() {
-    auto err = generate_objects();
-    if (err) {
-        throw std::runtime_error(err.message());
-    }
-
-    textures_.storage().clear_unused();
-    sounds_.storage().clear_unused();
 }
 
 Error Game::update_level() {

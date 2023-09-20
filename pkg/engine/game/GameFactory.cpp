@@ -27,8 +27,10 @@ Game GameFactory::generate(Window& window, const nl::json& game, const nl::json&
     LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
     LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
 
+    auto fps = json::get<int>(game, "fps", 60);
+
     return Game(window, generate_players(game), std::move(textures), std::move(sounds),
-                std::move(types.value()), std::move(levels));
+                std::move(types.value()), std::move(levels), fps);
 }
 
 std::unique_ptr<Game> GameFactory::generate_unique(Window& window, const nl::json& game,
@@ -47,8 +49,10 @@ std::unique_ptr<Game> GameFactory::generate_unique(Window& window, const nl::jso
     LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
     LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
 
+    auto fps = json::get<int>(game, "fps", 60);
+
     return std::make_unique<Game>(window, generate_players(game), std::move(textures), std::move(sounds),
-                                  std::move(types.value()), std::move(levels));
+                                  std::move(types.value()), std::move(levels), fps);
 }
 
 namespace {

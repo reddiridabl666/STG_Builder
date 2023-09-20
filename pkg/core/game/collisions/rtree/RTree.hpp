@@ -29,8 +29,17 @@ class RTree : public Observable<index_type, box_type> {
         rtree_.insert(value);
     }
 
-    const auto& intersects(const box_type& box) const {
+    auto intersects(const box_type& box) const {
         return rtree_.qbegin(rtree::intersects(box));
+    }
+
+    template <typename Geometry>
+    auto contains(const Geometry& geom) const {
+        return rtree_.qbegin(rtree::contains(geom));
+    }
+
+    auto end() const {
+        return rtree_.qend();
     }
 
   private:

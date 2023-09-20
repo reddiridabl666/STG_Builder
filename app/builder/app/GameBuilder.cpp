@@ -95,7 +95,9 @@ void GameBuilder::backup(const fs::path& path) {
 }
 
 std::unique_ptr<engine::Game> GameBuilder::create_engine(Window& window) {
-    return engine::GameFactory::generate_unique(window, game_, entities_, game_dir_);
+    auto res = engine::GameFactory::generate_unique(window, game_, entities_, game_dir_);
+    res->reload_objects();
+    return res;
 }
 
 void GameBuilder::delete_game() {

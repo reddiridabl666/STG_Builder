@@ -50,10 +50,10 @@ struct MainTabContents : public Element {
 
         ImGui::SeparatorText(message(Message::ScreenOpts));
 
-        ImGui::Text(message(Message::FPS));
-        ImGui::RadioButton("30", &fps, 30);
-        ImGui::RadioButton("60", &fps, 60);
-        ImGui::RadioButton("120", &fps, 120);
+        // ImGui::Text(message(Message::FPS));
+        // ImGui::RadioButton("30", &fps, 30);
+        // ImGui::RadioButton("60", &fps, 60);
+        // ImGui::RadioButton("120", &fps, 120);
 
         ImGui::NewLine();
         ImGui::Checkbox(message(Message::Fullscreen), &is_fullscreen);
@@ -68,7 +68,7 @@ struct MainTabContents : public Element {
             data["description"] = description;
             data["fullscreen"] = is_fullscreen;
             data["field_size"] = field_size;
-            data["fps"] = fps;
+            // data["fps"] = fps;
             data["size"] = size;
             data["last_updated"] = time(nullptr);
         } catch (std::exception& e) {
@@ -82,17 +82,17 @@ struct MainTabContents : public Element {
     nl::json& data;
 };
 
-int normalize_fps(int fps) {
-    if (fps < 30) {
-        return 30;
-    }
+// int normalize_fps(int fps) {
+//     if (fps < 30) {
+//         return 30;
+//     }
 
-    if (fps > 60 && fps != 120) {
-        return 120;
-    }
+//     if (fps > 60 && fps != 120) {
+//         return 120;
+//     }
 
-    return 60;
-}
+//     return 60;
+// }
 }  // namespace
 
 Menu::Tab MainTab(nl::json& json) {
@@ -102,7 +102,7 @@ Menu::Tab MainTab(nl::json& json) {
         tab->name = json.at("name").template get<std::string>();
         tab->description = json.at("description").template get<std::string>();
         tab->is_fullscreen = json.at("fullscreen").template get<bool>();
-        tab->fps = normalize_fps(json.at("fps").template get<int>());
+        // tab->fps = normalize_fps(json.at("fps").template get<int>());
         tab->size = json.at("size").template get<sf::Vector2i>();
         tab->field_size = json.at("field_size").template get<sf::FloatRect>();
     } catch (...) {

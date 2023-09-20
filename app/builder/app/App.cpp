@@ -40,12 +40,16 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
     state_.schedule_state_change(State::MainMenu);
 
     window_.add_handler(sf::Event::MouseWheelScrolled, [this](const sf::Event& event) {
-        if (state_.state() == State::LevelEditor) {
+        if (game_) {
             game_->scroll(event.mouseWheelScroll.delta * -20);
         }
     });
 
     window_.add_handler(sf::Event::KeyReleased, [this](const sf::Event& event) {
+        if (!game_) {
+            return;
+        }
+
         if (event.key.code == sf::Keyboard::Equal) {
             game_->zoom(0.8);
         }
@@ -231,6 +235,7 @@ void App::draw_ui() {
 void App::on_state_start(State state) {
     switch (state) {
         case State::MainMenu: {
+            game_.release();
             ui_.erase("back");
             ui_.emplace("exit", std::make_unique<ui::Button>(
                                     message_func(Message::Exit),
@@ -258,6 +263,7 @@ void App::on_state_start(State state) {
             if (err) {
                 throw std::runtime_error(err.message());
             }
+            game_->reload_objects();
             return;
         }
         default:

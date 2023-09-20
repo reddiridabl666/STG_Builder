@@ -36,7 +36,7 @@ struct Box {
 
 using FloatBox = Box<float>;
 
-BOOST_GEOMETRY_REGISTER_BOX(FloatBox, sf::Vector2f, top_left, bottom_right)
+BOOST_GEOMETRY_REGISTER_BOX(FloatBox, sf::Vector2f, top_left(), bottom_right())
 
 template <Numeric T>
 inline sf::Vector2<T> Box<T>::top_left() const {

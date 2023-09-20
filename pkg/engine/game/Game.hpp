@@ -7,13 +7,15 @@
 #include "LevelManager.hpp"
 #include "ObjectTypeFactory.hpp"
 #include "Player.hpp"
+#include "RTree.hpp"
 #include "Window.hpp"
 
 namespace engine {
 class Game {
   public:
     Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
-         AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels);
+         AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels,
+         int fps);
 
     Error render(float delta_time);
 
@@ -27,10 +29,16 @@ class Game {
     Error choose_level(size_t);
 
     void render_debug();
+    void reload_objects();
+
+    GameObject* object_by_pos(const sf::Vector2f& pos);
+
+    int fps() const {
+        return fps_;
+    }
 
   private:
     Error update(float delta_time);
-    void update_debug();
 
     void draw_objects();
 
@@ -57,5 +65,8 @@ class Game {
 
     std::shared_ptr<Level> level_;
     LevelManager levels_;
+
+    int fps_;
+    RTree<> rtree_;
 };
 }  // namespace engine
