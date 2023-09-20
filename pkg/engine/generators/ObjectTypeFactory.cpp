@@ -88,12 +88,19 @@ struct TagHandler : public Handler<ObjectType> {
     }
 
     void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        if (!value.is_string()) {
+            return;
+        }
+
         static const std::unordered_map<std::string, GameObject::Tag> map = {
             {"enemy", GameObject::Tag::Enemy},
             {"player", GameObject::Tag::Player},
             {"bullet", GameObject::Tag::Bullet}};
 
-        obj.tag = map.at(value.template get<std::string>());  // TODO: Need to add checks for this exception
+        auto it = map.find(value.template get<std::string>());
+        if (it != map.end()) {
+            obj.tag = it->second;
+        }
     }
 };
 }  // namespace

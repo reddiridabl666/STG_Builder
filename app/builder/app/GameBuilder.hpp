@@ -51,6 +51,10 @@ class GameBuilder {
         return levels_[current_level_];
     }
 
+    size_t current_level_num() const {
+        return current_level_ + 1;
+    }
+
     void choose_level(size_t num);
     void new_level();
 

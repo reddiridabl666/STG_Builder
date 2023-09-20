@@ -4,16 +4,21 @@ namespace engine {
 
 ErrorOr<std::shared_ptr<Level>> LevelManager::start_next(Window& window,
                                                          AssetManager<sf::Texture>& textures) {
-    if (cur_num_ == level_num_) {
-        return Error::New("No levels left");
+    return get(cur_num_ + 1, window, textures);
+}
+
+ErrorOr<std::shared_ptr<Level>> LevelManager::get(size_t num, Window& window,
+                                                  AssetManager<sf::Texture>& textures) {
+    if (num > level_num_) {
+        return Error::New("No such level");
     }
 
-    auto level = loader_.load_level(window, textures, cur_num_ + 1);
+    auto level = loader_.load_level(window, textures, num);
     if (!level) {
         return tl::unexpected(level.error());
     }
 
-    ++cur_num_;
+    cur_num_ = num;
     return std::make_shared<Level>(std::move(level.value()));
 }
 }  // namespace engine

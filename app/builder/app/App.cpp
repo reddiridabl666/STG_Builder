@@ -38,6 +38,53 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
       textures_(games_dir) {
     Lang::set(Lang::EN);
     state_.schedule_state_change(State::MainMenu);
+
+    window_.add_handler(sf::Event::MouseWheelScrolled, [this](const sf::Event& event) {
+        if (state_.state() == State::LevelEditor) {
+            game_->scroll(event.mouseWheelScroll.delta * -20);
+        }
+    });
+
+    window_.add_handler(sf::Event::KeyReleased, [this](const sf::Event& event) {
+        if (event.key.code == sf::Keyboard::Equal) {
+            game_->zoom(0.8);
+        }
+        if (event.key.code == sf::Keyboard::Dash) {
+            game_->zoom(1.25);
+        }
+    });
+}
+
+void App::run() noexcept {
+    TimedAction saver(
+        [this] {
+            builder_.save();
+        },
+        20);
+
+    try {
+        saver.run();
+
+        ui::set_default_font(games_dir_ / "Roboto-Regular.ttf", 16);
+
+        window_.main_loop([this, &saver] {
+            ImGui::ShowDemoWindow();
+            state_.resolve_state_change();
+            draw_ui();
+
+            if (state_.state() == State::LevelEditor) {
+                game_->render_debug();
+            }
+
+            saver.action();
+        });
+    } catch (const std::exception& e) {
+        saver.stop();
+        ui::ErrorPopup(window_, e.what());
+    } catch (...) {
+        saver.stop();
+        ui::ErrorPopup(window_, message(Message::UnexpectedError));
+    }
 }
 
 ui::DefaultBox::Items App::load_games() {
@@ -168,33 +215,6 @@ std::function<void()> App::new_game() {
     };
 }
 
-void App::run() noexcept {
-    TimedAction saver(
-        [this] {
-            builder_.save();
-        },
-        20);
-
-    try {
-        saver.run();
-
-        ui::set_default_font(games_dir_ / "Roboto-Regular.ttf", 16);
-
-        window_.main_loop([this, &saver] {
-            ImGui::ShowDemoWindow();
-            state_.resolve_state_change();
-            draw_ui();
-            saver.action();
-        });
-    } catch (const std::exception& e) {
-        saver.stop();
-        ui::ErrorPopup(window_, e.what());
-    } catch (...) {
-        saver.stop();
-        ui::ErrorPopup(window_, message(Message::UnexpectedError));
-    }
-}
-
 App::~App() {
     ui_.clear();
     builder_.save();
@@ -210,7 +230,7 @@ void App::draw_ui() {
 
 void App::on_state_start(State state) {
     switch (state) {
-        case State::MainMenu:
+        case State::MainMenu: {
             ui_.erase("back");
             ui_.emplace("exit", std::make_unique<ui::Button>(
                                     message_func(Message::Exit),
@@ -221,19 +241,25 @@ void App::on_state_start(State state) {
             ui_.emplace("games", std::make_unique<ui::DefaultBox>(message_func(Message::Games), load_games(),
                                                                   ImVec2{400, 400}, window_.get_center()));
             return;
-        case State::GameMenu:
-#ifdef DEBUG
-            LOG(fmt::format("Game chosen: {}", current_game_.string()));
-#endif
+        }
+        case State::GameMenu: {
             ui_.emplace("back", back_button());
             ui_.emplace("levels",
                         std::make_unique<ui::DefaultBox>(message_func(Message::YourLevels), load_levels(),
                                                          ImVec2{400, 400}, window_.get_center()));
-            builder_.init(games_dir_ / current_game_);
+            auto game_dir = games_dir_ / current_game_;
+            builder_.init(game_dir);
+            game_ = builder_.create_engine(window_);
             return;
-        case State::LevelEditor:
+        }
+        case State::LevelEditor: {
             ui_.emplace("menu", make_menu());
+            auto err = game_->choose_level(builder_.current_level_num());
+            if (err) {
+                throw std::runtime_error(err.message());
+            }
             return;
+        }
         default:
             return;
     }

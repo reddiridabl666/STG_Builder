@@ -31,6 +31,9 @@ class GameField : public ImageContainer {
         return center().y < end();
     }
 
+    void move_view(const sf::Vector2f& offset);
+    void zoom(float);
+
     float end() const {
         return top() + view_.getSize().y / 2;
     }

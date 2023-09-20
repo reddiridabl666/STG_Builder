@@ -14,6 +14,15 @@ Window::Window(const std::string& name, uint width, uint height, bool is_fullscr
     if (!ImGui::SFML::Init(window_, default_font)) {
         throw std::runtime_error("Imgui SFML Init failure\n");
     }
+
+    add_handler(sf::Event::Closed, [this](auto) {
+        window_.close();
+    });
+
+    add_handler(sf::Event::Resized, [this](const auto& event) {
+        sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
+        window_.setView(sf::View(visibleArea));
+    });
 }
 
 bool Window::is_open() const {
@@ -24,30 +33,17 @@ void Window::process_events() {
     sf::Event event{};
     while (window_.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(window_, event);
-        if (event.type == sf::Event::Closed) {
-            window_.close();
-        }
 
-        if (event.type == sf::Event::Resized) {
-            sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
-            window_.setView(sf::View(visibleArea));
-        }
-
-#ifdef DEBUG
-        if (event.type == sf::Event::KeyReleased) {
-            if (event.key.code == sf::Keyboard::Equal) {
-                auto view = window_.getView();
-                view.zoom(0.8);
-                window_.setView(view);
-            }
-            if (event.key.code == sf::Keyboard::Dash) {
-                auto view = window_.getView();
-                view.zoom(1.25);
-                window_.setView(view);
+        for (auto& [event_type, handler] : handlers_) {
+            if (event_type == event.type) {
+                handler(event);
             }
         }
-#endif
     }
+}
+
+void Window::add_handler(sf::Event::EventType event, const std::function<void(sf::Event)>& handler) {
+    handlers_.emplace_back(event, handler);
 }
 
 void Window::main_loop(const std::function<void()>& cb) {

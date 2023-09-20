@@ -14,12 +14,16 @@ class Window {
     sf::RenderWindow window_;
     sf::Clock clock_;
 
+    std::vector<std::pair<sf::Event::EventType, std::function<void(const sf::Event&)>>> handlers_;
+
   public:
     Window(const std::string& name, uint width, uint height, bool is_fullscreen = false, bool vsync = true,
            bool default_font = true);
 
     bool is_open() const;
     void process_events();
+
+    void add_handler(sf::Event::EventType event, const std::function<void(sf::Event)>& handler);
 
     void main_loop(const std::function<void()>& cb);
     void frame(const std::function<void()>& cb);

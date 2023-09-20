@@ -31,6 +31,26 @@ Game GameFactory::generate(Window& window, const nl::json& game, const nl::json&
                 std::move(types.value()), std::move(levels));
 }
 
+std::unique_ptr<Game> GameFactory::generate_unique(Window& window, const nl::json& game,
+                                                   const nl::json& entities, const std::string& base_dir) {
+    auto types = ObjectTypeFactory::generate(entities);
+    if (!types) {
+        throw std::runtime_error(types.error().message());
+    }
+
+    // TODO: do something about the side menu, game field and the player
+    // TODO: should directories be hardcoded?
+    AssetManager<sf::Texture> textures(AssetLoader{base_dir + "/assets/images"}, AssetStorage<sf::Texture>{});
+    AssetManager<sf::SoundBuffer> sounds(AssetLoader{base_dir + "/assets/sounds"},
+                                         AssetStorage<sf::SoundBuffer>{});
+
+    LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
+    LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
+
+    return std::make_unique<Game>(window, generate_players(game), std::move(textures), std::move(sounds),
+                                  std::move(types.value()), std::move(levels));
+}
+
 namespace {
 PlayerOptions generate_options(const nl::json& player_json, int player_num) {
     if (!player_json.contains("opts")) {

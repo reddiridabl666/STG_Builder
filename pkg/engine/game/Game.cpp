@@ -28,6 +28,39 @@ Error Game::render(float delta_time) {
     return Error::OK;
 }
 
+void Game::render_debug() {
+    update_debug();
+    draw_objects();
+}
+
+void Game::scroll(float value) {
+    if (!level_) {
+        return;
+    }
+
+    level_->field().move_view(sf::Vector2f{0, value});
+}
+
+void Game::zoom(float value) {
+    if (!level_) {
+        return;
+    }
+
+    level_->field().zoom(value);
+}
+
+Error Game::choose_level(size_t num) {
+    objects_.clear();
+
+    auto res = levels_.get(num, window_, textures_);
+    if (!res) {
+        return res.error();
+    }
+
+    level_ = res.value();
+    return generate_players();
+}
+
 void Game::draw_objects() {
     level_->field().draw(window_);
 
@@ -59,6 +92,16 @@ Error Game::update(float delta_time) {
     sounds_.storage().clear_unused();
 
     return Error::OK;
+}
+
+void Game::update_debug() {
+    auto err = generate_objects();
+    if (err) {
+        throw std::runtime_error(err.message());
+    }
+
+    textures_.storage().clear_unused();
+    sounds_.storage().clear_unused();
 }
 
 Error Game::update_level() {

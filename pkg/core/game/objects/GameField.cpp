@@ -35,10 +35,10 @@ void GameField::update(float delta_time) {
         return;
     }
 
-    view_.move(sf::Vector2f{0, -1 * speed() * delta_time});
 #ifdef DEBUG
     border_.move(sf::Vector2f{0, -1 * speed() * delta_time});
 #endif
+    move_view(sf::Vector2f{0, -1 * speed() * delta_time});
     window_.set_view(view_);
 }
 
@@ -48,6 +48,16 @@ void GameField::draw(Window& window) const {
     window.draw(border_);
 }
 #endif
+
+void GameField::move_view(const sf::Vector2f& offset) {
+    view_.move(offset);
+    window_.set_view(view_);
+}
+
+void GameField::zoom(float value) {
+    view_.zoom(value);
+    window_.set_view(view_);
+}
 
 bool GameField::is_in_bounds(const Transformable& obj, float margin) const {
     // return abs(view_.getCenter().x - obj.pos().x) <= view_.getSize().x / 2 + margin &&

@@ -21,8 +21,16 @@ class Game {
         return textures_;
     }
 
+    void scroll(float);
+    void zoom(float);
+
+    Error choose_level(size_t);
+
+    void render_debug();
+
   private:
     Error update(float delta_time);
+    void update_debug();
 
     void draw_objects();
 
