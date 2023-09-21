@@ -11,7 +11,7 @@ set(SOURCES
     level/Level.cpp
     level/LevelLoader.cpp
     level/LevelManager.cpp
-    game/Game.cpp
+    # game/Game.cpp
     game/GameFactory.cpp
 )
 

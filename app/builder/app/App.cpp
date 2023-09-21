@@ -7,8 +7,9 @@
 
 #include "Json.hpp"
 #include "Messages.hpp"
+#include "ObjectEditor.hpp"
 #include "TimedAction.hpp"
-#include "ui/Fonts.hpp"
+#include "ui/common/Fonts.hpp"
 #include "ui/elements/Button.hpp"
 #include "ui/elements/ErrorPopup.hpp"
 #include "ui/elements/GameInfo.hpp"
@@ -39,13 +40,13 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
     Lang::set(Lang::EN);
     state_.schedule_state_change(State::MainMenu);
 
-    window_.add_handler(sf::Event::MouseWheelScrolled, [this](const sf::Event& event) {
+    window_.add_handler("app_scroll", sf::Event::MouseWheelScrolled, [this](const sf::Event& event) {
         if (game_) {
             game_->scroll(event.mouseWheelScroll.delta * -20);
         }
     });
 
-    window_.add_handler(sf::Event::KeyReleased, [this](const sf::Event& event) {
+    window_.add_handler("app_zoom", sf::Event::KeyReleased, [this](const sf::Event& event) {
         if (!game_) {
             return;
         }
@@ -264,6 +265,7 @@ void App::on_state_start(State state) {
                 throw std::runtime_error(err.message());
             }
             game_->reload_objects();
+            ui_.emplace("obj_editor", std::make_unique<ui::ObjectEditor>(window_, *game_));
             return;
         }
         default:
@@ -283,6 +285,7 @@ void App::on_state_end(State state) {
         case State::LevelEditor:
             ui_.erase("menu");
             builder_.save();
+            ui_.erase("obj_editor");
             return;
         default:
             return;

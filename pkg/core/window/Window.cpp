@@ -15,11 +15,11 @@ Window::Window(const std::string& name, uint width, uint height, bool is_fullscr
         throw std::runtime_error("Imgui SFML Init failure\n");
     }
 
-    add_handler(sf::Event::Closed, [this](auto) {
+    add_handler("window_close", sf::Event::Closed, [this](auto) {
         window_.close();
     });
 
-    add_handler(sf::Event::Resized, [this](const auto& event) {
+    add_handler("window_resize", sf::Event::Resized, [this](const auto& event) {
         sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
         window_.setView(sf::View(visibleArea));
     });
@@ -34,16 +34,21 @@ void Window::process_events() {
     while (window_.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(window_, event);
 
-        for (auto& [event_type, handler] : handlers_) {
-            if (event_type == event.type) {
+        for (auto& [key, handler] : handlers_) {
+            if (handler.type == event.type) {
                 handler(event);
             }
         }
     }
 }
 
-void Window::add_handler(sf::Event::EventType event, const std::function<void(sf::Event)>& handler) {
-    handlers_.emplace_back(event, handler);
+void Window::add_handler(const std::string& key, sf::Event::EventType event,
+                         const std::function<void(sf::Event)>& handler) {
+    handlers_.emplace(key, EventHandler{event, handler});
+}
+
+void Window::remove_handler(const std::string& key) {
+    handlers_.erase(key);
 }
 
 void Window::main_loop(const std::function<void()>& cb) {
@@ -85,6 +90,10 @@ void Window::set_default_view() {
 
 void Window::draw(const Drawable& obj) {
     window_.draw(obj.drawable());
+}
+
+void Window::draw(const sf::Drawable& obj) {
+    window_.draw(obj);
 }
 
 void Window::update_ui() {

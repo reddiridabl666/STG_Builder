@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-#include "Game.hpp"
+#include "EditableGame.hpp"
 #include "Json.hpp"
 #include "ObjectOptions.hpp"
 #include "ObjectType.hpp"
@@ -30,7 +30,7 @@ class GameBuilder {
     static const inline fs::path kGame = "game.json";
     static const inline fs::path kEntities = "entities.json";
 
-    std::unique_ptr<engine::Game> create_engine(Window& window);
+    std::unique_ptr<EditableGame> create_engine(Window& window);
 
     nl::json& game() {
         return game_;

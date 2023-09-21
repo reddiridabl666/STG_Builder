@@ -8,54 +8,6 @@
 
 namespace engine {
 namespace {
-PlayerList generate_players(const nl::json& game);
-}  // namespace
-
-Game GameFactory::generate(Window& window, const nl::json& game, const nl::json& entities,
-                           const std::string& base_dir) {
-    auto types = ObjectTypeFactory::generate(entities);
-    if (!types) {
-        throw std::runtime_error(types.error().message());
-    }
-
-    // TODO: do something about the side menu, game field and the player
-    // TODO: should directories be hardcoded?
-    AssetManager<sf::Texture> textures(AssetLoader{base_dir + "/assets/images"}, AssetStorage<sf::Texture>{});
-    AssetManager<sf::SoundBuffer> sounds(AssetLoader{base_dir + "/assets/sounds"},
-                                         AssetStorage<sf::SoundBuffer>{});
-
-    LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
-    LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
-
-    auto fps = json::get<int>(game, "fps", 60);
-
-    return Game(window, generate_players(game), std::move(textures), std::move(sounds),
-                std::move(types.value()), std::move(levels), fps);
-}
-
-std::unique_ptr<Game> GameFactory::generate_unique(Window& window, const nl::json& game,
-                                                   const nl::json& entities, const std::string& base_dir) {
-    auto types = ObjectTypeFactory::generate(entities);
-    if (!types) {
-        throw std::runtime_error(types.error().message());
-    }
-
-    // TODO: do something about the side menu, game field and the player
-    // TODO: should directories be hardcoded?
-    AssetManager<sf::Texture> textures(AssetLoader{base_dir + "/assets/images"}, AssetStorage<sf::Texture>{});
-    AssetManager<sf::SoundBuffer> sounds(AssetLoader{base_dir + "/assets/sounds"},
-                                         AssetStorage<sf::SoundBuffer>{});
-
-    LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
-    LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
-
-    auto fps = json::get<int>(game, "fps", 60);
-
-    return std::make_unique<Game>(window, generate_players(game), std::move(textures), std::move(sounds),
-                                  std::move(types.value()), std::move(levels), fps);
-}
-
-namespace {
 PlayerOptions generate_options(const nl::json& player_json, int player_num) {
     if (!player_json.contains("opts")) {
         return PlayerOptions{.num = player_num};
@@ -74,8 +26,9 @@ PlayerList::value_type generate_player(const nl::json& player_json, int player_n
 
     return std::pair(*player_type, generate_options(player_json, player_num));
 }
+}  // namespace
 
-PlayerList generate_players(const nl::json& game) {
+PlayerList GameFactory::generate_players(const nl::json& game) {
     PlayerList res;
 
     if (game.contains("player")) {
@@ -98,6 +51,4 @@ PlayerList generate_players(const nl::json& game) {
 
     return res;
 }
-}  // namespace
-
 }  // namespace engine

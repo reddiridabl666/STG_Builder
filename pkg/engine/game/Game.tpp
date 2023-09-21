@@ -1,5 +1,3 @@
-#include "Game.hpp"
-
 #include "AssetManager.hpp"
 #include "GameInfo.hpp"
 #include "ObjectTypeFactory.hpp"
@@ -7,9 +5,11 @@
 #include "ui/elements/StatBox.hpp"
 
 namespace engine {
-Game::Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
-           AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels,
-           int fps)
+
+template <typename RTreeType>
+Game<RTreeType>::Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
+                      AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types,
+                      LevelManager&& levels, int fps)
     : window_(window),
       textures_(std::move(textures)),
       sounds_(std::move(sounds)),
@@ -18,7 +18,8 @@ Game::Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& tex
       levels_(std::move(levels)),
       fps_(fps) {}
 
-Error Game::render(float delta_time) {
+template <typename RTreeType>
+Error Game<RTreeType>::render(float delta_time) {
     auto err = update(delta_time);
     if (err) {
         return err;
@@ -30,64 +31,8 @@ Error Game::render(float delta_time) {
     return Error::OK;
 }
 
-void Game::render_debug() {
-    draw_objects();
-}
-
-void Game::reload_objects() {
-    if (!level_) {
-        return;
-    }
-
-    objects_.clear();
-
-    for (auto& opts : level_->objects()) {
-        auto obj = generate_object(opts);
-        if (!obj) {
-            throw std::runtime_error("Error generating objects");
-        }
-
-        objects_.emplace(obj->name(), std::move(*obj));
-    }
-}
-
-GameObject* Game::object_by_pos(const sf::Vector2f& pos) {
-    auto it = rtree_.contains(pos);
-    if (it != rtree_.end()) {
-        return &objects_.at(it->second);
-    }
-    return nullptr;
-}
-
-void Game::scroll(float value) {
-    if (!level_) {
-        return;
-    }
-
-    level_->field().move_view(sf::Vector2f{0, value});
-}
-
-void Game::zoom(float value) {
-    if (!level_) {
-        return;
-    }
-
-    level_->field().zoom(value);
-}
-
-Error Game::choose_level(size_t num) {
-    objects_.clear();
-
-    auto res = levels_.get(num, window_, textures_);
-    if (!res) {
-        return res.error();
-    }
-
-    level_ = res.value();
-    return generate_players();
-}
-
-void Game::draw_objects() {
+template <typename RTreeType>
+void Game<RTreeType>::draw_objects() {
     if (!level_) {
         return;
     }
@@ -99,7 +44,8 @@ void Game::draw_objects() {
     }
 }
 
-Error Game::update(float delta_time) {
+template <typename RTreeType>
+Error Game<RTreeType>::update(float delta_time) {
     auto err = update_level();
     if (err) {
         return err;
@@ -113,7 +59,9 @@ Error Game::update(float delta_time) {
     level_->field().update(delta_time);
 
     for (auto& [_, obj] : objects_) {
+        rtree_.remove(obj.name(), obj.get_bounds());
         obj.update(level_->field(), delta_time);
+        rtree_.insert(obj.name(), obj.get_bounds());
     }
 
     clear_dead();
@@ -124,7 +72,8 @@ Error Game::update(float delta_time) {
     return Error::OK;
 }
 
-Error Game::update_level() {
+template <typename RTreeType>
+Error Game<RTreeType>::update_level() {
     if (level_ && !level_->has_ended()) {
         return Error::OK;
     }
@@ -140,7 +89,8 @@ Error Game::update_level() {
     return generate_players();
 }
 
-ErrorOr<GameObject> Game::generate_object(const ObjectOptions& opts) {
+template <typename RTreeType>
+ErrorOr<GameObject> Game<RTreeType>::generate_object(const ObjectOptions& opts) {
     if (!types_.contains(opts.type)) {
         return Error::New(fmt::format("Object type '{}' not found", opts.type));
     }
@@ -157,7 +107,8 @@ ErrorOr<GameObject> Game::generate_object(const ObjectOptions& opts) {
     return obj;
 }
 
-Error Game::generate_objects() {
+template <typename RTreeType>
+Error Game<RTreeType>::generate_objects() {
     if (!level_) {
         return Error("No level loaded");
     }
@@ -181,7 +132,8 @@ Error Game::generate_objects() {
     return Error::OK;
 }
 
-void Game::clear_dead() {
+template <typename RTreeType>
+void Game<RTreeType>::clear_dead() {
     std::erase_if(objects_, [](auto& el) {
         if (!el.second.is_alive()) {
             GameState::get().emit(GameState::Event::ObjectDestroyed, el.second.tag());
@@ -191,7 +143,8 @@ void Game::clear_dead() {
     });
 }
 
-Error Game::generate_players() {
+template <typename RTreeType>
+Error Game<RTreeType>::generate_players() {
     size_t idx = 1;
     for (auto& [gen, opts] : player_types_) {
         auto player = gen.create_player(textures_, level_->field(), opts);
@@ -205,7 +158,8 @@ Error Game::generate_players() {
     return Error::OK;
 }
 
-void Game::draw_ui() {
+template <typename RTreeType>
+void Game<RTreeType>::draw_ui() {
     // clang-format off
     ui::StatBox::draw("Debug",
         ui::StatLine{"Objects active", &objects_},

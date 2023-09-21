@@ -94,8 +94,8 @@ void GameBuilder::backup(const fs::path& path) {
     fs::copy(path, backup_path / path.filename());
 }
 
-std::unique_ptr<engine::Game> GameBuilder::create_engine(Window& window) {
-    auto res = engine::GameFactory::generate_unique(window, game_, entities_, game_dir_);
+std::unique_ptr<EditableGame> GameBuilder::create_engine(Window& window) {
+    auto res = engine::GameFactory::generate_unique<EditableGame>(window, game_, entities_, game_dir_);
     res->reload_objects();
     return res;
 }

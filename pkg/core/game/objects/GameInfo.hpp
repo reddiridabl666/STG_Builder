@@ -16,8 +16,6 @@ class GameState : public Observable<int, size_t> {
   private:
     GameState();
 
-    // const GameField* field_;
-
     size_t enemy_count_ = 0;
     size_t player_count_ = 0;
 
@@ -39,8 +37,4 @@ class GameState : public Observable<int, size_t> {
     size_t player_count() {
         return player_count_;
     }
-
-    // const GameField* field() const {
-    //     return field_;
-    // }
 };

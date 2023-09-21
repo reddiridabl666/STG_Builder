@@ -11,6 +11,7 @@
 #include "Window.hpp"
 
 namespace engine {
+template <typename RTreeType = RTree<>>
 class Game {
   public:
     Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
@@ -19,25 +20,11 @@ class Game {
 
     Error render(float delta_time);
 
-    auto& textures() {
-        return textures_;
-    }
-
-    void scroll(float);
-    void zoom(float);
-
-    Error choose_level(size_t);
-
-    void render_debug();
-    void reload_objects();
-
-    GameObject* object_by_pos(const sf::Vector2f& pos);
-
     int fps() const {
         return fps_;
     }
 
-  private:
+  protected:
     Error update(float delta_time);
 
     void draw_objects();
@@ -67,6 +54,8 @@ class Game {
     LevelManager levels_;
 
     int fps_;
-    RTree<> rtree_;
+    RTreeType rtree_;
 };
 }  // namespace engine
+
+#include "Game.tpp"

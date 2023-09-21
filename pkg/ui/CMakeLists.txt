@@ -16,10 +16,8 @@ set(SOURCES
 
 set(INCLUDE_DIRS
     ..
-    .
     common
     mixin
-    elements
 )
 
 set(LIBS

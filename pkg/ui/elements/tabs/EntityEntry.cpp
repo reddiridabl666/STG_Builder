@@ -1,5 +1,7 @@
 #include "EntityEntry.hpp"
 
+#include <imgui-SFML.h>
+
 namespace ui {
 const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size", "tag", "speed", ""};
 

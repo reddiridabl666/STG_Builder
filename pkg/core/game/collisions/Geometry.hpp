@@ -29,6 +29,7 @@ struct Box {
     sf::Vector2<T> bottom_right() const;
     T width() const;
     T height() const;
+    sf::Vector2<T> size() const;
 
   private:
     sf::Rect<T> rect_;
@@ -40,12 +41,12 @@ BOOST_GEOMETRY_REGISTER_BOX(FloatBox, sf::Vector2f, top_left(), bottom_right())
 
 template <Numeric T>
 inline sf::Vector2<T> Box<T>::top_left() const {
-    return sf::Vector2<T>{rect_.top, rect_.left};
+    return sf::Vector2<T>{rect_.left, rect_.top};
 }
 
 template <Numeric T>
 inline sf::Vector2<T> Box<T>::bottom_right() const {
-    return sf::Vector2<T>{rect_.top + rect_.height, rect_.left + rect_.width};
+    return sf::Vector2<T>{rect_.left + rect_.width, rect_.top + rect_.height};
 }
 
 template <Numeric T>
@@ -56,6 +57,11 @@ inline T Box<T>::width() const {
 template <Numeric T>
 inline T Box<T>::height() const {
     return rect_.height;
+}
+
+template <Numeric T>
+inline sf::Vector2<T> Box<T>::size() const {
+    return rect_.getSize();
 }
 
 template <Numeric T, size_t N>

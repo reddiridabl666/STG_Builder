@@ -6,6 +6,7 @@ set(SOURCES
     main.cpp
     app/App.cpp
     app/GameBuilder.cpp
+    app/EditableGame.cpp
 )
 
 set(INCLUDE_DIRS
