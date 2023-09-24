@@ -16,6 +16,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     }
 
     void scroll(float);
+    void move_view(const sf::Vector2f& vec);
     void zoom(float);
 
     Error choose_level(size_t);

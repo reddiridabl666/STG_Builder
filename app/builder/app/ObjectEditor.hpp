@@ -8,6 +8,7 @@
 #include "GameObject.hpp"
 #include "Json.hpp"
 #include "UiElement.hpp"
+#include "ui/elements/Stats.hpp"
 #include "ui/elements/StringPoint.hpp"
 
 namespace ui {
@@ -24,7 +25,13 @@ class ObjectEditor : public Element {
         const static inline std::string kDefaultActivityStart =
             std::to_string(GameObject::kDefaultActivityStart);
 
-        ObjectEntry() = default;
+        const static inline std::unordered_set<std::string> kExcluded = {
+            "count", "delta", "type", "", "activity_start", "move", "lives", "pos", "rotation"};
+
+        ObjectEntry() : stats(kExcluded) {}
+
+        static ObjectEntry from_json(const nl::json&);
+        nl::json to_json() const;
 
         int count = -1;
         sf::Vector2f delta = {};
@@ -37,6 +44,8 @@ class ObjectEditor : public Element {
 
         FuncInfo move;
         FuncInfo lives;
+
+        Stats stats;
 
         NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ObjectEntry, count, delta, type, activity_start, pos,
                                                     rotation, move, lives)

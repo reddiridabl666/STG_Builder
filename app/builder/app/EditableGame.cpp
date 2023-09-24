@@ -61,6 +61,14 @@ void EditableGame::scroll(float value) {
     level_->field().move_view(sf::Vector2f{0, value});
 }
 
+void EditableGame::move_view(const sf::Vector2f& vec) {
+    if (!level_) {
+        return;
+    }
+
+    level_->field().move_view(vec);
+}
+
 void EditableGame::zoom(float value) {
     if (!level_) {
         return;

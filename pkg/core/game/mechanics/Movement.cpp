@@ -18,8 +18,6 @@ bool keys_are_pressed(const KeyList& keys) {
     return false;
 }
 
-// TODO: remove hard-coded keys, add gamepad support
-
 int horizontal(const KeyControls& keys, const JoyControls&) {
     if (keys_are_pressed(keys.left)) {
         return -1;
@@ -70,7 +68,6 @@ Func user_control(int user_num, const KeyControls& keys, const JoyControls& joy)
     return Func(
         Func::Type::Velocity,
         [user_num, keys, joy](const GameObject&, float) {
-            // return sf::Vector2f{};
             return sf::Vector2f{1.f * horizontal(keys, joy), 1.f * vertical(keys, joy)};
         },
         true);

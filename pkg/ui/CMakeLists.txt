@@ -6,6 +6,7 @@ set(SOURCES
     elements/GameInfo.cpp
     elements/Button.cpp
     elements/Menu.cpp
+    elements/FuncInput.cpp
     elements/LevelInfo.cpp
     elements/tabs/MainTab.cpp
     elements/tabs/EntitiesTab.cpp

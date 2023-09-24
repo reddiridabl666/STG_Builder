@@ -63,6 +63,87 @@
             "type": "enemy"
         }
     ],
-    "last_updated": 1695574404,
+    "entries": [
+        {
+            "activity_start": "50%",
+            "count": -1,
+            "delta": {
+                "x": 0.0,
+                "y": 0.0
+            },
+            "lives": {
+                "args": {
+                    "seconds": 2
+                },
+                "type": "timed"
+            },
+            "move": {
+                "args": {
+                    "x": 3,
+                    "y": -10
+                },
+                "type": "linear"
+            },
+            "pos": {
+                "x": "50.000000%",
+                "y": "-10.000000%"
+            },
+            "rotation": 60,
+            "type": "enemy"
+        },
+        {
+            "activity_start": "0.000000",
+            "count": -1,
+            "delta": {
+                "x": 0.0,
+                "y": 0.0
+            },
+            "lives": {
+                "args": null,
+                "type": ""
+            },
+            "move": {
+                "args": {
+                    "center": {
+                        "x": 200,
+                        "y": 250
+                    },
+                    "speed": 3
+                },
+                "type": "circular"
+            },
+            "pos": {
+                "x": 150.0,
+                "y": 300.0
+            },
+            "rotation": 0,
+            "type": "enemy"
+        },
+        {
+            "activity_start": "0.000000",
+            "count": 4,
+            "delta": {
+                "x": 120.0,
+                "y": -50.0
+            },
+            "lives": {
+                "args": {
+                    "margin": 50
+                },
+                "type": "bounds"
+            },
+            "move": {
+                "args": null,
+                "type": ""
+            },
+            "pos": {
+                "x": -50.0,
+                "y": 600.0
+            },
+            "rotation": 180,
+            "type": "enemy"
+        }
+    ],
+    "last_updated": 1695580201,
     "name": "The first level"
 }

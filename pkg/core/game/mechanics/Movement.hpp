@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFML/System/Vector2.hpp>
-#include <concepts>
 #include <functional>
+#include <string>
 
 #include "Controls.hpp"
 
@@ -19,9 +19,6 @@ struct Func {
     };
 
     Func() : type_(Type::Unknown), func_(nullptr) {}
-
-    // template <typename T, typename U>
-    // Func(T&& func, U&& initial) : func_(std::forward<T>(func)), initial_(std::forward<U>(initial)) {}
 
     template <typename T>
     Func(Type type, T&& func, bool moves_with_field = false)
@@ -43,14 +40,6 @@ struct Func {
         return moves_with_field_;
     }
 
-    // const update& velocity_func() const {
-    //     return velocity_;
-    // }
-
-    // const update& pos_func() const {
-    //     return pos_;
-    // }
-
   private:
     using update = std::function<sf::Vector2f(const GameObject& obj, float delta)>;
 
@@ -58,8 +47,6 @@ struct Func {
     update func_;
 
     bool moves_with_field_ = false;
-    // update velocity_;
-    // update pos_;
 };
 
 inline const Func no_op;
@@ -70,5 +57,7 @@ Func circular(sf::Vector2f center, float);  // find a way to pass obj here
 
 Func user_control(int user_num = 1, const KeyControls& keys = kDefaultKeyControls,
                   const JoyControls& joy = kDefaultJoyControls);
+
+inline const char* const types[4] = {"none", "linear", "circular", "user_control"};
 
 }  // namespace movement

@@ -58,6 +58,29 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
             game_->zoom(1.25);
         }
     });
+
+    window_.add_handler("app_move", sf::Event::KeyPressed, [this, kSpeed = 30](const sf::Event& event) {
+        if (!game_) {
+            return;
+        }
+
+        switch (event.key.code) {
+            case sf::Keyboard::Right:
+                game_->move_view(kSpeed * sf::Vector2f{1, 0});
+                break;
+            case sf::Keyboard::Left:
+                game_->move_view(kSpeed * sf::Vector2f{-1, 0});
+                break;
+            case sf::Keyboard::Up:
+                game_->move_view(kSpeed * sf::Vector2f{0, -1});
+                break;
+            case sf::Keyboard::Down:
+                game_->move_view(kSpeed * sf::Vector2f{0, 1});
+                break;
+            default:
+                break;
+        }
+    });
 }
 
 void App::run() noexcept {
@@ -73,7 +96,9 @@ void App::run() noexcept {
         ui::set_default_font(games_dir_ / "Roboto-Regular.ttf", 16);
 
         window_.main_loop([this, &saver] {
+#ifdef DEBUG
             ImGui::ShowDemoWindow();
+#endif
             state_.resolve_state_change();
             draw_ui();
 
@@ -141,7 +166,7 @@ ui::DefaultBox::Items App::load_levels() {
         },
         true, ImVec2{}, ImVec2{0, 70}));
 
-    size_t num_pos = sizeof("level");
+    static size_t num_pos = sizeof("level");
 
     for (const auto& file : fs::directory_iterator(game_dir)) {
         auto filename = file.path().filename().string();

@@ -16,7 +16,7 @@
 namespace ui {
 struct EntityEntry : public Element {
   public:
-    EntityEntry() = default;
+    EntityEntry() : stats_(kBaseValues) {}
     EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image);
 
     nl::json to_json() const;

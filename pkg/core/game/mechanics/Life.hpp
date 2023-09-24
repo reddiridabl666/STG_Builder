@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <string>
 
 class GameObject;
 class GameField;
@@ -17,4 +18,6 @@ const inline update default_func = in_bounds(0);
 inline const update always = [](auto&, auto&) {
     return true;
 };
+
+inline const char* const types[4] = {"default", "always", "in_bounds", "timed"};
 }  // namespace alive

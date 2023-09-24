@@ -6,6 +6,7 @@
 #include "ImguiUtils.hpp"
 #include "Messages.hpp"
 #include "ui/common/Bus.hpp"
+#include "ui/elements/FuncInput.hpp"
 
 namespace ui {
 namespace {
@@ -54,7 +55,7 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         }
 
         auto json = data_["entities"][obj->props().at(builder::kJsonID).get()];
-        auto entry = json.template get<ObjectEntry>();
+        auto entry = ObjectEntry::from_json(json);
 
         entry.type_id = get_type_id(obj_types_, entry.type);
 
@@ -96,11 +97,18 @@ void ObjectEditor::draw(const Window&) {
         }
 
         obj_data.pos.draw(message(Message::Pos));
+
+        MoveFuncInput(obj_data.move);
+        AliveFuncInput(obj_data.lives);
+
+        obj_data.stats.draw();
+
         ImGui::PopItemWidth();
 
         ImGui::End();
 
         if (!open) {
+            data_["entries"][obj->props().at(builder::kJsonID).get()] = obj_data.to_json();
             shown_.erase(it);
         }
 
@@ -111,5 +119,18 @@ void ObjectEditor::draw(const Window&) {
 ObjectEditor::~ObjectEditor() {
     Bus::get().off(Bus::Event::ObjectTypesChanged, "obj_editor");
     window_.remove_handler("obj_editor");
+}
+
+ObjectEditor::ObjectEntry ObjectEditor::ObjectEntry::from_json(const nl::json& json) {
+    auto res = json.template get<ObjectEntry>();
+    res.stats.from_json(json);
+    return res;
+}
+
+nl::json ObjectEditor::ObjectEntry::to_json() const {
+    nl::json res;
+    nl::to_json(res, *this);
+    stats.to_json(res);
+    return res;
 }
 }  // namespace ui

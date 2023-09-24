@@ -8,9 +8,11 @@
 static ImVector<ImRect> s_GroupPanelLabelStack;
 
 void ImGui::VecInput(const char* name, const char* x_name, const char* y_name, float* x, float* y) {
+    ImGui::BeginGroup();
     ImGui::SeparatorText(name);
     ImGui::InputFloat(x_name, x);
     ImGui::InputFloat(y_name, y);
+    ImGui::EndGroup();
 }
 
 void ImGui::PosStringInput(const char* name, std::string* x, std::string* y) {

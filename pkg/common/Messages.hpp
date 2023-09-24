@@ -70,6 +70,7 @@ enum class Message {
     ActivityStart,
     ActivityStartHint,
     Pixels,
+    Type,
 };
 
 const char* message(Message type);
