@@ -15,6 +15,7 @@ namespace sf {
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2f, x, y);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2i, x, y);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2u, x, y);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2<std::string>, x, y);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FloatRect, left, top, width, height);
 }  // namespace sf
 

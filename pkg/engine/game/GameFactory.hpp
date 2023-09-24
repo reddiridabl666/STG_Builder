@@ -17,7 +17,7 @@ class GameFactory {
     static PlayerList generate_players(const nl::json& game);
 };
 
-template <typename GameType>
+template <typename GameType = Game<>>
 GameType GameFactory::generate(Window& window, const nl::json& game, const nl::json& entities,
                                const std::string& base_dir) {
     auto types = ObjectTypeFactory::generate(entities);

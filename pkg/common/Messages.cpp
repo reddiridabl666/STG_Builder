@@ -38,6 +38,7 @@ const char* message(Message type) {
         {Message::Height, {U8("Высота"), "Height"}},
         {Message::Width, {U8("Ширина"), "Width"}},
         {Message::ObjectTypes, {U8("Типы объектов"), "Object types"}},
+        {Message::ObjectType, {U8("Тип объекта"), "Object type"}},
         {Message::Tag, {U8("Тег"), "Tag"}},
         {Message::Stats, {U8("Характеристики"), "Stats"}},
         {Message::AddStat, {U8("Добавить характеристику"), "Add stat"}},

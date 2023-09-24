@@ -4,6 +4,9 @@
 #include "Game.hpp"
 
 namespace builder {
+static constexpr const char* kOptsID = "__opts_id";
+static constexpr const char* kJsonID = "__json_id";
+
 class EditableGame : public engine::Game<DrawableRTree<>> {
   public:
     using Game<DrawableRTree<>>::Game;
@@ -23,8 +26,6 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     GameObject* object_by_pos(const sf::Vector2f& pos);
 
   private:
-    static constexpr const char* kOptsID = "__opts_id";
-
     ErrorOr<GameObject> generate_object_debug(size_t idx, const ObjectOptions& opts);
 };
 }  // namespace builder

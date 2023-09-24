@@ -6,7 +6,7 @@
 namespace engine {
 class App {
   public:
-    App(Window& window, Game&& game);
+    App(Window& window, Game<>&& game);
 
     void run();
 
@@ -14,6 +14,6 @@ class App {
     void draw_ui();
 
     Window& window_;
-    Game game_;
+    Game<> game_;
 };
 }  // namespace engine

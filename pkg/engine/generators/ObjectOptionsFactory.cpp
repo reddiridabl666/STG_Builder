@@ -34,13 +34,18 @@ ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
     LOG("Generating object instance options");
 #endif
     res_type res;
+    size_t idx = 0;
 
     for (auto& obj : json) {
         auto opts = generate(obj);
+
         if (!opts) {
             return tl::unexpected(opts.error());
         }
+
+        opts->json_id = idx;
         append_to_res(res, obj, opts.value());
+        ++idx;
     }
 
     return res;

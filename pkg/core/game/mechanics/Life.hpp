@@ -12,6 +12,8 @@ update timed(float seconds);
 
 update in_bounds(float margin = 0);
 
+const inline update default_func = in_bounds(0);
+
 inline const update always = [](auto&, auto&) {
     return true;
 };

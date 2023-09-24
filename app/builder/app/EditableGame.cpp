@@ -49,6 +49,7 @@ inline ErrorOr<GameObject> EditableGame::generate_object_debug(size_t idx, const
         return obj;
     }
     obj->props().set(kOptsID, idx);
+    obj->props().set(kJsonID, opts.json_id);
     return obj;
 }
 

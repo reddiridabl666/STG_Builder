@@ -25,7 +25,7 @@ int main() {
 
         auto app = engine::App{
             window,
-            engine::GameFactory::generate(window, *game_json, *entities_json, kBase),
+            engine::GameFactory::generate<>(window, *game_json, *entities_json, kBase),
         };
         app.run();
     } catch (std::exception& e) {

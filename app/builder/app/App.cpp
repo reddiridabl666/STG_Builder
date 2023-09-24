@@ -7,7 +7,6 @@
 
 #include "Json.hpp"
 #include "Messages.hpp"
-#include "ObjectEditor.hpp"
 #include "TimedAction.hpp"
 #include "ui/common/Fonts.hpp"
 #include "ui/elements/Button.hpp"
@@ -16,6 +15,7 @@
 #include "ui/elements/LangChanger.hpp"
 #include "ui/elements/LevelInfo.hpp"
 #include "ui/elements/Menu.hpp"
+#include "ui/elements/ObjectEditor.hpp"
 #include "ui/elements/Tabs.hpp"
 
 #ifdef DEBUG

@@ -63,7 +63,8 @@ enum class Message {
     GameFieldHint,
     ObjectTypes,
     Stats,
-    LastUpdated
+    LastUpdated,
+    ObjectType
 };
 
 const char* message(Message type);

@@ -33,6 +33,8 @@ struct ObjectOptions {
 
     float rotation = 0;
 
+    size_t json_id = 0;
+
     float activity_start = GameObject::kDefaultActivityStart;
 };
 

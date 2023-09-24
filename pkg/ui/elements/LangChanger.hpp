@@ -10,7 +10,6 @@ class LangChanger {
   public:
     static void draw(const ImVec2& pos, const ImVec2& size) {
         ImGui::SetNextWindowPos(pos);
-        // ImGui::SetNextWindowSize(size);
 
         ImGui::Begin("lang_changer", nullptr,
                      kStaticNoResizeWindow | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
