@@ -11,16 +11,13 @@
 #include <unordered_set>
 
 #include "UiElement.hpp"
+#include "ui/elements/Stats.hpp"
 
 namespace ui {
 struct EntityEntry : public Element {
   public:
     EntityEntry() = default;
-
-    EntityEntry(const std::string& name, std::shared_ptr<sf::Texture>&& image)
-        : texture_(std::move(image)), name(name), old_name_(name) {}
-
-    EntityEntry(const std::string& name, nl::json& json, std::shared_ptr<sf::Texture>&& image);
+    EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image);
 
     nl::json to_json() const;
 
@@ -48,10 +45,13 @@ struct EntityEntry : public Element {
     sf::Vector2f size = {};
     float speed = 0;
 
-    std::unordered_map<std::string, float> values_;
     bool shown_ = false;
     std::string stat_name_;
     std::string old_name_;
     bool to_delete_ = false;
+
+    Stats stats_;
+
+    nl::json* data_;
 };
 }  // namespace ui

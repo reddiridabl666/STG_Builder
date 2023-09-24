@@ -13,6 +13,12 @@ void ImGui::VecInput(const char* name, const char* x_name, const char* y_name, f
     ImGui::InputFloat(y_name, y);
 }
 
+void ImGui::PosStringInput(const char* name, std::string* x, std::string* y) {
+    ImGui::SeparatorText(name);
+    ImGui::InputText("x", x);
+    ImGui::InputText("y", y);
+}
+
 void ImGui::SizeInput(const char* name, float* x, float* y) {
     ImGui::VecInput(name, message(Message::Width), message(Message::Height), x, y);
 }

@@ -9,6 +9,7 @@
 #include "Debug.hpp"
 #endif
 
+#include "Bus.hpp"
 #include "EntityEntry.hpp"
 
 namespace ui {
@@ -16,20 +17,29 @@ namespace {
 struct EntitiesTabContents : public Element {
   public:
     EntitiesTabContents(AssetManager<sf::Texture>& textures, Box<EntityEntry>::Items&& items, nl::json& data)
-        : create_btn_(
-              message_func(Message::CreateObjectType), textures.get_or("plus.png", kFallbackImage),
-              ImVec2{50, 50},
-              [this, &textures] {
-                  auto name = fmt::format("New object {}", box_.size());
-                  box_.elems().push_back(std::make_unique<EntityEntry>(name, *textures.get(kFallbackImage)));
-              },
-              true, {}, {400, 80}),
+        : create_btn_(message_func(Message::CreateObjectType), textures.get_or("plus.png", kFallbackImage),
+                      ImVec2{50, 50},
+                      [this, &textures] {
+                          auto name = fmt::format("New object {}", box_.size());
+
+                          data_[name] = nl::json::object();
+                          Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
+
+                          box_.elems().push_back(std::make_unique<EntityEntry>(
+                              name, &data_.at(name), *textures.get(kFallbackImage)));
+                      },
+                      true, {}, {400, 80}),
           box_(std::move(items), {}),
           data_(data) {}
 
     void draw(const Window& window) override {
-        std::erase_if(box_.elems(), [](auto& entry) {
-            return entry->should_delete();
+        std::erase_if(box_.elems(), [this](auto& entry) {
+            if (entry->should_delete()) {
+                data_.erase(entry->get_name());
+                Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
+                return true;
+            }
+            return false;
         });
 
         create_btn_.draw(window);
@@ -49,6 +59,7 @@ struct EntitiesTabContents : public Element {
             LOG(e.what());
 #endif
         }
+        Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
     }
 
   private:
@@ -65,7 +76,7 @@ Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, AssetManager<sf::Te
 
     for (auto& [key, val] : json.items()) {
         entries.push_back(std::make_unique<EntityEntry>(
-            key, val,
+            key, &val,
             textures.get_or(game_dir / "assets/images" / json::get<std::string>(val, "image"),
                             kFallbackImage)));
     }

@@ -35,8 +35,8 @@ struct MainTabContents : public Element {
 
     void draw(const Window&) override {
         ImGui::InputText(message(Message::Name), &name);
-
         ImGui::InputTextMultiline(message(Message::Desc), &description);
+        ImGui::NewLine();
 
         ImGui::SeparatorText(message(Message::GameField));
         ImGui::Text(message(Message::GameFieldHint));
@@ -54,8 +54,8 @@ struct MainTabContents : public Element {
         // ImGui::RadioButton("30", &fps, 30);
         // ImGui::RadioButton("60", &fps, 60);
         // ImGui::RadioButton("120", &fps, 120);
+        // ImGui::NewLine();
 
-        ImGui::NewLine();
         ImGui::Checkbox(message(Message::Fullscreen), &is_fullscreen);
         ImGui::NewLine();
 

@@ -2,27 +2,22 @@
 
 #include <imgui-SFML.h>
 
+#include "Bus.hpp"
+
 namespace ui {
 const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size", "tag", "speed", ""};
 
-EntityEntry::EntityEntry(const std::string& name, nl::json& json, std::shared_ptr<sf::Texture>&& image)
-    : texture_(std::move(image)), name(name), old_name_(name) {
-    nl::from_json(json, *this);
-
-    for (auto& [key, val] : json.items()) {
-        if (!kBaseValues.contains(key) && val.is_number()) {
-            values_[key] = val.template get<float>();
-        }
-    }
+EntityEntry::EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image)
+    : texture_(std::move(image)), name(name), old_name_(name), stats_(kBaseValues), data_(json) {
+    nl::from_json(*json, *this);
+    stats_.from_json(*json);
 }
 
 nl::json EntityEntry::to_json() const {
     nl::json res;
     nl::to_json(res, *this);
 
-    for (const auto& [key, val] : values_) {
-        res[key] = val;
-    }
+    stats_.to_json(res);
 
     return res;
 }
@@ -63,23 +58,14 @@ void EntityEntry::draw(const Window&) {
 
         ImGui::SizeInput(message(Message::Size), &size.x, &size.y);
 
-        ImGui::SeparatorText(message(Message::Stats));
-        for (auto& [key, val] : values_) {
-            ImGui::InputFloat(key.c_str(), &val);
-        }
-
-        ImGui::InputText("##stat_name", &stat_name_);
-        ImGui::SameLine();
-        if (ImGui::Button(message(Message::AddStat)) && !kBaseValues.contains(stat_name_)) {
-            values_.emplace(stat_name_, 0);
-            stat_name_ = "";
-        }
+        stats_.draw();
 
         ImGui::End();
 
         if (!shown_) {
             old_name_ = name;
-            // TODO: Save object type somehow
+            *data_ = to_json();
+            // Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
         }
     }
 }

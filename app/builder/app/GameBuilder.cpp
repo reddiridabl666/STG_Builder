@@ -48,9 +48,21 @@ void GameBuilder::new_game(const fs::path& game) const {
         throw std::runtime_error("Assets directory creation failure");
     }
 
+    fmt::println("{}", fs::current_path().string());
+
+    fs::copy(game.parent_path() / kFallbackImage, game / "assets/images");
+
     nl::json game_json{
         {"name", game.stem().string()},
         {"description", ui::GameInfo::kDefaultDesc},
+        {"levels", 0},
+        {"field_size", GameField::kDefaultRatio},
+        {"player",
+         {
+             {"image", kFallbackImage},
+             {"size", sf::Vector2f{100, 100}},
+             {"speed", 300},
+         }},
     };
 
     json::create(game / "game.json", game_json);
@@ -83,9 +95,18 @@ void GameBuilder::choose_level(size_t num) {
 
 void GameBuilder::new_level() {
     current_level_ = levels_.size();
-    auto level = R"({"name":"New level"})"_json;
+    nl::json level = {
+        {"name", "New level"},
+        {"entities", nl::json::array()},
+        {"bg",
+         {
+             {"image", kFallbackImage},
+             {"speed", 100.0},
+         }},
+    };
     json::create(game_dir_ / level_filename(current_level_ + 1), level);
     levels_.push_back(std::move(level));
+    game_["levels"] = levels_.size();
 }
 
 void GameBuilder::backup(const fs::path& path) {
@@ -110,5 +131,6 @@ void GameBuilder::delete_level() {
     // backup(game_dir_);
     fs::remove(level_filename(current_level_));
     levels_.erase(levels_.begin() + current_level_);  // TODO: Dangerous
+    game_["levels"] = levels_.size();
 }
 }  // namespace builder

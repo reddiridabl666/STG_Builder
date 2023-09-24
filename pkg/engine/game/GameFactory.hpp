@@ -31,8 +31,9 @@ GameType GameFactory::generate(Window& window, const nl::json& game, const nl::j
     AssetManager<sf::SoundBuffer> sounds(AssetLoader{base_dir + "/assets/sounds"},
                                          AssetStorage<sf::SoundBuffer>{});
 
-    LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
-    LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
+    LevelLoader level_loader(base_dir + "/level",
+                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio));
+    LevelManager levels(json::get<int>(game, "levels"), std::move(level_loader));
 
     auto fps = json::get<int>(game, "fps", 60);
 
@@ -53,8 +54,9 @@ std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl:
     AssetManager<sf::SoundBuffer> sounds(AssetLoader{base_dir + "/assets/sounds"},
                                          AssetStorage<sf::SoundBuffer>{});
 
-    LevelLoader level_loader(base_dir + "/level", game.at("field_size").get<sf::FloatRect>());
-    LevelManager levels(game.at("levels").get<int>(), std::move(level_loader));
+    LevelLoader level_loader(base_dir + "/level",
+                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio));
+    LevelManager levels(json::get<int>(game, "levels"), std::move(level_loader));
 
     auto fps = json::get<int>(game, "fps", 60);
 

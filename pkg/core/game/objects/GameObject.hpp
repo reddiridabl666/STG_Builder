@@ -21,7 +21,8 @@ class GameObject : public ImageContainer {
         Item,
         Enemy,
         Bullet,
-        Player
+        Player,
+        PlayerBuller
     };
 
     GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,

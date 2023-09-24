@@ -7,6 +7,7 @@
 
 #include "Json.hpp"
 #include "Messages.hpp"
+#include "ObjectEditor.hpp"
 #include "TimedAction.hpp"
 #include "ui/common/Fonts.hpp"
 #include "ui/elements/Button.hpp"
@@ -15,7 +16,6 @@
 #include "ui/elements/LangChanger.hpp"
 #include "ui/elements/LevelInfo.hpp"
 #include "ui/elements/Menu.hpp"
-#include "ui/elements/ObjectEditor.hpp"
 #include "ui/elements/Tabs.hpp"
 
 #ifdef DEBUG
@@ -121,12 +121,6 @@ ui::DefaultBox::Items App::load_games() {
         game_info->set_cb(game_choice(dir.path().stem()));
         res.push_back(std::move(game_info));
     }
-
-#ifdef DEBUG
-    for (size_t i = 0; i < 2; ++i) {
-        res.push_back(std::make_unique<ui::GameInfo>("Another game", "Just for UI testing"));
-    }
-#endif
 
     games_num_ = res.size() - 1;
 
@@ -265,7 +259,8 @@ void App::on_state_start(State state) {
                 throw std::runtime_error(err.message());
             }
             game_->reload_objects();
-            ui_.emplace("obj_editor", std::make_unique<ui::ObjectEditor>(window_, *game_));
+            ui_.emplace("obj_editor", std::make_unique<ui::ObjectEditor>(
+                                          window_, *game_, builder_.current_level(), builder_.entities()));
             return;
         }
         default:

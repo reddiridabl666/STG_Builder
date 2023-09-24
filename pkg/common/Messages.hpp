@@ -64,7 +64,12 @@ enum class Message {
     ObjectTypes,
     Stats,
     LastUpdated,
-    ObjectType
+    ObjectType,
+    Rotation,
+    Pos,
+    ActivityStart,
+    ActivityStartHint,
+    Pixels,
 };
 
 const char* message(Message type);

@@ -14,6 +14,8 @@
 
 class GameField : public ImageContainer {
   public:
+    static inline const sf::FloatRect kDefaultRatio = {0.05, 0.05, 0.5, 0.9};
+
     GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
               int speed = 50);
 

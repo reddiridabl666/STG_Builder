@@ -6,14 +6,14 @@
 template <>
 movement::Func FuncBuilder::generate(const FuncInfo& info) {
     // clang-format off
-    if (info.name == "linear") {
+    if (info.type == "linear") {
         return movement::linear(
             info.args.at("x").get<float>(),
             info.args.at("y").get<float>()
         );
     }
 
-    if (info.name == "circular") {
+    if (info.type == "circular") {
         return movement::circular(
             info.args.at("center").get<sf::Vector2f>(),
             info.args.at("speed").get<float>()
@@ -26,11 +26,11 @@ movement::Func FuncBuilder::generate(const FuncInfo& info) {
 
 template <>
 alive::update FuncBuilder::generate(const FuncInfo& info) {
-    if (info.name == "bounds") {
+    if (info.type == "bounds") {
         return alive::in_bounds(info.args.at("margin").get<float>());
     }
 
-    if (info.name == "timed") {
+    if (info.type == "timed") {
         return alive::timed(info.args.at("seconds").get<float>());
     }
 

@@ -44,7 +44,7 @@ inline void create(const std::filesystem::path& path, const nl::json& json = "{}
 }
 
 template <typename T>
-T get(const nl::json& json, const std::string& key, T&& default_value = T{}) {
+T get(const nl::json& json, const std::string& key, const T& default_value = T{}) {
     try {
         return json.at(key).template get<T>();
     } catch (...) {
