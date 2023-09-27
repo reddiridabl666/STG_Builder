@@ -36,6 +36,7 @@ enum class Message {
     CreateGame,
     CreateLevel,
     CreateObjectType,
+    NewObject,
     Back,
     UnexpectedError,
     Close,
