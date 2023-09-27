@@ -3,13 +3,12 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
 
-#include "Framed.hpp"
 #include "Geometry.hpp"
 
 class RectHitbox;
 class CircleHitbox;
 
-class Hitbox : public Framed {
+class Hitbox {
   public:
     enum class Type {
         Circle,
