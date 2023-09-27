@@ -23,7 +23,7 @@ void EditableGame::reload_objects() {
         ++idx;
 
         // rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
-        rtree_.insert(std::pair(FloatBox(obj->get_bounds()), obj->name()));
+        rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
         objects_.emplace(obj->name(), std::move(*obj));
     }
 
