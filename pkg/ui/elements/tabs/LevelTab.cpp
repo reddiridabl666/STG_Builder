@@ -1,6 +1,5 @@
-#include "LevelTab.hpp"
-
 #include "Messages.hpp"
+#include "Tabs.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"

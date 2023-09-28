@@ -8,6 +8,7 @@ set(SOURCES
     elements/Menu.cpp
     elements/LevelInfo.cpp
     elements/tabs/MainTab.cpp
+    elements/tabs/PlayerTab.cpp
     elements/tabs/EntitiesTab.cpp
     elements/tabs/EntityEntry.cpp
     elements/tabs/LevelTab.cpp

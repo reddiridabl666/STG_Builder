@@ -1,10 +1,9 @@
-#include "MainTab.hpp"
-
 #include <iostream>
 
 #include "ImguiUtils.hpp"
 #include "Json.hpp"
 #include "Messages.hpp"
+#include "Tabs.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"
