@@ -6,6 +6,10 @@
 template <>
 movement::Func FuncBuilder::generate(const FuncInfo& info) {
     // clang-format off
+    if (info.type == "") {
+        return movement::no_op;
+    }
+
     if (info.type == "linear") {
         return movement::linear(
             info.args.at("x").get<float>(),
@@ -26,6 +30,10 @@ movement::Func FuncBuilder::generate(const FuncInfo& info) {
 
 template <>
 alive::update FuncBuilder::generate(const FuncInfo& info) {
+    if (info.type == "") {
+        return alive::default_func;
+    }
+
     if (info.type == "bounds") {
         return alive::in_bounds(info.args.at("margin").get<float>());
     }

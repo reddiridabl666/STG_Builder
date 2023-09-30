@@ -19,7 +19,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     void move_view(const sf::Vector2f& vec);
     void zoom(float);
 
-    std::string new_object(const std::string& type);
+    GameObject& new_object(const std::string& type);
 
     Error choose_level(size_t);
 

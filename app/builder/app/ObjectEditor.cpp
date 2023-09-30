@@ -62,7 +62,13 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                                    return;
                            }
 
-                           auto json = data_.at("entities")[obj->props().at(builder::kJsonID).get()];
+                           auto json = data_.at("entities").at(obj->props().at(builder::kJsonID).get());
+
+                           fmt::println("Id: {}", obj->props().at(builder::kJsonID).get());
+                           fmt::println("Entities length: {}", data_.at("entities").size());
+                           fmt::println("Entities: {}", data_.at("entities").dump(4));
+                           fmt::println("json: {}", json.dump(4));
+
                            auto entry = ObjectEntry::from_json(json);
 
                            entry.type_id = get_type_id(obj_types_, entry.type);
@@ -92,11 +98,14 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         }
         auto type = data.template get<std::string>();
 
-        game_.new_object(type);
-        data_["entities"].push_back({
-            {"type", type},
-            {"pos", window_.get_view().getCenter()},
-        });
+        auto& obj = game_.new_object(type);
+        obj.props().set(builder::kJsonID, data_.at("entities").size());
+
+        data_.at("entities")
+            .push_back({
+                {"type", type},
+                {"pos", window_.get_view().getCenter()},
+            });
     });
 }
 
@@ -167,6 +176,16 @@ nl::json ObjectEditor::ObjectEntry::to_json() const {
     nl::json res;
     nl::to_json(res, *this);
     stats.to_json(res);
+
+    if (count == -1) {
+        res.erase("count");
+        res.erase("delta");
+    }
+
+    if (activity_start == kDefaultActivityStart) {
+        res.erase("activity_start");
+    }
+
     return res;
 }
 }  // namespace ui

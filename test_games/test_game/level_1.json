@@ -46,8 +46,8 @@
         {
             "count": 4,
             "delta": {
-                "x": 120,
-                "y": -50
+                "x": 120.0,
+                "y": -50.0
             },
             "lives": {
                 "args": {
@@ -55,14 +55,34 @@
                 },
                 "type": "bounds"
             },
+            "move": {
+                "args": null,
+                "type": ""
+            },
             "pos": {
-                "x": -50,
-                "y": 600
+                "x": -50.0,
+                "y": 600.0
             },
             "rotation": 180,
             "type": "enemy"
+        },
+        {
+            "lives": {
+                "args": null,
+                "type": ""
+            },
+            "move": {
+                "args": null,
+                "type": ""
+            },
+            "pos": {
+                "x": 320.0,
+                "y": 833.77783203125
+            },
+            "rotation": 0,
+            "type": "enemy"
         }
     ],
-    "last_updated": 1696085625,
+    "last_updated": 1696104693,
     "name": "The first level"
 }

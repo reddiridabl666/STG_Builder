@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Controls.hpp"
+#include "FuncInfo.hpp"
 
 class GameObject;
 

@@ -22,20 +22,12 @@ void EditableGame::reload_objects() {
 
         ++idx;
 
-        // rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
         rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
         objects_.emplace(obj->name(), std::move(*obj));
     }
-
-    // for (auto& [box, _] : rtree_) {
-    //     fmt::println("{{{}, {}, {}, {}}}", box.top_left().x, box.top_left().y, box.bottom_right().x,
-    //                  box.bottom_right().y);
-    // }
 }
 
 GameObject* EditableGame::object_by_pos(const sf::Vector2f& pos) {
-    // fmt::println("Pos: {{{}, {}}}", pos.x, pos.y);
-
     auto it = rtree_.contains(pos);
     if (it != rtree_.qend()) {
         return &objects_.at(it->second);
@@ -77,7 +69,7 @@ void EditableGame::zoom(float value) {
     level_->field().zoom(value);
 }
 
-std::string EditableGame::new_object(const std::string& type) {
+GameObject& EditableGame::new_object(const std::string& type) {
     auto it = types_.find(type);
     if (it == types_.end()) {
         throw std::runtime_error(fmt::format("No such object type {}", type));
@@ -90,15 +82,15 @@ std::string EditableGame::new_object(const std::string& type) {
         throw std::runtime_error(fmt::format("Error creating object: {}", obj.error().message()));
     }
 
-    auto res = obj->name();
-    rtree_.insert(obj->name(), obj->get_bounds());
-    obj->props().set(kJsonID, level_->objects().size());
+    auto obj_name = obj->name();
+    rtree_.insert(obj_name, obj->get_bounds());
+    obj->props().set(kOptsID, level_->objects().size());
 
-    objects_.emplace(obj->name(), std::move(*obj));
+    objects_.emplace(obj_name, std::move(*obj));
 
     level_->objects().push_back(std::move(opts));
     level_->prepare_objects();
-    return res;
+    return objects_.at(obj_name);
 }
 
 Error EditableGame::choose_level(size_t num) {
