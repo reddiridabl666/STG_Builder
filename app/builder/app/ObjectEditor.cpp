@@ -42,36 +42,71 @@ int get_type_id(const std::string& types, const std::string& to_find) {
 ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json& data,
                            const nl::json& entities)
     : window_(window), data_(data), game_(game), obj_types_(get_obj_types(entities)) {
-    window.add_handler("obj_editor", sf::Event::MouseButtonPressed, [&window, this](const sf::Event& event) {
-        if (event.mouseButton.button != sf::Mouse::Right) {
+    window.add_handler("obj_editor_click", sf::Event::MouseButtonPressed,
+                       [&window, this](const sf::Event& event) {
+                           auto coords = window.pixel_to_coords(event.mouseButton.x, event.mouseButton.y);
+
+                           auto obj = game_.object_by_pos(coords);
+                           if (!obj) {
+                               return;
+                           }
+
+                           switch (event.mouseButton.button) {
+                               case sf::Mouse::Left:
+                                   drag_n_drop_ = true;
+                                   drag_target_ = obj;
+                                   return;
+                               case sf::Mouse::Right:
+                                   break;
+                               default:
+                                   return;
+                           }
+
+                           auto json = data_.at("entities")[obj->props().at(builder::kJsonID).get()];
+                           auto entry = ObjectEntry::from_json(json);
+
+                           entry.type_id = get_type_id(obj_types_, entry.type);
+
+                           shown_.emplace(obj, std::move(entry));
+                       });
+
+    window.add_handler("obj_editor_release", sf::Event::MouseButtonReleased, [this](const sf::Event& event) {
+        if (event.mouseButton.button != sf::Mouse::Left) {
             return;
         }
 
-        auto coords = window.pixel_to_coords(event.mouseButton.x, event.mouseButton.y);
-
-        auto obj = game_.object_by_pos(coords);
-        if (!obj) {
-            return;
-        }
-
-        auto json = data_["entities"][obj->props().at(builder::kJsonID).get()];
-        auto entry = ObjectEntry::from_json(json);
-
-        entry.type_id = get_type_id(obj_types_, entry.type);
-
-        shown_.emplace(obj, std::move(entry));
+        drag_n_drop_ = false;
+        drag_target_ = nullptr;
     });
 
-    Bus::get().on(Bus::Event::ObjectTypesChanged, "obj_editor", [this](const nl::json& data) {
+    Bus::get().on(Bus::Event::ObjectTypesChanged, "obj_editor_changed", [this](const nl::json& data) {
         obj_types_ = get_obj_types(data);
         for (auto& [_, obj_data] : shown_) {
             obj_data.type_id = get_type_id(obj_types_, obj_data.type);
         }
     });
+
+    Bus::get().on(Bus::Event::ObjectCreated, "obj_editor_created", [this](const nl::json& data) {
+        if (!data.is_string()) {
+            return;
+        }
+        auto type = data.template get<std::string>();
+
+        game_.new_object(type);
+        data_["entities"].push_back({
+            {"type", type},
+            {"pos", window_.get_view().getCenter()},
+        });
+    });
 }
 
 void ObjectEditor::draw(const Window&) {
-    if (game_.object_by_pos(window_.pixel_to_coords(sf::Mouse::getPosition(window_.base())))) {
+    auto mouse_pos = window_.pixel_to_coords(sf::Mouse::getPosition(window_.base()));
+
+    if (drag_n_drop_) {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+        game_.set_object_pos(*drag_target_, mouse_pos);
+    } else if (game_.object_by_pos(mouse_pos)) {
         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     }
 
@@ -108,7 +143,7 @@ void ObjectEditor::draw(const Window&) {
         ImGui::End();
 
         if (!open) {
-            data_["entries"][obj->props().at(builder::kJsonID).get()] = obj_data.to_json();
+            data_["entities"][obj->props().at(builder::kJsonID).get()] = obj_data.to_json();
             shown_.erase(it);
         }
 
@@ -118,7 +153,8 @@ void ObjectEditor::draw(const Window&) {
 
 ObjectEditor::~ObjectEditor() {
     Bus::get().off(Bus::Event::ObjectTypesChanged, "obj_editor");
-    window_.remove_handler("obj_editor");
+    window_.remove_handler("obj_editor_click");
+    window_.remove_handler("obj_editor_release");
 }
 
 ObjectEditor::ObjectEntry ObjectEditor::ObjectEntry::from_json(const nl::json& json) {

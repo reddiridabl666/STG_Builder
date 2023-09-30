@@ -14,6 +14,8 @@
 struct ObjectOptions {
   public:
     ObjectOptions() = default;
+    ObjectOptions(const std::string& type, const sf::Vector2f& pos)
+        : type(type), pos_x(pos.x), pos_y(pos.y) {}
 
     void set_props(GameObject& obj) const;
 

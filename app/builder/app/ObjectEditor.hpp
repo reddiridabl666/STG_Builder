@@ -55,6 +55,9 @@ class ObjectEditor : public Element {
     std::unordered_map<GameObject*, ObjectEntry> shown_;
     nl::json& data_;
     builder::EditableGame& game_;
+
+    bool drag_n_drop_ = false;
+    GameObject* drag_target_ = nullptr;
     std::string obj_types_;
 };
 }  // namespace ui

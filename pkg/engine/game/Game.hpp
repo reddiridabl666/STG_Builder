@@ -24,6 +24,8 @@ class Game {
         return fps_;
     }
 
+    void set_object_pos(GameObject& obj, const sf::Vector2f& pos);
+
   protected:
     Error update(float delta_time);
 

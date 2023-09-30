@@ -14,6 +14,7 @@ const char* message(Message type) {
         {Message::CreateGame, {U8("Создать игру"), "New Game"}},
         {Message::CreateLevel, {U8("Создать уровень"), "New Level"}},
         {Message::CreateObjectType, {U8("Новый тип объекта"), "New object type"}},
+        {Message::NewObject, {U8("Создать новый объект"), "New object"}},
         {Message::Back, {U8("Назад"), "Back"}},
         {Message::UnexpectedError, {U8("Непредвиденная ошибка"), "Unexpected error"}},
         {Message::Close, {U8("Закрыть"), "Close"}},

@@ -42,10 +42,16 @@ void EntityEntry::draw(const Window&) {
     }
 
     ImGui::SameLine();
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30);
+
+    ImGui::BeginGroup();
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
+    if (ImGui::Button(message(Message::NewObject))) {
+        Bus::get().emit(Bus::Event::ObjectCreated, name);
+    }
     if (ImGui::Button(message(Message::Delete))) {
         to_delete_ = true;
     }
+    ImGui::EndGroup();
 
     if (shown_) {
         ImGui::Begin(old_name_.c_str(), &shown_, ImGuiWindowFlags_AlwaysAutoResize);

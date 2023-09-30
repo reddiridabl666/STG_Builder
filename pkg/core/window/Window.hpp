@@ -46,7 +46,7 @@ class Window {
     void clear();
     void set_default_view();
 
-    const sf::Window& base() {
+    const sf::Window& base() const {
         return window_;
     }
 

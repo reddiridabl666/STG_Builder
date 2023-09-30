@@ -8,21 +8,21 @@
 template <typename index_type = std::string>
 class DrawableRTree : public RTree<index_type, FloatBox> {
   public:
-    void remove(const std::pair<FloatBox, index_type>& value) override {
-        RTree<index_type, FloatBox>::remove(value);
-        boxes_.erase(value.second);
+    void remove(const index_type& index, const FloatBox& box) override {
+        RTree<index_type, FloatBox>::remove(index, box);
+        boxes_.erase(index);
     }
 
-    void insert(const std::pair<FloatBox, index_type>& value) override {
-        RTree<index_type, FloatBox>::insert(value);
-        sf::RectangleShape shape(value.first.size());
+    void insert(const index_type& index, const FloatBox& box) override {
+        RTree<index_type, FloatBox>::insert(index, box);
+        sf::RectangleShape shape(box.size());
 
         shape.setOutlineColor(sf::Color::Green);
         shape.setFillColor(sf::Color::Transparent);
         shape.setOutlineThickness(2);
-        shape.setPosition(value.first.top_left());
+        shape.setPosition(box.top_left());
 
-        boxes_.emplace(value.second, shape);
+        boxes_.emplace(index, shape);
     }
 
     void draw(Window& window) {

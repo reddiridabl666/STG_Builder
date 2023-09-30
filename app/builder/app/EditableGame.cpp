@@ -23,7 +23,7 @@ void EditableGame::reload_objects() {
         ++idx;
 
         // rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
-        rtree_.insert(std::pair(FloatBox(obj->get_bounds()), obj->name()));
+        rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
         objects_.emplace(obj->name(), std::move(*obj));
     }
 
@@ -75,6 +75,30 @@ void EditableGame::zoom(float value) {
     }
 
     level_->field().zoom(value);
+}
+
+std::string EditableGame::new_object(const std::string& type) {
+    auto it = types_.find(type);
+    if (it == types_.end()) {
+        throw std::runtime_error(fmt::format("No such object type {}", type));
+    }
+
+    ObjectOptions opts(type, window_.get_view().getCenter());
+
+    auto obj = it->second.create_object(opts, textures_);
+    if (!obj) {
+        throw std::runtime_error(fmt::format("Error creating object: {}", obj.error().message()));
+    }
+
+    auto res = obj->name();
+    rtree_.insert(obj->name(), obj->get_bounds());
+    obj->props().set(kJsonID, level_->objects().size());
+
+    objects_.emplace(obj->name(), std::move(*obj));
+
+    level_->objects().push_back(std::move(opts));
+    level_->prepare_objects();
+    return res;
 }
 
 Error EditableGame::choose_level(size_t num) {

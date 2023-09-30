@@ -12,21 +12,21 @@ class RTree {
   public:
     using value_type = std::pair<box_type, index_type>;
 
-    virtual void insert(index_type index, const box_type& box) {
-        insert(std::pair(box, index));
+    virtual void insert(const index_type& index, const box_type& box) {
+        rtree_.insert(std::pair(box, index));
     }
 
-    virtual void remove(index_type index, const box_type& box) {
-        remove(std::pair(box, index));
+    virtual void remove(const index_type& index, const box_type& box) {
+        rtree_.remove(std::pair(box, index));
     }
 
-    virtual void remove(const value_type& value) {
-        rtree_.remove(value);
-    }
+    // virtual void remove(const value_type& value) {
+    //     rtree_.remove(value);
+    // }
 
-    virtual void insert(const value_type& value) {
-        rtree_.insert(value);
-    }
+    // virtual void insert(const value_type& value) {
+    //     rtree_.insert(value);
+    // }
 
     auto intersects(const box_type& box) const {
         return rtree_.qbegin(rtree::intersects(box));

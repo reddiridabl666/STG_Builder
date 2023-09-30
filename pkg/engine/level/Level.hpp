@@ -27,9 +27,9 @@ class Level {
         return objects_;
     }
 
-  private:
     void prepare_objects();
 
+  private:
     std::string name_;
     GameField field_;
     ObjectOptionsFactory::res_type objects_;

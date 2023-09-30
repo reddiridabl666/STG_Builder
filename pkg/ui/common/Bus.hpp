@@ -10,7 +10,10 @@ class Bus {
   public:
     using Cb = std::function<void(const nl::json&)>;
 
-    enum class Event { ObjectTypesChanged };
+    enum class Event {
+        ObjectTypesChanged,
+        ObjectCreated
+    };
 
     void on(Event event, const std::string& key, const Cb& cb) {
         cbs_[event][key] = cb;

@@ -32,6 +32,13 @@ Error Game<RTreeType>::render(float delta_time) {
 }
 
 template <typename RTreeType>
+void Game<RTreeType>::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
+    rtree_.remove(obj.name(), obj.get_bounds());
+    obj.set_pos(pos);
+    rtree_.insert(obj.name(), obj.get_bounds());
+}
+
+template <typename RTreeType>
 void Game<RTreeType>::draw_objects() {
     if (!level_) {
         return;
