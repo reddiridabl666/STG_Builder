@@ -16,7 +16,7 @@ inline Func set(float x) {
 
 inline Func percent_width(int percent = 50) {
     return [percent](const GameField& field) {
-        return field.left() + percent / 100 * field.width();
+        return field.left() + percent / 100.f * field.width();
     };
 }
 

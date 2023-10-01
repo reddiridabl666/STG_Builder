@@ -26,15 +26,12 @@ class ObjectEditor : public Element {
             std::to_string(GameObject::kDefaultActivityStart);
 
         const static inline std::unordered_set<std::string> kExcluded = {
-            "count", "delta", "type", "", "activity_start", "move", "lives", "pos", "rotation"};
+            "type", "", "activity_start", "move", "lives", "pos", "rotation"};
 
         ObjectEntry() : stats(kExcluded) {}
 
         static ObjectEntry from_json(const nl::json&);
         nl::json to_json() const;
-
-        int count = -1;
-        sf::Vector2f delta = {};
 
         std::string type = "";
         int type_id = 0;
@@ -47,8 +44,8 @@ class ObjectEditor : public Element {
 
         Stats stats;
 
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ObjectEntry, count, delta, type, activity_start, pos,
-                                                    rotation, move, lives)
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ObjectEntry, type, activity_start, pos, rotation, move,
+                                                    lives)
     };
 
     Window& window_;

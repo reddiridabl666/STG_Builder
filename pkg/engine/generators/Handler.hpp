@@ -15,6 +15,7 @@ template <typename T>
 struct Handler {
     virtual bool should_handle(const std::string& key) const = 0;
     virtual void handle(T& obj, const std::string& key, const nl::json& value) = 0;
+    virtual ~Handler() = default;
 };
 
 template <typename T>

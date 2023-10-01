@@ -6,10 +6,6 @@
 #include "Debug.hpp"
 #endif
 
-namespace {
-void append_to_res(ObjectOptionsFactory::res_type& res, const nl::json json, ObjectOptions& opts);
-}
-
 ObjectOptionsFactory::ObjectOptionsFactory(const GameField& field)
     : handler_chain_(init_handler_chain(field)) {}
 
@@ -44,7 +40,7 @@ ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
         }
 
         opts->json_id = idx;
-        append_to_res(res, obj, opts.value());
+        res.push_back(std::move(*opts));
         ++idx;
     }
 
@@ -52,23 +48,6 @@ ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
 }
 
 namespace {
-
-void append_to_res(ObjectOptionsFactory::res_type& res, const nl::json json, ObjectOptions& opts) {
-    if (!json.contains("delta") || !json.contains("count")) {
-        return res.push_back(std::move(opts));
-    }
-
-    size_t count = json.at("count").template get<size_t>();
-    auto delta = json.at("delta").template get<sf::Vector2f>();
-
-    for (size_t i = 0; i < count; ++i) {
-        res.push_back(opts);
-
-        opts.pos_x += delta.x;
-        opts.pos_y += delta.y;
-    }
-}
-
 struct TypeHandler : Handler<ObjectOptions> {
     bool should_handle(const std::string& key) const override {
         return key == "type";

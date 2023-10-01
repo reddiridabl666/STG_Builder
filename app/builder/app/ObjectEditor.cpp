@@ -63,12 +63,11 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                            }
 
                            auto json = data_.at("entities").at(obj->props().at(builder::kJsonID).get());
-
+#ifdef DEBUG
                            fmt::println("Id: {}", obj->props().at(builder::kJsonID).get());
                            fmt::println("Entities length: {}", data_.at("entities").size());
-                           fmt::println("Entities: {}", data_.at("entities").dump(4));
                            fmt::println("json: {}", json.dump(4));
-
+#endif
                            auto entry = ObjectEntry::from_json(json);
 
                            entry.type_id = get_type_id(obj_types_, entry.type);
@@ -77,7 +76,7 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                        });
 
     window.add_handler("obj_editor_release", sf::Event::MouseButtonReleased, [this](const sf::Event& event) {
-        if (event.mouseButton.button != sf::Mouse::Left) {
+        if (!drag_n_drop_ || event.mouseButton.button != sf::Mouse::Left) {
             return;
         }
 
@@ -107,6 +106,13 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                 {"pos", window_.get_view().getCenter()},
             });
     });
+
+    Bus::get().on(Bus::Event::ObjectTypeCreated, "obj_editor_type_created", [this](const nl::json& data) {
+        if (!data.is_string()) {
+            return;
+        }
+        game_.new_object_type(data.template get<std::string>());
+    });
 }
 
 void ObjectEditor::draw(const Window&) {
@@ -128,11 +134,14 @@ void ObjectEditor::draw(const Window&) {
         ImGui::Begin(obj->name().c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::PushItemWidth(100);
 
-        ImGui::Combo(message(Message::ObjectType), &obj_data.type_id, obj_types_.c_str());
-        if (ImGui::IsItemDeactivatedAfterEdit()) {
+        if (ImGui::Combo(message(Message::ObjectType), &obj_data.type_id, obj_types_.c_str())) {
             obj_data.type = find_item(obj_types_, obj_data.type_id);
         }
+
         ImGui::InputInt(message(Message::Rotation), &obj_data.rotation);
+        if (ImGui::IsItemDeactivatedAfterEdit()) {
+            obj->set_rotation(obj_data.rotation);
+        }
 
         ImGui::InputText(message(Message::ActivityStart), &obj_data.activity_start);
         if (ImGui::BeginItemTooltip()) {
@@ -149,6 +158,13 @@ void ObjectEditor::draw(const Window&) {
 
         ImGui::PopItemWidth();
 
+        if (ImGui::Button(message(Message::Delete))) {
+            Bus::get().emit(Bus::Event::ObjectDeleted, obj->name().substr(0, obj->name().rfind('-')));
+            data_["entities"].erase(obj->props().at(builder::kJsonID).get());
+            game_.remove_object(obj->name());
+            shown_.erase(it);
+        }
+
         ImGui::End();
 
         if (!open) {
@@ -161,7 +177,10 @@ void ObjectEditor::draw(const Window&) {
 }
 
 ObjectEditor::~ObjectEditor() {
-    Bus::get().off(Bus::Event::ObjectTypesChanged, "obj_editor");
+    Bus::get().off(Bus::Event::ObjectTypesChanged, "obj_editor_changed");
+    Bus::get().off(Bus::Event::ObjectCreated, "obj_editor_created");
+    Bus::get().off(Bus::Event::ObjectTypeCreated, "obj_editor_type_created");
+
     window_.remove_handler("obj_editor_click");
     window_.remove_handler("obj_editor_release");
 }
@@ -169,6 +188,7 @@ ObjectEditor::~ObjectEditor() {
 ObjectEditor::ObjectEntry ObjectEditor::ObjectEntry::from_json(const nl::json& json) {
     auto res = json.template get<ObjectEntry>();
     res.stats.from_json(json);
+    res.pos = json.at("pos").template get<StringPoint>();
     return res;
 }
 
@@ -177,10 +197,7 @@ nl::json ObjectEditor::ObjectEntry::to_json() const {
     nl::to_json(res, *this);
     stats.to_json(res);
 
-    if (count == -1) {
-        res.erase("count");
-        res.erase("delta");
-    }
+    res["pos"] = pos;
 
     if (activity_start == kDefaultActivityStart) {
         res.erase("activity_start");

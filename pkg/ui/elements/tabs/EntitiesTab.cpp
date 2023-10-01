@@ -22,15 +22,26 @@ struct EntitiesTabContents : public Element {
                       [this, &textures] {
                           auto name = fmt::format("New object {}", box_.size());
 
-                          data_[name] = nl::json::object();
+                          data_[name] = {{"size", sf::Vector2f{100, 100}}};
                           Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
+                          Bus::get().emit(Bus::Event::ObjectTypeCreated, name);
 
                           box_.elems().push_back(std::make_unique<EntityEntry>(
-                              name, &data_.at(name), *textures.get(kFallbackImage)));
+                              name, &data_.at(name), *textures.get(kFallbackImage), 0));
                       },
                       true, {}, {400, 80}),
           box_(std::move(items), {}),
-          data_(data) {}
+          data_(data) {
+        Bus::get().on(Bus::Event::ObjectDeleted, "entities_tab_obj_deleted", [this](const nl::json& type) {
+            auto it = std::ranges::find_if(box_.elems(), [&type](const auto& elem) {
+                return elem->get_name() == type.template get<std::string>();
+            });
+
+            if (it != box_.elems().end()) {
+                (*it)->obj_count() -= 1;
+            }
+        });
+    }
 
     void draw(const Window& window) override {
         std::erase_if(box_.elems(), [this](auto& entry) {
@@ -60,6 +71,7 @@ struct EntitiesTabContents : public Element {
 #endif
         }
         Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
+        Bus::get().off(Bus::Event::ObjectDeleted, "entities_tab_obj_deleted");
     }
 
   private:
@@ -70,18 +82,21 @@ struct EntitiesTabContents : public Element {
 }  // namespace
 
 Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, AssetManager<sf::Texture>& textures,
-                      nl::json& json) {
+                      nl::json& entities_json, const nl::json& level_objects) {
     Box<EntityEntry>::Items entries;
-    entries.reserve(json.size());
+    entries.reserve(entities_json.size());
 
-    for (auto& [key, val] : json.items()) {
+    for (auto& [key, val] : entities_json.items()) {
         entries.push_back(std::make_unique<EntityEntry>(
             key, &val,
             textures.get_or(game_dir / "assets/images" / json::get<std::string>(val, "image"),
-                            kFallbackImage)));
+                            kFallbackImage),
+            std::ranges::count_if(level_objects, [&key](const auto& elem) {
+                return elem.at("type") == key;
+            })));
     }
 
-    auto tab = std::make_unique<EntitiesTabContents>(textures, std::move(entries), json);
+    auto tab = std::make_unique<EntitiesTabContents>(textures, std::move(entries), entities_json);
 
     return Menu::Tab(std::move(tab), message_func(Message::ObjectTypes));
 }

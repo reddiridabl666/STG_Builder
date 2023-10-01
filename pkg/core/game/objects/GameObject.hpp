@@ -63,6 +63,10 @@ class GameObject : public ImageContainer {
         return props_;
     }
 
+    const Properties& props() const {
+        return const_cast<GameObject*>(this)->props();
+    }
+
     void update(const GameField& field, float delta_time);
 
     Tag tag() const {

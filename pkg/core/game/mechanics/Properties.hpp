@@ -22,6 +22,10 @@ struct Properties {
         return values_.at(key);
     }
 
+    const Value<>& at(const std::string& key) const {
+        return const_cast<Properties*>(this)->at(key);
+    }
+
     void set(const std::string& key, int value) {
         values_[key] = value;
     }

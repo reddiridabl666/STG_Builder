@@ -72,6 +72,8 @@ enum class Message {
     ActivityStartHint,
     Pixels,
     Type,
+    CantDelete,
+    CantDeleteFull,
 };
 
 const char* message(Message type);

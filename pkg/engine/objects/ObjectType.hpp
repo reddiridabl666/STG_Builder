@@ -19,7 +19,7 @@ class ObjectType {
   public:
     using AssetPaths = std::vector<std::string>;
 
-    ObjectType(const std::string& name = "") : name(name) {}
+    ObjectType(const std::string& name = "", const sf::Vector2f& size = {}) : name(name), size(size) {}
 
     ErrorOr<GameObject> create_object(const ObjectOptions& opts, AssetManager<sf::Texture>& textures
                                       /*AssetManager<sf::Sound>& sounds*/);
@@ -42,6 +42,7 @@ class ObjectType {
   private:
     size_t obj_count_ = 0;
 
+    ErrorOr<std::shared_ptr<sf::Texture>> get_texture(AssetManager<sf::Texture>& textures);
     // collision::Props
     // hitbox options
 };

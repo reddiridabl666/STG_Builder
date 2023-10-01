@@ -20,8 +20,8 @@
                 "type": "linear"
             },
             "pos": {
-                "x": "50%",
-                "y": "-10%"
+                "x": "10.000000%",
+                "y": "-10.000000%"
             },
             "rotation": 60,
             "type": "enemy"
@@ -76,13 +76,13 @@
                 "type": ""
             },
             "pos": {
-                "x": 320.0,
+                "x": "50.000000%",
                 "y": 833.77783203125
             },
-            "rotation": 0,
+            "rotation": 189,
             "type": "enemy"
         }
     ],
-    "last_updated": 1696104693,
+    "last_updated": 1696166249,
     "name": "The first level"
 }

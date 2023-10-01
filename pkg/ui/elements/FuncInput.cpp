@@ -30,7 +30,8 @@ void func_input(const char* msg, const char* const* types, size_t size, FuncInfo
         if (val.is_number()) {
             float res = val.get<float>();
 
-            ImGui::InputFloat(key.c_str(), &res);
+            std::string field_label = key + "##" + func.type;
+            ImGui::InputFloat(field_label.c_str(), &res);
             if (ImGui::IsItemEdited()) {
                 val = res;
             }

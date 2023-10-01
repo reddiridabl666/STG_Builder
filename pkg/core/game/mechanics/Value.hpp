@@ -25,6 +25,10 @@ class Value {
         return val_;
     }
 
+    operator T() const {
+        return val_;
+    }
+
     void add(T val) {
         val_ += val;
     }

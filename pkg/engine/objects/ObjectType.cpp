@@ -7,7 +7,7 @@
 
 ErrorOr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
                                               AssetManager<sf::Texture>& textures) {
-    auto texture = textures.get(images[0]);
+    auto texture = get_texture(textures);
     if (!texture) {
         return tl::unexpected(texture.error());
     }
@@ -31,11 +31,10 @@ ErrorOr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
 
 ErrorOr<GameObject> ObjectType::create_player(AssetManager<sf::Texture>& textures, const GameField& field,
                                               const PlayerOptions& opts) {
-    auto texture = textures.get(images[0]);
+    auto texture = get_texture(textures);
     if (!texture) {
         return tl::unexpected(texture.error());
     }
-
     auto displayable = std::make_unique<SpriteObject>(std::move(*texture));
 
     GameObject res(fmt::format("player-{}", opts.num), size, std::move(displayable), speed,
@@ -47,4 +46,19 @@ ErrorOr<GameObject> ObjectType::create_player(AssetManager<sf::Texture>& texture
     GameState::get().emit(GameState::Event::ObjectCreated, res.tag());
 
     return res;
+}
+
+ErrorOr<std::shared_ptr<sf::Texture>> ObjectType::get_texture(AssetManager<sf::Texture>& textures) {
+    if (images.empty()) {
+        return textures.get(kFallbackImage);
+    }
+
+    std::shared_ptr<sf::Texture> texture;
+    try {
+        texture = textures.get_or(images[0], kFallbackImage);
+    } catch (std::exception& e) {
+        return Error::New(e.what());
+    }
+
+    return texture;
 }

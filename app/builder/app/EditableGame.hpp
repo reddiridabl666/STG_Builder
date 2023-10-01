@@ -9,6 +9,8 @@ static constexpr const char* kJsonID = "__json_id";
 
 class EditableGame : public engine::Game<DrawableRTree<>> {
   public:
+    static inline sf::Vector2f kInitSize = {100, 100};
+
     using Game<DrawableRTree<>>::Game;
 
     auto& textures() {
@@ -20,6 +22,9 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     void zoom(float);
 
     GameObject& new_object(const std::string& type);
+    void new_object_type(const std::string& type);
+
+    void remove_object(const std::string& name);
 
     Error choose_level(size_t);
 
@@ -27,6 +32,8 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     void reload_objects();
 
     GameObject* object_by_pos(const sf::Vector2f& pos);
+
+    size_t object_count(const std::string& type) const;
 
   private:
     ErrorOr<GameObject> generate_object_debug(size_t idx, const ObjectOptions& opts);

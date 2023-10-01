@@ -216,7 +216,8 @@ std::unique_ptr<ui::Element> App::make_menu() {
 
     tabs.push_back(ui::MainTab(builder_.game()));
     tabs.push_back(ui::LevelTab(builder_.current_level()));
-    tabs.push_back(ui::EntitiesTab(current_game_, textures_, builder_.entities()));
+    tabs.push_back(ui::EntitiesTab(current_game_, textures_, builder_.entities(),
+                                   builder_.current_level().at("entities")));
 
     return std::make_unique<ui::Menu>(std::move(tabs), message_func(Message::Menu));
 }

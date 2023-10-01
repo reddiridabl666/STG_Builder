@@ -35,6 +35,12 @@ GameObject* EditableGame::object_by_pos(const sf::Vector2f& pos) {
     return nullptr;
 }
 
+size_t EditableGame::object_count(const std::string& type) const {
+    return std::ranges::count_if(objects_, [&type](const auto& el) {
+        return el.first.substr(0, el.first.rfind('-')) == type;
+    });
+}
+
 inline ErrorOr<GameObject> EditableGame::generate_object_debug(size_t idx, const ObjectOptions& opts) {
     auto obj = generate_object(opts);
     if (!obj) {
@@ -91,6 +97,17 @@ GameObject& EditableGame::new_object(const std::string& type) {
     level_->objects().push_back(std::move(opts));
     level_->prepare_objects();
     return objects_.at(obj_name);
+}
+
+void EditableGame::new_object_type(const std::string& type) {
+    types_[type] = ObjectType{type, kInitSize};
+}
+
+void EditableGame::remove_object(const std::string& name) {
+    const auto& obj = objects_.at(name);
+    rtree_.remove(name, obj.get_bounds());
+    level_->objects().erase(level_->objects().begin() + obj.props().at(kOptsID));
+    objects_.erase(name);
 }
 
 Error EditableGame::choose_level(size_t num) {

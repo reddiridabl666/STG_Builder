@@ -5,5 +5,6 @@
 #include "ui/elements/Menu.hpp"
 
 namespace ui {
-Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, AssetManager<sf::Texture>& textures, nl::json&);
+Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, AssetManager<sf::Texture>& textures,
+                      nl::json& entities_json, const nl::json& level_objects);
 }  // namespace ui

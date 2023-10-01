@@ -7,8 +7,14 @@
 namespace ui {
 const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size", "tag", "speed", ""};
 
-EntityEntry::EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image)
-    : texture_(std::move(image)), name(name), old_name_(name), stats_(kBaseValues), data_(json) {
+EntityEntry::EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image,
+                         size_t obj_count)
+    : texture_(std::move(image)),
+      name(name),
+      old_name_(name),
+      stats_(kBaseValues),
+      data_(json),
+      obj_count_(obj_count) {
     nl::from_json(*json, *this);
     stats_.from_json(*json);
 }
@@ -45,13 +51,25 @@ void EntityEntry::draw(const Window&) {
 
     ImGui::BeginGroup();
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
+
     if (ImGui::Button(message(Message::NewObject))) {
         Bus::get().emit(Bus::Event::ObjectCreated, name);
+        ++obj_count_;
     }
+
     if (ImGui::Button(message(Message::Delete))) {
-        to_delete_ = true;
+        if (obj_count_ != 0) {
+            ImGui::OpenPopup(message(Message::CantDelete));
+        } else {
+            to_delete_ = true;
+        }
     }
     ImGui::EndGroup();
+
+    if (ImGui::BeginPopup(message(Message::CantDelete))) {
+        ImGui::Text(message(Message::CantDeleteFull), std::to_string(obj_count_).c_str());
+        ImGui::EndPopup();
+    }
 
     if (shown_) {
         ImGui::Begin(old_name_.c_str(), &shown_, ImGuiWindowFlags_AlwaysAutoResize);

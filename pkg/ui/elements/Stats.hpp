@@ -15,7 +15,7 @@ struct Stats {
     Stats() = default;
     Stats(const std::unordered_set<std::string>& excluded) : excluded_(excluded) {}
 
-    std::unordered_map<std::string, float> values;
+    std::unordered_map<std::string, int> values;
 
     void draw() {
         ImGui::SeparatorText(message(Message::Stats));
@@ -23,7 +23,7 @@ struct Stats {
         for (auto it = values.begin(); it != values.end();) {
             auto next = std::next(it);
 
-            ImGui::InputFloat(it->first.c_str(), &it->second);
+            ImGui::InputInt(it->first.c_str(), &it->second);
             ImGui::SameLine();
 
             // ImGui::PushID(&it);

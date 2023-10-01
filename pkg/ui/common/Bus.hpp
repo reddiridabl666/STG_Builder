@@ -12,7 +12,9 @@ class Bus {
 
     enum class Event {
         ObjectTypesChanged,
-        ObjectCreated
+        ObjectCreated,
+        ObjectTypeCreated,
+        ObjectDeleted,
     };
 
     void on(Event event, const std::string& key, const Cb& cb) {
