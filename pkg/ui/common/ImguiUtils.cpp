@@ -15,18 +15,12 @@ void ImGui::VecInput(const char* name, const char* x_name, const char* y_name, f
     ImGui::EndGroup();
 }
 
-void ImGui::PosStringInput(const char* name, std::string* x, std::string* y) {
-    ImGui::SeparatorText(name);
-    ImGui::InputText("x", x);
-    ImGui::InputText("y", y);
-}
-
 void ImGui::SizeInput(const char* name, float* x, float* y) {
     ImGui::VecInput(name, message(Message::Width), message(Message::Height), x, y);
 }
 
-void ImGui::PosInput(const char* name, float* x, float* y) {
-    ImGui::VecInput(name, "x", "y", x, y);
+void ImGui::PosInput(const char* name, float* x, float* y, const std::string& id = "") {
+    ImGui::VecInput(name, ("x##" + id).c_str(), ("y##" + id).c_str(), x, y);
 }
 
 void ImGui::BeginGroupPanel(const char* name, const ImVec2& size) {

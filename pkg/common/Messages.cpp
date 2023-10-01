@@ -50,6 +50,8 @@ const char* message(Message type) {
         {Message::Pos, {U8("Расположение"), "Position"}},
         {Message::Pixels, {U8("Пикселей"), "Pixels"}},
         {Message::Type, {U8("Тип"), "Type"}},
+        {Message::Movement, {U8("Движение"), "Movement"}},
+        {Message::IsAlive, {U8("Жизненный цикл"), "Vital signs"}},
         {Message::LastUpdated, {U8("Обновлено: %s"), "Last updated: %s"}},
         {Message::CantDelete, {U8("Невозможно удалить тип объекта"), "Object type can't be deleted"}},
         {Message::CantDeleteFull,

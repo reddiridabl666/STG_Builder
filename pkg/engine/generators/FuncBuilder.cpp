@@ -6,7 +6,7 @@
 template <>
 movement::Func FuncBuilder::generate(const FuncInfo& info) {
     // clang-format off
-    if (info.type == "") {
+    if (info.type == "" || info.type == "none") {
         return movement::no_op;
     }
 
@@ -30,12 +30,16 @@ movement::Func FuncBuilder::generate(const FuncInfo& info) {
 
 template <>
 alive::update FuncBuilder::generate(const FuncInfo& info) {
-    if (info.type == "") {
+    if (info.type == "" || info.type == "default") {
         return alive::default_func;
     }
 
     if (info.type == "bounds") {
         return alive::in_bounds(info.args.at("margin").get<float>());
+    }
+
+    if (info.type == "always") {
+        return alive::always;
     }
 
     if (info.type == "timed") {

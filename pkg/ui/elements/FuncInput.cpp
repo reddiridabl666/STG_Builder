@@ -16,26 +16,29 @@ int get_type_id(const char* const* types, size_t size, const std::string& to_fin
     return 0;
 }
 
-void func_input(const char* msg, const char* const* types, size_t size, FuncInfo& func) {
+void func_input(const char* msg, const char* const* types,
+                const std::unordered_map<std::string, nl::json>& args, size_t size, FuncInfo& func) {
     ImGui::SeparatorText(msg);
 
     int idx = get_type_id(types, size, func.type);
     auto id = std::string(message(Message::Type)) + "##" + msg;
-    ImGui::Combo(id.c_str(), &idx, types, size);
-    if (ImGui::IsItemDeactivatedAfterEdit()) {
-        func.type = alive::types[idx];
+    if (ImGui::Combo(id.c_str(), &idx, types, size)) {
+        func.type = types[idx];
+        func.args = args.at(func.type);
+        // fmt::println("{}", func.args.dump(4));
     }
 
     for (auto& [key, val] : func.args.items()) {
+        std::string field_label = key + "##func" + func.type;
+
         if (val.is_number()) {
             float res = val.get<float>();
 
-            std::string field_label = key + "##" + func.type;
             ImGui::InputFloat(field_label.c_str(), &res);
             if (ImGui::IsItemEdited()) {
                 val = res;
             }
-            return;
+            continue;
         }
 
         if (!val.is_object()) {
@@ -43,7 +46,7 @@ void func_input(const char* msg, const char* const* types, size_t size, FuncInfo
         }
 
         sf::Vector2f res = val.get<sf::Vector2f>();
-        ImGui::PosInput(key.c_str(), &res.x, &res.y);
+        ImGui::PosInput(field_label.c_str(), &res.x, &res.y, func.type);
         if (ImGui::IsItemEdited()) {
             val = res;
         }
@@ -53,10 +56,10 @@ void func_input(const char* msg, const char* const* types, size_t size, FuncInfo
 }  // namespace
 
 void AliveFuncInput(FuncInfo& func) {
-    func_input("Is alive", alive::types, 4, func);
+    func_input(message(Message::IsAlive), alive::types, alive::args, 4, func);
 }
 
 void MoveFuncInput(FuncInfo& func) {
-    func_input("Movement", movement::types, 4, func);
+    func_input(message(Message::Movement), movement::types, movement::args, 4, func);
 }
 }  // namespace ui

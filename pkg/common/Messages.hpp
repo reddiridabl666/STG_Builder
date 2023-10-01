@@ -75,6 +75,8 @@ enum class Message {
     Type,
     CantDelete,
     CantDeleteFull,
+    Movement,
+    IsAlive
 };
 
 const char* message(Message type);

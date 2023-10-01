@@ -5,8 +5,8 @@
 #include "Json.hpp"
 
 struct FuncInfo {
-    std::string type;
-    nl::json args;
+    std::string type = "";
+    nl::json args = nl::json::object();
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FuncInfo, type, args)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(FuncInfo, type, args)

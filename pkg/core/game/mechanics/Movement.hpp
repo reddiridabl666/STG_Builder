@@ -3,9 +3,11 @@
 #include <SFML/System/Vector2.hpp>
 #include <functional>
 #include <string>
+#include <unordered_map>
 
 #include "Controls.hpp"
 #include "FuncInfo.hpp"
+#include "Json.hpp"
 
 class GameObject;
 
@@ -61,4 +63,10 @@ Func user_control(int user_num = 1, const KeyControls& keys = kDefaultKeyControl
 
 inline const char* const types[4] = {"none", "linear", "circular", "user_control"};
 
+inline const std::unordered_map<std::string, nl::json> args = {
+    {"none", nl::json::object()},
+    {"linear", {{"x", 0}, {"y", 0}}},
+    {"circular", {{"center", sf::Vector2f{}}, {"speed", 0}}},
+    {"user_control", nl::json::object()},
+};
 }  // namespace movement

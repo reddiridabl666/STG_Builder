@@ -44,20 +44,21 @@
             "type": "enemy"
         },
         {
-            "count": 4,
-            "delta": {
-                "x": 120.0,
-                "y": -50.0
-            },
             "lives": {
                 "args": {
                     "margin": 50
                 },
-                "type": "bounds"
+                "type": "default"
             },
             "move": {
-                "args": null,
-                "type": ""
+                "args": {
+                    "center": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "speed": 0
+                },
+                "type": "circular"
             },
             "pos": {
                 "x": 585.625,
@@ -68,11 +69,11 @@
         },
         {
             "lives": {
-                "args": null,
+                "args": {},
                 "type": ""
             },
             "move": {
-                "args": null,
+                "args": {},
                 "type": ""
             },
             "pos": {
@@ -84,27 +85,33 @@
         },
         {
             "lives": {
-                "args": null,
-                "type": ""
+                "args": {},
+                "type": "always"
             },
             "move": {
-                "args": null,
-                "type": ""
+                "args": {
+                    "center": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "speed": 0
+                },
+                "type": "circular"
             },
             "pos": {
-                "x": 441.0,
-                "y": 682.77783203125
+                "x": 431.0,
+                "y": 645.77783203125
             },
             "rotation": 180,
             "type": "enemy"
         },
         {
             "lives": {
-                "args": null,
+                "args": {},
                 "type": ""
             },
             "move": {
-                "args": null,
+                "args": {},
                 "type": ""
             },
             "pos": {
@@ -116,11 +123,11 @@
         },
         {
             "lives": {
-                "args": null,
+                "args": {},
                 "type": ""
             },
             "move": {
-                "args": null,
+                "args": {},
                 "type": ""
             },
             "pos": {
@@ -131,6 +138,6 @@
             "type": "enemy"
         }
     ],
-    "last_updated": 1696170584,
+    "last_updated": 1696174658,
     "name": "The first level"
 }
