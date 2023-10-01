@@ -17,7 +17,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(FieldOptions, speed, image);
 
 struct LevelTabContents : public Element {
   public:
-    LevelTabContents(nl::json& json) : data(json) {}
+    LevelTabContents(nl::json& json, const std::function<void()>& cb) : data(json), cb_(cb) {}
 
     std::string name;
     FieldOptions field;
@@ -28,9 +28,20 @@ struct LevelTabContents : public Element {
         ImGui::SeparatorText(message(Message::GameField));
         ImGui::InputText(message(Message::Image), &field.image);
         ImGui::InputFloat(message(Message::Speed), &field.speed);
+
+        ImGui::NewLine();
+
+        if (ImGui::Button(message(Message::DeleteLevel))) {
+            deleted_ = true;
+            cb_();
+        }
     }
 
     ~LevelTabContents() {
+        if (deleted_) {
+            return;
+        }
+
         try {
             data["name"] = name;
             data["bg"] = field;
@@ -44,11 +55,13 @@ struct LevelTabContents : public Element {
 
   private:
     nl::json& data;
+    std::function<void()> cb_;
+    bool deleted_ = false;
 };
 }  // namespace
 
-Menu::Tab LevelTab(nl::json& json) {
-    auto tab = std::make_unique<LevelTabContents>(json);
+Menu::Tab LevelTab(nl::json& json, const std::function<void()>& cb) {
+    auto tab = std::make_unique<LevelTabContents>(json, cb);
 
     try {
         tab->name = json.at("name").template get<std::string>();

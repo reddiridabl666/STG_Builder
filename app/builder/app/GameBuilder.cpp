@@ -129,7 +129,7 @@ void GameBuilder::delete_game() {
 
 void GameBuilder::delete_level() {
     // backup(game_dir_);
-    fs::remove(level_filename(current_level_));
+    fs::remove(game_dir_ / level_filename(current_level_ + 1));
     levels_.erase(levels_.begin() + current_level_);  // TODO: Dangerous
     game_["levels"] = levels_.size();
 }

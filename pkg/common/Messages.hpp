@@ -32,6 +32,7 @@ enum class Message {
     Level,
     Exit,
     Delete,
+    DeleteLevel,
     Tag,
     CreateGame,
     CreateLevel,

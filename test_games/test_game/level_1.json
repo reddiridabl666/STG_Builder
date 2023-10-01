@@ -81,8 +81,56 @@
             },
             "rotation": 189,
             "type": "enemy"
+        },
+        {
+            "lives": {
+                "args": null,
+                "type": ""
+            },
+            "move": {
+                "args": null,
+                "type": ""
+            },
+            "pos": {
+                "x": 320.0,
+                "y": 733.77783203125
+            },
+            "rotation": 180,
+            "type": "enemy"
+        },
+        {
+            "lives": {
+                "args": null,
+                "type": ""
+            },
+            "move": {
+                "args": null,
+                "type": ""
+            },
+            "pos": {
+                "x": 320.0,
+                "y": 733.77783203125
+            },
+            "rotation": 180,
+            "type": "enemy"
+        },
+        {
+            "lives": {
+                "args": null,
+                "type": ""
+            },
+            "move": {
+                "args": null,
+                "type": ""
+            },
+            "pos": {
+                "x": 320.0,
+                "y": 733.77783203125
+            },
+            "rotation": 180,
+            "type": "enemy"
         }
     ],
-    "last_updated": 1696166249,
+    "last_updated": 1696168150,
     "name": "The first level"
 }

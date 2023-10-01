@@ -215,7 +215,12 @@ std::unique_ptr<ui::Element> App::make_menu() {
     tabs.reserve(3);
 
     tabs.push_back(ui::MainTab(builder_.game()));
-    tabs.push_back(ui::LevelTab(builder_.current_level()));
+
+    tabs.push_back(ui::LevelTab(builder_.current_level(), [this] {
+        builder_.delete_level();
+        state_.schedule_state_change(State::Back);
+    }));
+
     tabs.push_back(ui::EntitiesTab(current_game_, textures_, builder_.entities(),
                                    builder_.current_level().at("entities")));
 
