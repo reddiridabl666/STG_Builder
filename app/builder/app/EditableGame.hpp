@@ -35,6 +35,10 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
 
     size_t object_count(const std::string& type) const;
 
+    const GameField& field() const {
+        return level_->field();
+    }
+
   private:
     ErrorOr<GameObject> generate_object_debug(size_t idx, const ObjectOptions& opts);
 };

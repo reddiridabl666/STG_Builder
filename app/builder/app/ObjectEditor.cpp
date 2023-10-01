@@ -37,6 +37,10 @@ std::string find_item(std::string input, int idx) {
 int get_type_id(const std::string& types, const std::string& to_find) {
     return std::ranges::count(types.substr(0, types.find(to_find)), '\0');
 }
+
+int get_json_id(const GameObject* obj) {
+    return obj->props().at(builder::kJsonID).get();
+}
 }  // namespace
 
 ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json& data,
@@ -62,9 +66,9 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                                    return;
                            }
 
-                           auto json = data_.at("entities").at(obj->props().at(builder::kJsonID).get());
+                           auto json = data_.at("entities").at(get_json_id(obj));
 #ifdef DEBUG
-                           fmt::println("Id: {}", obj->props().at(builder::kJsonID).get());
+                           fmt::println("Id: {}", get_json_id(obj));
                            fmt::println("Entities length: {}", data_.at("entities").size());
                            fmt::println("json: {}", json.dump(4));
 #endif
@@ -79,6 +83,12 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         if (!drag_n_drop_ || event.mouseButton.button != sf::Mouse::Left) {
             return;
         }
+
+        auto it = shown_.find(drag_target_);
+        if (it != shown_.end()) {
+            it->second.pos = drag_target_->pos();
+        }
+        data_.at("entities").at(get_json_id(drag_target_))["pos"] = drag_target_->pos();
 
         drag_n_drop_ = false;
         drag_target_ = nullptr;
@@ -141,6 +151,7 @@ void ObjectEditor::draw(const Window&) {
         ImGui::InputInt(message(Message::Rotation), &obj_data.rotation);
         if (ImGui::IsItemDeactivatedAfterEdit()) {
             obj->set_rotation(obj_data.rotation);
+            game_.set_object_pos(*obj, obj->pos());
         }
 
         ImGui::InputText(message(Message::ActivityStart), &obj_data.activity_start);
@@ -150,6 +161,9 @@ void ObjectEditor::draw(const Window&) {
         }
 
         obj_data.pos.draw(message(Message::Pos));
+        if (ImGui::IsItemDeactivated()) {
+            game_.set_object_pos(*obj, obj_data.pos.to_vec(game_.field()));
+        }
 
         MoveFuncInput(obj_data.move);
         AliveFuncInput(obj_data.lives);
