@@ -28,6 +28,7 @@ class Lang {
 enum class Message {
     Games,
     Levels,
+    Run,
     YourLevels,
     Level,
     Exit,

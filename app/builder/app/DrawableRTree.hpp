@@ -31,6 +31,11 @@ class DrawableRTree : public RTree<index_type, FloatBox> {
         }
     }
 
+    void clear() override {
+        RTree<index_type, FloatBox>::clear();
+        boxes_.clear();
+    }
+
   private:
     std::unordered_map<index_type, sf::RectangleShape> boxes_;
 };

@@ -20,4 +20,8 @@ ErrorOr<std::shared_ptr<Level>> LevelManager::get(size_t num, Window& window,
     cur_num_ = num;
     return std::make_shared<Level>(std::move(level.value()));
 }
+
+ErrorOr<std::shared_ptr<Level>> LevelManager::reload(Window& window, AssetManager<sf::Texture>& textures) {
+    return get(cur_num_, window, textures);
+}
 }  // namespace engine

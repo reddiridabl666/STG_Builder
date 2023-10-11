@@ -22,12 +22,12 @@ inline const update always = [](auto&, auto&) {
     return true;
 };
 
-inline const char* const types[4] = {"default", "always", "in_bounds", "timed"};
+inline const char* const types[4] = {"default", "always", "bounds", "timed"};
 
 inline const std::unordered_map<std::string, nl::json> args = {
     {"default", {{"margin", 50}}},
     {"always", nl::json::object()},
-    {"in_bounds", {{"margin", 0}}},
+    {"bounds", {{"margin", 0}}},
     {"timed", {{"seconds", 0}}},
 };
 }  // namespace alive

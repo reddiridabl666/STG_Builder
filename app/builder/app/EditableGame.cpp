@@ -11,13 +11,13 @@ void EditableGame::reload_objects() {
         return;
     }
 
-    objects_.clear();
+    clear();
 
     size_t idx = 0;
     for (auto& opts : level_->objects()) {
         auto obj = generate_object_debug(idx, opts);
         if (!obj) {
-            throw std::runtime_error("Error generating objects");
+            throw std::runtime_error(fmt::format("error generating objects: {}", obj.error().message()));
         }
 
         ++idx;
@@ -25,6 +25,15 @@ void EditableGame::reload_objects() {
         rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
         objects_.emplace(obj->name(), std::move(*obj));
     }
+
+    generate_players();
+}
+
+void EditableGame::init_debug() {
+    clear();
+    levels_.reload(window_, textures_);
+    scroll_back();
+    generate_players();
 }
 
 GameObject* EditableGame::object_by_pos(const sf::Vector2f& pos) {
@@ -56,7 +65,13 @@ void EditableGame::scroll(float value) {
         return;
     }
 
+    scrolled_ += value;
+
     level_->field().move_view(sf::Vector2f{0, value});
+}
+
+void EditableGame::scroll_back() {
+    scroll(-1 * scrolled_);
 }
 
 void EditableGame::move_view(const sf::Vector2f& vec) {
@@ -111,14 +126,17 @@ void EditableGame::remove_object(const std::string& name) {
 }
 
 Error EditableGame::choose_level(size_t num) {
-    objects_.clear();
-
     auto res = levels_.get(num, window_, textures_);
     if (!res) {
         return res.error();
     }
 
     level_ = res.value();
+
     return generate_players();
+}
+
+EditableGame::~EditableGame() {
+    GameState::get().reset();
 }
 }  // namespace builder

@@ -5,82 +5,47 @@
     },
     "entities": [
         {
-            "activity_start": "50%",
+            "activity_start": "30%",
             "lives": {
                 "args": {
-                    "seconds": 2
+                    "seconds": 3.0
                 },
                 "type": "timed"
             },
             "move": {
                 "args": {
                     "x": 3,
-                    "y": -10
+                    "y": -15.0
                 },
                 "type": "linear"
             },
             "pos": {
-                "x": "10.000000%",
-                "y": "-10.000000%"
+                "x": 106.0,
+                "y": 1298.7777099609375
             },
             "rotation": 60,
             "type": "enemy"
         },
         {
-            "move": {
-                "args": {
-                    "center": {
-                        "x": 200,
-                        "y": 250
-                    },
-                    "speed": 3
-                },
-                "type": "circular"
-            },
-            "pos": {
-                "x": 150,
-                "y": 300
-            },
-            "type": "enemy"
-        },
-        {
+            "activity_start": "10%",
             "lives": {
                 "args": {
-                    "margin": 50
+                    "margin": 200.0
                 },
-                "type": "default"
+                "type": "bounds"
             },
             "move": {
                 "args": {
-                    "center": {
-                        "x": 0.0,
-                        "y": 0.0
-                    },
-                    "speed": 0
+                    "x": 1.0,
+                    "y": 1.0
                 },
-                "type": "circular"
+                "type": "linear"
             },
             "pos": {
-                "x": 585.625,
-                "y": 684.09033203125
+                "x": 274.0,
+                "y": 383.77783203125
             },
-            "rotation": 180,
-            "type": "enemy"
-        },
-        {
-            "lives": {
-                "args": {},
-                "type": ""
-            },
-            "move": {
-                "args": {},
-                "type": ""
-            },
-            "pos": {
-                "x": "145.000000%",
-                "y": 785.77783203125
-            },
-            "rotation": 270,
+            "rotation": 0,
             "type": "enemy"
         },
         {
@@ -91,16 +56,51 @@
             "move": {
                 "args": {
                     "center": {
-                        "x": 0.0,
-                        "y": 0.0
+                        "x": 300.0,
+                        "y": 800.0
                     },
-                    "speed": 0
+                    "speed": 1.0
                 },
                 "type": "circular"
             },
             "pos": {
-                "x": 431.0,
-                "y": 645.77783203125
+                "x": 426.0,
+                "y": 831.77783203125
+            },
+            "rotation": 180,
+            "type": "enemy"
+        },
+        {
+            "lives": {
+                "args": {},
+                "type": "always"
+            },
+            "move": {
+                "args": {
+                    "x": -1.0,
+                    "y": 3.0
+                },
+                "type": "linear"
+            },
+            "pos": {
+                "x": 393.2421875,
+                "y": 259.66656494140625
+            },
+            "rotation": 270,
+            "type": "enemy"
+        },
+        {
+            "lives": {
+                "args": {},
+                "type": "always"
+            },
+            "move": {
+                "args": {},
+                "type": "user_control"
+            },
+            "pos": {
+                "x": 67.0,
+                "y": 749.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -115,8 +115,8 @@
                 "type": ""
             },
             "pos": {
-                "x": 107.5,
-                "y": 660.65283203125
+                "x": 177.0,
+                "y": 851.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -127,17 +127,20 @@
                 "type": ""
             },
             "move": {
-                "args": {},
-                "type": ""
+                "args": {
+                    "x": 5.0,
+                    "y": 0
+                },
+                "type": "linear"
             },
             "pos": {
-                "x": 280.9375,
-                "y": 655.96533203125
+                "x": 446.0,
+                "y": 583.77783203125
             },
             "rotation": 180,
             "type": "enemy"
         }
     ],
-    "last_updated": 1696174658,
+    "last_updated": 1697003611,
     "name": "The first level"
 }

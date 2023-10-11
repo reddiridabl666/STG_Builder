@@ -20,14 +20,6 @@ class RTree {
         rtree_.remove(std::pair(box, index));
     }
 
-    // virtual void remove(const value_type& value) {
-    //     rtree_.remove(value);
-    // }
-
-    // virtual void insert(const value_type& value) {
-    //     rtree_.insert(value);
-    // }
-
     auto intersects(const box_type& box) const {
         return rtree_.qbegin(rtree::intersects(box));
     }
@@ -47,6 +39,10 @@ class RTree {
 
     auto begin() const {
         return rtree_.begin();
+    }
+
+    virtual void clear() {
+        rtree_.clear();
     }
 
   private:

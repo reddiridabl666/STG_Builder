@@ -26,6 +26,7 @@ class App {
         MainMenu,
         GameMenu,
         LevelEditor,
+        GamePreview,
         Back,
     };
 
@@ -60,5 +61,7 @@ class App {
 
     AssetManager<sf::Texture> textures_;
     std::unordered_map<std::string, std::unique_ptr<ui::Element>> ui_;
+
+    sf::Clock game_clock_;
 };
 }  // namespace builder

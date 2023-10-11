@@ -41,13 +41,13 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
     state_.schedule_state_change(State::MainMenu);
 
     window_.add_handler("app_scroll", sf::Event::MouseWheelScrolled, [this](const sf::Event& event) {
-        if (game_) {
+        if (state_.state() == State::LevelEditor && game_) {
             game_->scroll(event.mouseWheelScroll.delta * -20);
         }
     });
 
     window_.add_handler("app_zoom", sf::Event::KeyReleased, [this](const sf::Event& event) {
-        if (!game_) {
+        if (/* state_.state() != State::LevelEditor || */ !game_) {
             return;
         }
 
@@ -60,7 +60,7 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
     });
 
     window_.add_handler("app_move", sf::Event::KeyPressed, [this, kSpeed = 30](const sf::Event& event) {
-        if (!game_) {
+        if (state_.state() != State::LevelEditor || !game_) {
             return;
         }
 
@@ -102,8 +102,15 @@ void App::run() noexcept {
             state_.resolve_state_change();
             draw_ui();
 
-            if (state_.state() == State::LevelEditor) {
-                game_->render_debug();
+            switch (state_.state()) {
+                case State::LevelEditor:
+                    game_->render_debug();
+                    break;
+                case State::GamePreview:
+                    game_->render(game_clock_.restart().asSeconds());
+                    break;
+                default:
+                    break;
             }
 
             saver.action();
@@ -290,10 +297,24 @@ void App::on_state_start(State state) {
                 throw std::runtime_error(err.message());
             }
             game_->reload_objects();
+
             ui_.emplace("obj_editor", std::make_unique<ui::ObjectEditor>(
                                           window_, *game_, builder_.current_level(), builder_.entities()));
+            ui_.emplace(
+                "play_btn",
+                std::make_unique<ui::ImageButton>(
+                    message_func(Message::Run), textures_.get_or("run.png", kFallbackImage), ImVec2{50, 50},
+                    [this] {
+                        state_.schedule_state_change(State::GamePreview);
+                    },
+                    false, ImVec2{game_->field().right() + 70, game_->field().top() + 30}));
             return;
         }
+        case State::GamePreview:
+            builder_.save();
+            game_ = builder_.create_engine(window_);
+            game_->choose_level(builder_.current_level_num());
+            game_clock_.restart();
         default:
             return;
     }
@@ -312,6 +333,7 @@ void App::on_state_end(State state) {
             ui_.erase("menu");
             builder_.save();
             ui_.erase("obj_editor");
+            ui_.erase("play_btn");
             return;
         default:
             return;

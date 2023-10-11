@@ -18,6 +18,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     }
 
     void scroll(float);
+
     void move_view(const sf::Vector2f& vec);
     void zoom(float);
 
@@ -30,6 +31,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
 
     void render_debug();
     void reload_objects();
+    void init_debug();
 
     GameObject* object_by_pos(const sf::Vector2f& pos);
 
@@ -39,7 +41,12 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
         return level_->field();
     }
 
+    ~EditableGame();
+
   private:
     ErrorOr<GameObject> generate_object_debug(size_t idx, const ObjectOptions& opts);
+    void scroll_back();
+
+    float scrolled_ = 0;
 };
 }  // namespace builder

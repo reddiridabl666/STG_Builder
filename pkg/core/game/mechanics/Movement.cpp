@@ -52,16 +52,18 @@ Func linear(float x, float y) {
 }
 
 Func circular(sf::Vector2f center, float speed) {
-    return Func(Func::Type::Pos,
-                [center, speed, angle = 0.f](const GameObject& obj, float delta_time) mutable {
-                    angle += delta_time * speed;
-                    static float radius = abs(center - obj.pos());
+    return Func(Func::Type::Pos, [center, speed](const GameObject& obj, float delta_time) mutable {
+        static sf::Vector2f r_vec = center - obj.pos();
+        static float angle = atan(r_vec.y / r_vec.x);
+        static float radius = abs(r_vec);
 
-                    float x = center.x + radius * cos(angle);
-                    float y = center.y + radius * sin(angle);
+        angle += speed * delta_time;
 
-                    return sf::Vector2f{x, y};
-                });
+        float x = center.x + radius * cos(angle);
+        float y = center.y + radius * sin(angle);
+
+        return sf::Vector2f{x, y};
+    });
 }
 
 Func user_control(int user_num, const KeyControls& keys, const JoyControls& joy) {

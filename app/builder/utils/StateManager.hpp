@@ -20,6 +20,7 @@ struct StateManager {
 
     std::stack<State> states_;
     State next_state_ = State::Undefined;
+
     Cb on_state_start_;
     Cb on_state_end_;
 };

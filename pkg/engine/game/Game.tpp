@@ -151,15 +151,23 @@ void Game<RTreeType>::clear_dead() {
 }
 
 template <typename RTreeType>
+void Game<RTreeType>::clear() {
+    objects_.clear();
+    rtree_.clear();
+    GameState::get().reset();
+    for (auto& [_, type] : types_) {
+        type.reset_count();
+    }
+}
+
+template <typename RTreeType>
 Error Game<RTreeType>::generate_players() {
-    size_t idx = 1;
     for (auto& [gen, opts] : player_types_) {
         auto player = gen.create_player(textures_, level_->field(), opts);
         if (!player) {
             return player.error();
         }
         objects_.emplace(player->name(), std::move(*player));
-        ++idx;
     }
 
     return Error::OK;

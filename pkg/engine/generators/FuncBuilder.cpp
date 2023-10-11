@@ -23,6 +23,10 @@ movement::Func FuncBuilder::generate(const FuncInfo& info) {
             info.args.at("speed").get<float>()
         );
     }
+
+    if (info.type == "user_control") {
+        return movement::user_control();
+    }
     // clang-format on
 
     throw std::runtime_error("Unsupported move func type");

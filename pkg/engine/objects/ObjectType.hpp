@@ -28,6 +28,10 @@ class ObjectType {
                                       /*AssetManager<sf::Sound>& sounds*/,
                                       const GameField& field, const PlayerOptions& opts);
 
+    void reset_count() {
+        obj_count_ = 0;
+    }
+
     std::string name;
     int speed;
     sf::Vector2f size;

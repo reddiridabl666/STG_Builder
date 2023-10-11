@@ -37,4 +37,9 @@ class GameState : public Observable<int, size_t> {
     size_t player_count() {
         return player_count_;
     }
+
+    void reset() {
+        enemy_count_ = 0;
+        player_count_ = 0;
+    }
 };
