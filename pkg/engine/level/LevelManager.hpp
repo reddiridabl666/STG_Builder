@@ -8,11 +8,11 @@ class LevelManager {
     LevelManager(size_t level_num, LevelLoader&& loader)
         : level_num_(level_num), loader_(std::move(loader)) {}
 
-    ErrorOr<std::shared_ptr<Level>> start_next(Window& window, AssetManager<sf::Texture>& textures);
+    ErrorOr<std::shared_ptr<Level>> start_next(Window& window);
 
-    ErrorOr<std::shared_ptr<Level>> get(size_t num, Window& window, AssetManager<sf::Texture>& textures);
+    ErrorOr<std::shared_ptr<Level>> get(size_t num, Window& window);
 
-    ErrorOr<std::shared_ptr<Level>> reload(Window& window, AssetManager<sf::Texture>& textures);
+    ErrorOr<std::shared_ptr<Level>> reload(Window& window);
 
   private:
     size_t cur_num_ = 0;

@@ -50,7 +50,7 @@ void GameBuilder::new_game(const fs::path& game) const {
 
     fmt::println("{}", fs::current_path().string());
 
-    fs::copy(game.parent_path() / kFallbackImage, game / "assets/images");
+    fs::copy(game.parent_path() / assets::kFallbackImage, game / "assets/images");
 
     nl::json game_json{
         {"name", game.stem().string()},
@@ -59,7 +59,7 @@ void GameBuilder::new_game(const fs::path& game) const {
         {"field_size", GameField::kDefaultRatio},
         {"player",
          {
-             {"image", kFallbackImage},
+             {"image", assets::kFallbackImage},
              {"size", sf::Vector2f{100, 100}},
              {"speed", 300},
          }},
@@ -100,7 +100,7 @@ void GameBuilder::new_level() {
         {"entities", nl::json::array()},
         {"bg",
          {
-             {"image", kFallbackImage},
+             {"image", assets::kFallbackImage},
              {"speed", 100.0},
          }},
     };

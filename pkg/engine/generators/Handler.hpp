@@ -48,6 +48,10 @@ class HandlerChain {
         handlers_.push_back(std::move(handler));
     }
 
+    // void set_fallback_handler(std::unique_ptr<Handler<T>>&& handler) {
+    //     fallback_ = std::move(handler);
+    // }
+
     Error handle(T& res, const nl::json& json) const noexcept {
 #ifdef DEBUG
         LOG(fmt::format("Parsing json: \n{}", json.dump(4)));
@@ -86,9 +90,14 @@ class HandlerChain {
                 }
             }
         }
+
+        // if (fallback_) {
+        //     fallback_->handle(res, key, value)
+        // };
         return Error::OK;
     }
 
   private:
     storage_type handlers_;
+    // storage_type::value_type fallback_;
 };

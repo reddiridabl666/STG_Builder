@@ -12,7 +12,7 @@ set(SOURCES
     level/LevelLoader.cpp
     level/LevelManager.cpp
     # game/Game.cpp
-    game/GameFactory.cpp
+    # game/GameFactory.cpp
 )
 
 set(INCLUDE_DIRS

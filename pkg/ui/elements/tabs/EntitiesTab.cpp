@@ -16,9 +16,9 @@ namespace ui {
 namespace {
 struct EntitiesTabContents : public Element {
   public:
-    EntitiesTabContents(AssetManager<sf::Texture>& textures, Box<EntityEntry>::Items&& items, nl::json& data)
-        : create_btn_(message_func(Message::CreateObjectType), textures.get_or("plus.png", kFallbackImage),
-                      ImVec2{50, 50},
+    EntitiesTabContents(assets::Textures& textures, Box<EntityEntry>::Items&& items, nl::json& data)
+        : create_btn_(message_func(Message::CreateObjectType),
+                      textures.get_or("plus.png", assets::kFallbackImage), ImVec2{50, 50},
                       [this, &textures] {
                           auto name = fmt::format("New object {}", box_.size());
 
@@ -27,7 +27,7 @@ struct EntitiesTabContents : public Element {
                           Bus::get().emit(Bus::Event::ObjectTypeCreated, name);
 
                           box_.elems().push_back(std::make_unique<EntityEntry>(
-                              name, &data_.at(name), *textures.get(kFallbackImage), 0));
+                              name, &data_.at(name), *textures.get(assets::kFallbackImage), 0));
                       },
                       true, {}, {400, 80}),
           box_(std::move(items), {}),
@@ -81,7 +81,7 @@ struct EntitiesTabContents : public Element {
 };
 }  // namespace
 
-Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, AssetManager<sf::Texture>& textures,
+Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, assets::Textures& textures,
                       nl::json& entities_json, const nl::json& level_objects) {
     Box<EntityEntry>::Items entries;
     entries.reserve(entities_json.size());
@@ -90,7 +90,7 @@ Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, AssetManager<sf::Te
         entries.push_back(std::make_unique<EntityEntry>(
             key, &val,
             textures.get_or(game_dir / "assets/images" / json::get<std::string>(val, "image"),
-                            kFallbackImage),
+                            assets::kFallbackImage),
             std::ranges::count_if(level_objects, [&key](const auto& elem) {
                 return elem.at("type") == key;
             })));

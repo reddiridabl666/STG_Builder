@@ -18,24 +18,21 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     }
 
     void scroll(float);
-
     void move_view(const sf::Vector2f& vec);
     void zoom(float);
 
     GameObject& new_object(const std::string& type);
     void new_object_type(const std::string& type);
-
     void remove_object(const std::string& name);
 
     Error choose_level(size_t);
 
     void render_debug();
     void reload_objects();
-    void init_debug();
+    Error prepare_preview(size_t level);
 
+    void set_object_pos(GameObject& obj, const sf::Vector2f& pos);
     GameObject* object_by_pos(const sf::Vector2f& pos);
-
-    size_t object_count(const std::string& type) const;
 
     const GameField& field() const {
         return level_->field();

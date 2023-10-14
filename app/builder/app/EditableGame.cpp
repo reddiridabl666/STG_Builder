@@ -26,14 +26,10 @@ void EditableGame::reload_objects() {
         objects_.emplace(obj->name(), std::move(*obj));
     }
 
-    generate_players();
-}
-
-void EditableGame::init_debug() {
-    clear();
-    levels_.reload(window_, textures_);
-    scroll_back();
-    generate_players();
+    auto err = generate_players();
+    if (err) {
+        throw std::runtime_error(fmt::format("error generating players: {}", err.message()));
+    }
 }
 
 GameObject* EditableGame::object_by_pos(const sf::Vector2f& pos) {
@@ -44,10 +40,10 @@ GameObject* EditableGame::object_by_pos(const sf::Vector2f& pos) {
     return nullptr;
 }
 
-size_t EditableGame::object_count(const std::string& type) const {
-    return std::ranges::count_if(objects_, [&type](const auto& el) {
-        return el.first.substr(0, el.first.rfind('-')) == type;
-    });
+void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
+    rtree_.remove(obj.name(), obj.get_bounds());
+    obj.set_pos(pos);
+    rtree_.insert(obj.name(), obj.get_bounds());
 }
 
 inline ErrorOr<GameObject> EditableGame::generate_object_debug(size_t idx, const ObjectOptions& opts) {
@@ -125,15 +121,22 @@ void EditableGame::remove_object(const std::string& name) {
     objects_.erase(name);
 }
 
+Error EditableGame::prepare_preview(size_t level) {
+    auto err = choose_level(level);
+    if (err) {
+        return err;
+    }
+    return generate_players();
+}
+
 Error EditableGame::choose_level(size_t num) {
-    auto res = levels_.get(num, window_, textures_);
+    auto res = levels_.get(num, window_);
     if (!res) {
         return res.error();
     }
 
     level_ = res.value();
-
-    return generate_players();
+    return Error::OK;
 }
 
 EditableGame::~EditableGame() {

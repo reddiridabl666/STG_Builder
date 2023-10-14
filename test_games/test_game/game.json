@@ -8,8 +8,7 @@
     },
     "fps": 60,
     "fullscreen": true,
-    "last_edited": 1695143538,
-    "last_updated": 1697003611,
+    "last_updated": 1697309897,
     "levels": 1,
     "menu": {
         "ratio": 0.3,
@@ -19,44 +18,35 @@
         ]
     },
     "name": "My first game",
-    "player": {
-        "bullets": {},
-        "hitbox": {
-            "color": "green",
-            "show": "true",
-            "size": {
-                "x": 5,
-                "y": 5
+    "players": [
+        {
+            "opts": {
+                "keys": {
+                    "down": [
+                        "Down",
+                        "S"
+                    ],
+                    "left": [
+                        "Left",
+                        "A"
+                    ],
+                    "right": [
+                        "Right",
+                        "D"
+                    ],
+                    "up": [
+                        "Up",
+                        "W"
+                    ]
+                }
             },
-            "type": "rect"
-        },
-        "image": "player.png",
-        "opts": {
-            "keys": {
-                "down": [
-                    "Down",
-                    "S"
-                ],
-                "left": [
-                    "Left",
-                    "A"
-                ],
-                "right": [
-                    "Right",
-                    "D"
-                ],
-                "up": [
-                    "Up",
-                    "W"
-                ]
-            }
-        },
-        "size": {
-            "x": 100,
-            "y": 60
-        },
-        "speed": 300
-    },
+            "pos": {
+                "x": "50%",
+                "y": "10%"
+            },
+            "type": "player"
+        }
+    ],
     "size": {
         "x": 1280,
         "y": 720

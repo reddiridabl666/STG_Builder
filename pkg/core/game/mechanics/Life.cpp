@@ -7,12 +7,10 @@
 
 namespace alive {
 update timed(float seconds) {
-    return [seconds](const GameObject&, const GameField&) {
-        static sf::Clock timer;
-        if (timer.getElapsedTime().asSeconds() > seconds) {
-            return false;
-        }
-        return true;
+    return [seconds, timer = sf::Clock()](const GameObject&, const GameField&) mutable {
+        [[maybe_unused]] static auto _ = timer.restart();
+
+        return timer.getElapsedTime().asSeconds() < seconds;
     };
 }
 

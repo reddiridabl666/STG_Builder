@@ -18,6 +18,8 @@ class ObjectOptionsFactory {
 
     ErrorOr<res_type> generate(const std::vector<nl::json>& json) const;
 
+    // void add_handler(std::unique_ptr<Handler<ObjectOptions>>&&)
+
   private:
     HandlerChain<ObjectOptions> init_handler_chain(const GameField& field);
 

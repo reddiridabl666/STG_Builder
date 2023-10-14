@@ -1,15 +1,15 @@
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
 #include <string>
-#include <variant>
 
-enum class AssetType {
+namespace assets {
+enum class Type {
     Image,
     Sound
 };
 
 struct Asset {
-    AssetType type;
+    Type type;
     std::string path;
 };
+}  // namespace assets

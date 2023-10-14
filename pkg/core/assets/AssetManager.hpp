@@ -1,26 +1,27 @@
 #pragma once
 
-#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
 #include "AssetLoader.hpp"
 #include "AssetStorage.hpp"
 
+namespace assets {
 static constexpr const char* kFallbackImage = "fallback.png";
 
 template <Loadable T>
-class AssetManager {
+class Manager {
   public:
-    AssetManager(const std::string& dir) : loader_{dir}, storage_() {}
+    Manager(const std::string& dir = "") : loader_{dir}, storage_() {}
 
-    AssetManager(AssetLoader&& loader, AssetStorage<T>&& storage)
+    Manager(Loader&& loader, Storage<T>&& storage)
         : loader_(std::move(loader)), storage_(std::move(storage)) {}
 
-    AssetLoader& loader() {
+    Loader& loader() {
         return loader_;
     }
 
-    AssetStorage<T>& storage() {
+    Storage<T>& storage() {
         return storage_;
     }
 
@@ -50,6 +51,10 @@ class AssetManager {
     }
 
   private:
-    AssetLoader loader_;
-    AssetStorage<T> storage_;
+    Loader loader_;
+    Storage<T> storage_;
 };
+
+using Textures = Manager<sf::Texture>;
+using Sounds = Manager<sf::SoundBuffer>;
+}  // namespace assets

@@ -59,6 +59,7 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                                case sf::Mouse::Left:
                                    drag_n_drop_ = true;
                                    drag_target_ = obj;
+                                   drag_pos_ = obj->pos();
                                    return;
                                case sf::Mouse::Right:
                                    break;
@@ -91,7 +92,17 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         data_.at("entities").at(get_json_id(drag_target_))["pos"] = drag_target_->pos();
 
         drag_n_drop_ = false;
-        drag_target_ = nullptr;
+    });
+
+    window.add_handler("obj_editor_undo", sf::Event::KeyPressed, [this](const sf::Event& event) {
+        if (!drag_target_) {
+            return;
+        }
+
+        if (event.key.code == sf::Keyboard::Z && event.key.control) {
+            game_.set_object_pos(*drag_target_, drag_pos_);
+            drag_target_ = nullptr;
+        }
     });
 
     Bus::get().on(Bus::Event::ObjectTypesChanged, "obj_editor_changed", [this](const nl::json& data) {
@@ -197,6 +208,7 @@ ObjectEditor::~ObjectEditor() {
 
     window_.remove_handler("obj_editor_click");
     window_.remove_handler("obj_editor_release");
+    window_.remove_handler("obj_editor_undo");
 }
 
 ObjectEditor::ObjectEntry ObjectEditor::ObjectEntry::from_json(const nl::json& json) {

@@ -21,12 +21,11 @@ class ObjectType {
 
     ObjectType(const std::string& name = "", const sf::Vector2f& size = {}) : name(name), size(size) {}
 
-    ErrorOr<GameObject> create_object(const ObjectOptions& opts, AssetManager<sf::Texture>& textures
-                                      /*AssetManager<sf::Sound>& sounds*/);
+    ErrorOr<GameObject> create_object(const ObjectOptions& opts, assets::Textures& textures
+                                      /*assets::Sounds& sounds*/);
 
-    ErrorOr<GameObject> create_player(AssetManager<sf::Texture>& textures
-                                      /*AssetManager<sf::Sound>& sounds*/,
-                                      const GameField& field, const PlayerOptions& opts);
+    ErrorOr<GameObject> create_player(const ObjectOptions& obj_opts, assets::Textures& textures,
+                                      const PlayerOptions& opts);
 
     void reset_count() {
         obj_count_ = 0;
@@ -46,7 +45,7 @@ class ObjectType {
   private:
     size_t obj_count_ = 0;
 
-    ErrorOr<std::shared_ptr<sf::Texture>> get_texture(AssetManager<sf::Texture>& textures);
+    ErrorOr<std::shared_ptr<sf::Texture>> get_texture(assets::Textures& textures);
     // collision::Props
     // hitbox options
 };

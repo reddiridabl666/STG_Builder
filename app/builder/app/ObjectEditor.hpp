@@ -54,7 +54,9 @@ class ObjectEditor : public Element {
     builder::EditableGame& game_;
 
     bool drag_n_drop_ = false;
+    sf::Vector2f drag_pos_;
     GameObject* drag_target_ = nullptr;
+
     std::string obj_types_;
 };
 }  // namespace ui

@@ -59,7 +59,7 @@ class App {
     GameBuilder builder_;
     std::unique_ptr<EditableGame> game_ = nullptr;
 
-    AssetManager<sf::Texture> textures_;
+    assets::Textures textures_;
     std::unordered_map<std::string, std::unique_ptr<ui::Element>> ui_;
 
     sf::Clock game_clock_;

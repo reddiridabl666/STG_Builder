@@ -7,16 +7,16 @@
 namespace engine {
 
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, PlayerList&& players, AssetManager<sf::Texture>&& textures,
-                      AssetManager<sf::SoundBuffer>&& sounds, ObjectTypeFactory::res_type&& types,
-                      LevelManager&& levels, int fps)
+Game<RTreeType>::Game(Window& window, PlayerLoader&& player_loader, assets::Textures&& textures,
+                      assets::Sounds&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels,
+                      int fps)
     : window_(window),
       textures_(std::move(textures)),
       sounds_(std::move(sounds)),
       types_(std::move(types)),
-      player_types_(std::move(players)),
       levels_(std::move(levels)),
-      fps_(fps) {}
+      fps_(fps),
+      player_loader_(std::move(player_loader)) {}
 
 template <typename RTreeType>
 Error Game<RTreeType>::render(float delta_time) {
@@ -29,13 +29,6 @@ Error Game<RTreeType>::render(float delta_time) {
     draw_ui();
 
     return Error::OK;
-}
-
-template <typename RTreeType>
-void Game<RTreeType>::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
-    rtree_.remove(obj.name(), obj.get_bounds());
-    obj.set_pos(pos);
-    rtree_.insert(obj.name(), obj.get_bounds());
 }
 
 template <typename RTreeType>
@@ -85,15 +78,29 @@ Error Game<RTreeType>::update_level() {
         return Error::OK;
     }
 
-    objects_.clear();
-
-    auto res = levels_.start_next(window_, textures_);
+    auto res = levels_.start_next(window_);
     if (!res) {
         return res.error();
     }
 
     level_ = res.value();
+
+    objects_.clear();
+
     return generate_players();
+}
+
+template <typename RTreeType>
+Error Game<RTreeType>::generate_players() {
+    auto players = player_loader_.load_players(textures_, level_->field(), types_);
+    if (!players) {
+        return players.error();
+    }
+
+    for (auto&& player : *players) {
+        objects_.emplace(player.name(), std::move(player));
+    }
+    return Error::OK;
 }
 
 template <typename RTreeType>
@@ -158,19 +165,6 @@ void Game<RTreeType>::clear() {
     for (auto& [_, type] : types_) {
         type.reset_count();
     }
-}
-
-template <typename RTreeType>
-Error Game<RTreeType>::generate_players() {
-    for (auto& [gen, opts] : player_types_) {
-        auto player = gen.create_player(textures_, level_->field(), opts);
-        if (!player) {
-            return player.error();
-        }
-        objects_.emplace(player->name(), std::move(*player));
-    }
-
-    return Error::OK;
 }
 
 template <typename RTreeType>

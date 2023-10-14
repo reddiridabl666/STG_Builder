@@ -5,8 +5,7 @@
 #include "Player.hpp"
 #include "SpriteObject.hpp"
 
-ErrorOr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
-                                              AssetManager<sf::Texture>& textures) {
+ErrorOr<GameObject> ObjectType::create_object(const ObjectOptions& opts, assets::Textures& textures) {
     auto texture = get_texture(textures);
     if (!texture) {
         return tl::unexpected(texture.error());
@@ -29,33 +28,27 @@ ErrorOr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
     return res;
 }
 
-ErrorOr<GameObject> ObjectType::create_player(AssetManager<sf::Texture>& textures, const GameField& field,
+ErrorOr<GameObject> ObjectType::create_player(const ObjectOptions& obj_opts, assets::Textures& textures,
                                               const PlayerOptions& opts) {
-    auto texture = get_texture(textures);
-    if (!texture) {
-        return tl::unexpected(texture.error());
+    auto player = create_object(obj_opts, textures);
+    if (!player) {
+        return player;
     }
-    auto displayable = std::make_unique<SpriteObject>(std::move(*texture));
 
-    GameObject res(fmt::format("player-{}", opts.num), size, std::move(displayable), speed,
-                   GameObject::Tag::Player, props, GameObject::kDefaultActivityStart, alive::always,
-                   movement::user_control(opts.num, opts.keys, opts.joy));
+    player->set_life_update(alive::always);
+    player->set_movement(movement::user_control(opts.num, opts.keys, opts.joy));
 
-    res.set_pos(field.center().x, field.bottom() - size.y);
-
-    GameState::get().emit(GameState::Event::ObjectCreated, res.tag());
-
-    return res;
+    return player;
 }
 
-ErrorOr<std::shared_ptr<sf::Texture>> ObjectType::get_texture(AssetManager<sf::Texture>& textures) {
+ErrorOr<std::shared_ptr<sf::Texture>> ObjectType::get_texture(assets::Textures& textures) {
     if (images.empty()) {
-        return textures.get(kFallbackImage);
+        return textures.get(assets::kFallbackImage);
     }
 
     std::shared_ptr<sf::Texture> texture;
     try {
-        texture = textures.get_or(images[0], kFallbackImage);
+        texture = textures.get_or(images[0], assets::kFallbackImage);
     } catch (std::exception& e) {
         return Error::New(e.what());
     }

@@ -47,7 +47,7 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
     });
 
     window_.add_handler("app_zoom", sf::Event::KeyReleased, [this](const sf::Event& event) {
-        if (/* state_.state() != State::LevelEditor || */ !game_) {
+        if (/* state_.state() != State::LevelEditor || */ !game_ || ImGui::IsAnyItemHovered()) {
             return;
         }
 
@@ -60,7 +60,7 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
     });
 
     window_.add_handler("app_move", sf::Event::KeyPressed, [this, kSpeed = 30](const sf::Event& event) {
-        if (state_.state() != State::LevelEditor || !game_) {
+        if (state_.state() != State::LevelEditor || !game_ || ImGui::IsAnyItemHovered()) {
             return;
         }
 
@@ -128,8 +128,8 @@ ui::DefaultBox::Items App::load_games() {
     ui::DefaultBox::Items res;
 
     res.push_back(std::make_unique<ui::ImageButton>(
-        message_func(Message::CreateGame), textures_.get_or("plus.png", kFallbackImage), ImVec2{50, 50},
-        new_game(), true, ImVec2{}, ImVec2{0, 70}));
+        message_func(Message::CreateGame), textures_.get_or("plus.png", assets::kFallbackImage),
+        ImVec2{50, 50}, new_game(), true, ImVec2{}, ImVec2{0, 70}));
 
     if (!fs::is_directory(games_dir_)) {
         return res;
@@ -166,7 +166,8 @@ ui::DefaultBox::Items App::load_levels() {
     res.reserve(4);
 
     res.push_back(std::make_unique<ui::ImageButton>(
-        message_func(Message::CreateLevel), textures_.get_or("plus.png", kFallbackImage), ImVec2{50, 50},
+        message_func(Message::CreateLevel), textures_.get_or("plus.png", assets::kFallbackImage),
+        ImVec2{50, 50},
         [this] {
             builder_.new_level();
             state_.schedule_state_change(State::LevelEditor);
@@ -192,13 +193,14 @@ ui::DefaultBox::Items App::load_levels() {
             try {
                 return level->at("/bg/image"_json_pointer).template get<std::string>();
             } catch (...) {
-                return kFallbackImage;
+                return assets::kFallbackImage;
             }
         }();
 
         res.push_back(std::make_unique<ui::LevelInfo>(
             level->at("name").template get<std::string>(), num,
-            textures_.get_or(game_dir.filename() / kImagesPath / bg_image, kFallbackImage), ImVec2{50, 50},
+            textures_.get_or(game_dir.filename() / kImagesPath / bg_image, assets::kFallbackImage),
+            ImVec2{50, 50},
             [this, num] {
                 builder_.choose_level(num - 1);
                 state_.schedule_state_change(State::LevelEditor);
@@ -207,7 +209,7 @@ ui::DefaultBox::Items App::load_levels() {
     }
 
     res.push_back(std::make_unique<ui::ImageButton>(
-        message_func(Message::Delete), textures_.get_or("delete.png", kFallbackImage), ImVec2{30, 30},
+        message_func(Message::Delete), textures_.get_or("delete.png", assets::kFallbackImage), ImVec2{30, 30},
         [this] {
             builder_.delete_game();
             state_.schedule_state_change(State::Back);
@@ -300,20 +302,20 @@ void App::on_state_start(State state) {
 
             ui_.emplace("obj_editor", std::make_unique<ui::ObjectEditor>(
                                           window_, *game_, builder_.current_level(), builder_.entities()));
-            ui_.emplace(
-                "play_btn",
-                std::make_unique<ui::ImageButton>(
-                    message_func(Message::Run), textures_.get_or("run.png", kFallbackImage), ImVec2{50, 50},
-                    [this] {
-                        state_.schedule_state_change(State::GamePreview);
-                    },
-                    false, ImVec2{game_->field().right() + 70, game_->field().top() + 30}));
+            ui_.emplace("play_btn",
+                        std::make_unique<ui::ImageButton>(
+                            message_func(Message::Run), textures_.get_or("run.png", assets::kFallbackImage),
+                            ImVec2{50, 50},
+                            [this] {
+                                state_.schedule_state_change(State::GamePreview);
+                            },
+                            false, ImVec2{game_->field().right() + 70, game_->field().top() + 30}));
             return;
         }
         case State::GamePreview:
             builder_.save();
             game_ = builder_.create_engine(window_);
-            game_->choose_level(builder_.current_level_num());
+            game_->prepare_preview(builder_.current_level_num());
             game_clock_.restart();
         default:
             return;
@@ -342,7 +344,7 @@ void App::on_state_end(State state) {
 
 std::unique_ptr<ui::Element> App::back_button() {
     return std::make_unique<ui::ImageButton>(
-        message_func(Message::Back), textures_.get_or("back.png", kFallbackImage), ImVec2{50, 50},
+        message_func(Message::Back), textures_.get_or("back.png", assets::kFallbackImage), ImVec2{50, 50},
         [this] {
             state_.schedule_state_change(State::Back);
         },

@@ -9,8 +9,10 @@
 #include "Loadable.hpp"
 #include "Utils.hpp"
 
+namespace assets {
+
 template <Loadable T>
-class AssetStorage {
+class Storage {
   public:
     void add(const std::string& filename, const std::shared_ptr<T>& asset) {
         assets_[filename] = asset;
@@ -33,10 +35,11 @@ class AssetStorage {
         });
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const AssetStorage& storage) {
+    friend std::ostream& operator<<(std::ostream& out, const Storage& storage) {
         return out << storage.assets_;
     }
 
   private:
     std::unordered_map<std::string, std::weak_ptr<T>> assets_;
 };
+}  // namespace assets
