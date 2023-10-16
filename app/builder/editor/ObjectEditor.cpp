@@ -5,6 +5,7 @@
 #include "FuncBuilder.hpp"
 #include "ImguiUtils.hpp"
 #include "Messages.hpp"
+#include "ObjectEntryFactory.hpp"
 #include "ui/common/Bus.hpp"
 #include "ui/elements/FuncInput.hpp"
 
@@ -19,33 +20,15 @@ std::string get_obj_types(const nl::json& json) {
 
     return res;
 }
-
-std::string find_item(std::string input, int idx) {
-    int cur = 0;
-    for (auto chr : input) {
-        if (cur == idx) {
-            return input.substr(cur, input.substr(cur).find('\0'));
-        }
-
-        if (chr == '\0') {
-            ++cur;
-        }
-    }
-    return "";
-}
-
-int get_type_id(const std::string& types, const std::string& to_find) {
-    return std::ranges::count(types.substr(0, types.find(to_find)), '\0');
-}
-
-int get_json_id(const GameObject* obj) {
-    return obj->props().at(builder::kJsonID).get();
-}
 }  // namespace
 
-ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json& data,
-                           const nl::json& entities)
-    : window_(window), data_(data), game_(game), obj_types_(get_obj_types(entities)) {
+ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json& level_data,
+                           nl::json& game_data, const nl::json& entities)
+    : window_(window),
+      level_data_(level_data),
+      game_data_(game_data),
+      game_(game),
+      obj_types_(get_obj_types(entities)) {
     window.add_handler("obj_editor_click", sf::Event::MouseButtonPressed,
                        [&window, this](const sf::Event& event) {
                            auto coords = window.pixel_to_coords(event.mouseButton.x, event.mouseButton.y);
@@ -67,15 +50,8 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                                    return;
                            }
 
-                           auto json = data_.at("entities").at(get_json_id(obj));
-#ifdef DEBUG
-                           fmt::println("Id: {}", get_json_id(obj));
-                           fmt::println("Entities length: {}", data_.at("entities").size());
-                           fmt::println("json: {}", json.dump(4));
-#endif
-                           auto entry = ObjectEntry::from_json(json);
-
-                           entry.type_id = get_type_id(obj_types_, entry.type);
+                           auto json = json_by_obj(obj);
+                           auto entry = ObjectEntryFactory::create(json, obj->tag());
 
                            shown_.emplace(obj, std::move(entry));
                        });
@@ -85,12 +61,7 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
             return;
         }
 
-        auto it = shown_.find(drag_target_);
-        if (it != shown_.end()) {
-            it->second.pos = drag_target_->pos();
-        }
-        data_.at("entities").at(get_json_id(drag_target_))["pos"] = drag_target_->pos();
-
+        update_dragged_obj_pos();
         drag_n_drop_ = false;
     });
 
@@ -101,15 +72,14 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
 
         if (event.key.code == sf::Keyboard::Z && event.key.control) {
             game_.set_object_pos(*drag_target_, drag_pos_);
+            update_dragged_obj_pos();
             drag_target_ = nullptr;
+            drag_n_drop_ = false;
         }
     });
 
     Bus::get().on(Bus::Event::ObjectTypesChanged, "obj_editor_changed", [this](const nl::json& data) {
         obj_types_ = get_obj_types(data);
-        for (auto& [_, obj_data] : shown_) {
-            obj_data.type_id = get_type_id(obj_types_, obj_data.type);
-        }
     });
 
     Bus::get().on(Bus::Event::ObjectCreated, "obj_editor_created", [this](const nl::json& data) {
@@ -119,9 +89,9 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         auto type = data.template get<std::string>();
 
         auto& obj = game_.new_object(type);
-        obj.props().set(builder::kJsonID, data_.at("entities").size());
+        obj.props().set(builder::kJsonID, level_data_.at("entities").size());
 
-        data_.at("entities")
+        level_data_.at("entities")
             .push_back({
                 {"type", type},
                 {"pos", window_.get_view().getCenter()},
@@ -155,45 +125,25 @@ void ObjectEditor::draw(const Window&) {
         ImGui::Begin(obj->name().c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::PushItemWidth(100);
 
-        if (ImGui::Combo(message(Message::ObjectType), &obj_data.type_id, obj_types_.c_str())) {
-            obj_data.type = find_item(obj_types_, obj_data.type_id);
+        auto delta = obj_data->draw(obj_types_);
+        if (delta.has_value()) {
+            obj->set_rotation(delta->rotation);
+            game_.set_object_pos(*obj, delta->pos.to_vec(game_.field()));
         }
-
-        ImGui::InputInt(message(Message::Rotation), &obj_data.rotation);
-        if (ImGui::IsItemDeactivatedAfterEdit()) {
-            obj->set_rotation(obj_data.rotation);
-            game_.set_object_pos(*obj, obj->pos());
-        }
-
-        ImGui::InputText(message(Message::ActivityStart), &obj_data.activity_start);
-        if (ImGui::BeginItemTooltip()) {
-            ImGui::Text(message(Message::ActivityStartHint));
-            ImGui::EndTooltip();
-        }
-
-        obj_data.pos.draw(message(Message::Pos));
-        if (ImGui::IsItemDeactivated()) {
-            game_.set_object_pos(*obj, obj_data.pos.to_vec(game_.field()));
-        }
-
-        MoveFuncInput(obj_data.move);
-        AliveFuncInput(obj_data.lives);
-
-        obj_data.stats.draw();
 
         ImGui::PopItemWidth();
 
         if (ImGui::Button(message(Message::Delete))) {
             Bus::get().emit(Bus::Event::ObjectDeleted, obj->name().substr(0, obj->name().rfind('-')));
-            data_["entities"].erase(obj->props().at(builder::kJsonID).get());
-            game_.remove_object(obj->name());
+
+            erase_obj(obj);
             shown_.erase(it);
         }
 
         ImGui::End();
 
         if (!open) {
-            data_["entities"][obj->props().at(builder::kJsonID).get()] = obj_data.to_json();
+            json_by_obj(obj) = obj_data->to_json();
             shown_.erase(it);
         }
 
@@ -211,24 +161,27 @@ ObjectEditor::~ObjectEditor() {
     window_.remove_handler("obj_editor_undo");
 }
 
-ObjectEditor::ObjectEntry ObjectEditor::ObjectEntry::from_json(const nl::json& json) {
-    auto res = json.template get<ObjectEntry>();
-    res.stats.from_json(json);
-    res.pos = json.at("pos").template get<StringPoint>();
-    return res;
+nl::json& ObjectEditor::json_by_obj(GameObject* obj) {
+    if (obj->tag() == GameObject::Tag::Player) {
+        return game_data_.at("players").at(obj->props().at(engine::kPlayerNum));
+    }
+    return level_data_.at("entities").at(obj->props().at(builder::kJsonID));
 }
 
-nl::json ObjectEditor::ObjectEntry::to_json() const {
-    nl::json res;
-    nl::to_json(res, *this);
-    stats.to_json(res);
-
-    res["pos"] = pos;
-
-    if (activity_start == kDefaultActivityStart) {
-        res.erase("activity_start");
+void ObjectEditor::erase_obj(GameObject* obj) {
+    if (obj->tag() == GameObject::Tag::Player) {
+        game_data_.at("players").erase(obj->props().at(engine::kPlayerNum));
+    } else {
+        level_data_.at("entities").erase(obj->props().at(builder::kJsonID));
     }
+    game_.remove_object(obj->name());
+}
 
-    return res;
+void ObjectEditor::update_dragged_obj_pos() {
+    auto it = shown_.find(drag_target_);
+    if (it != shown_.end()) {
+        it->second->set_pos(drag_target_->pos());
+    }
+    json_by_obj(drag_target_)["pos"] = drag_target_->pos();
 }
 }  // namespace ui

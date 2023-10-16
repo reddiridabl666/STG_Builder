@@ -7,12 +7,14 @@ set(SOURCES
     app/App.cpp
     app/GameBuilder.cpp
     app/EditableGame.cpp
-    app/ObjectEditor.cpp
+    editor/ObjectEditor.cpp
+    editor/ObjectEntry.cpp
 )
 
 set(INCLUDE_DIRS
     app
     utils
+    editor
 )
 
 set(LIBS

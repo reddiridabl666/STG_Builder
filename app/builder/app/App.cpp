@@ -300,8 +300,9 @@ void App::on_state_start(State state) {
             }
             game_->reload_objects();
 
-            ui_.emplace("obj_editor", std::make_unique<ui::ObjectEditor>(
-                                          window_, *game_, builder_.current_level(), builder_.entities()));
+            ui_.emplace("obj_editor",
+                        std::make_unique<ui::ObjectEditor>(window_, *game_, builder_.current_level(),
+                                                           builder_.game(), builder_.entities()));
             ui_.emplace("play_btn",
                         std::make_unique<ui::ImageButton>(
                             message_func(Message::Run), textures_.get_or("run.png", assets::kFallbackImage),

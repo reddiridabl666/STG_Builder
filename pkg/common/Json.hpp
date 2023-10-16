@@ -19,6 +19,27 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2<std::string>, x, y);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FloatRect, left, top, width, height);
 }  // namespace sf
 
+namespace nlohmann {
+template <typename T>
+struct adl_serializer<std::unique_ptr<T>> {
+    static void to_json(json& j, const std::unique_ptr<T>& ptr) {
+        if (ptr) {
+            j = *ptr;
+        } else {
+            j = nullptr;
+        }
+    }
+
+    static void from_json(const json& j, std::unique_ptr<T>& ptr) {
+        if (j.is_null()) {
+            ptr = nullptr;
+        } else {
+            ptr = std::make_unique<T>(j.get<T>());
+        }
+    }
+};
+}  // namespace nlohmann
+
 namespace json {
 inline ErrorOr<nl::json> read(const std::string& path) {
     std::ifstream file(path);

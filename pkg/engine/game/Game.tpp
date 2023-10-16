@@ -6,6 +6,8 @@
 
 namespace engine {
 
+static constexpr const char* kPlayerNum = "__player_num";
+
 template <typename RTreeType>
 Game<RTreeType>::Game(Window& window, PlayerLoader&& player_loader, assets::Textures&& textures,
                       assets::Sounds&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels,
@@ -98,6 +100,10 @@ Error Game<RTreeType>::generate_players() {
     }
 
     for (auto&& player : *players) {
+        int id = std::stoi(player.name().substr(player.name().rfind('-')));
+        player.props().set(kPlayerNum, id);
+
+        rtree_.insert(player.name(), FloatBox(player.get_bounds()));
         objects_.emplace(player.name(), std::move(player));
     }
     return Error::OK;

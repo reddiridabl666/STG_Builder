@@ -1,4 +1,14 @@
 {
+    "New object 2": {
+        "description": "Description goes here",
+        "image": "",
+        "size": {
+            "x": 100.0,
+            "y": 100.0
+        },
+        "speed": 0.0,
+        "tag": ""
+    },
     "enemy": {
         "description": "Simple enemy type",
         "health": 50,

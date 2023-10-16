@@ -64,8 +64,8 @@
                 "type": "circular"
             },
             "pos": {
-                "x": 578.0,
-                "y": 992.77783203125
+                "x": 440.0,
+                "y": 800.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -117,8 +117,8 @@
                 "type": ""
             },
             "pos": {
-                "x": 283.0,
-                "y": 883.77783203125
+                "x": 230.0,
+                "y": 875.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -141,8 +141,24 @@
             },
             "rotation": 180,
             "type": "enemy"
+        },
+        {
+            "lives": {
+                "args": {},
+                "type": ""
+            },
+            "move": {
+                "args": {},
+                "type": ""
+            },
+            "pos": {
+                "x": 366.0,
+                "y": 594.77783203125
+            },
+            "rotation": 0,
+            "type": "New object 2"
         }
     ],
-    "last_updated": 1697309897,
+    "last_updated": 1697491256,
     "name": "The first level"
 }
