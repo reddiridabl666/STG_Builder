@@ -1,33 +1,11 @@
 #include "ObjectEntry.hpp"
 
+#include "Combo.hpp"
+#include "EditorWindow.hpp"
 #include "ui/elements/FuncInput.hpp"
+#include "ui/elements/KeyMapInput.hpp"
 
 namespace ui {
-
-namespace {
-std::string find_item(const std::string& input, int idx) {
-    int cur = 0;
-    int i = 0;
-
-    for (auto chr : input) {
-        if (cur == idx) {
-            return input.substr(i, input.substr(i).find('\0'));
-        }
-
-        if (chr == '\0') {
-            ++cur;
-        }
-
-        ++i;
-    }
-    return "";
-}
-
-int get_type_id(const std::string& types, const std::string& to_find) {
-    return std::ranges::count(types.substr(0, types.find(to_find)), '\0');
-}
-}  // namespace
-
 nl::json CommonEntry::to_json() const {
     nl::json res;
     nl::to_json(res, *this);
@@ -40,17 +18,18 @@ nl::json CommonEntry::to_json() const {
     return res;
 }
 
-std::optional<ObjectEntry::VisualDelta> CommonEntry::draw(const std::string& obj_types) {
-    bool had_changes = false;
+ObjectEntry::Changes CommonEntry::draw(const std::string& obj_types) {
+    Changes changes;
 
-    type_id = get_type_id(obj_types, type);
+    type_id = combo::get_item_id(obj_types, type);
 
     if (ImGui::Combo(message(Message::ObjectType), &type_id, obj_types.c_str())) {
-        type = find_item(obj_types, type_id);
+        type = combo::find_item(obj_types, type_id);
+        changes.type = true;
     }
 
     if (ImGui::InputInt(message(Message::Rotation), &rotation)) {
-        had_changes = true;
+        changes.rotation = true;
     }
 
     ImGui::InputText(message(Message::ActivityStart), &activity_start);
@@ -61,7 +40,7 @@ std::optional<ObjectEntry::VisualDelta> CommonEntry::draw(const std::string& obj
 
     pos.draw(message(Message::Pos));
     if (ImGui::IsItemDeactivated()) {
-        had_changes = true;
+        changes.pos = true;
     }
 
     MoveFuncInput(move);
@@ -69,7 +48,7 @@ std::optional<ObjectEntry::VisualDelta> CommonEntry::draw(const std::string& obj
 
     stats.draw();
 
-    return had_changes ? std::optional<VisualDelta>(VisualDelta{pos, rotation}) : std::nullopt;
+    return changes;
 }
 
 nl::json PlayerEntry::to_json() const {
@@ -80,26 +59,30 @@ nl::json PlayerEntry::to_json() const {
     return res;
 }
 
-std::optional<ObjectEntry::VisualDelta> PlayerEntry::draw(const std::string& obj_types) {
-    bool had_changes = false;
+ObjectEntry::Changes PlayerEntry::draw(const std::string& obj_types) {
+    Changes changes;
 
-    type_id = get_type_id(obj_types, type);
+    type_id = combo::get_item_id(obj_types, type);
 
     if (ImGui::Combo(message(Message::ObjectType), &type_id, obj_types.c_str())) {
-        type = find_item(obj_types, type_id);
+        type = combo::find_item(obj_types, type_id);
+        changes.type = true;
     }
 
     if (ImGui::InputInt(message(Message::Rotation), &rotation)) {
-        had_changes = true;
+        changes.rotation = true;
     }
 
     pos.draw(message(Message::Pos));
     if (ImGui::IsItemDeactivated()) {
-        had_changes = true;
+        changes.pos = true;
     }
 
     stats.draw();
 
-    return had_changes ? std::optional<VisualDelta>(VisualDelta{pos, rotation}) : std::nullopt;
+    ImGui::SeparatorText(message(Message::Controls));
+    KeyMapInput::draw(opts.keys, builder::EditorWindow::get());
+
+    return changes;
 }
 }  // namespace ui

@@ -35,6 +35,7 @@ class Game {
 
     ErrorOr<GameObject> generate_object(const ObjectOptions& opts);
 
+    void add_object(GameObject&&);
     Error generate_objects();
     Error generate_players();
 

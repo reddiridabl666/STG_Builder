@@ -33,7 +33,7 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
                        [&window, this](const sf::Event& event) {
                            auto coords = window.pixel_to_coords(event.mouseButton.x, event.mouseButton.y);
 
-                           auto obj = game_.object_by_pos(coords);
+                           auto obj = game_.get_object(coords);
                            if (!obj) {
                                return;
                            }
@@ -112,7 +112,7 @@ void ObjectEditor::draw(const Window&) {
     if (drag_n_drop_) {
         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
         game_.set_object_pos(*drag_target_, mouse_pos);
-    } else if (game_.object_by_pos(mouse_pos)) {
+    } else if (game_.get_object(mouse_pos)) {
         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     }
 
@@ -125,10 +125,22 @@ void ObjectEditor::draw(const Window&) {
         ImGui::Begin(obj->name().c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::PushItemWidth(100);
 
-        auto delta = obj_data->draw(obj_types_);
-        if (delta.has_value()) {
-            obj->set_rotation(delta->rotation);
-            game_.set_object_pos(*obj, delta->pos.to_vec(game_.field()));
+        auto changes = obj_data->draw(obj_types_);
+
+        if (changes.type) {
+            json_by_obj(obj) = obj_data->to_json();
+
+            game_.reload_object(obj->name(),
+                                *ObjectOptionsFactory(game_.field()).generate(obj_data->to_json()));
+            shown_.erase(it);
+            it = next;
+            ImGui::End();
+            continue;
+        } else if (changes.rotation) {
+            obj->set_rotation(obj_data->get_rotation());
+            game_.set_object_pos(*obj, obj_data->get_pos().to_vec(game_.field()));
+        } else if (changes.pos) {
+            game_.set_object_pos(*obj, obj_data->get_pos().to_vec(game_.field()));
         }
 
         ImGui::PopItemWidth();

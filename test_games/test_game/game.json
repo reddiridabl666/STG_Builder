@@ -8,7 +8,7 @@
     },
     "fps": 60,
     "fullscreen": true,
-    "last_updated": 1697491256,
+    "last_updated": 1697636572,
     "levels": 1,
     "menu": {
         "ratio": 0.3,
@@ -22,39 +22,39 @@
         {
             "opts": {
                 "joy": {
-                    "down": 0,
-                    "left": 0,
-                    "right": 0,
                     "shoot": 0,
                     "slow": 0,
-                    "special": 0,
-                    "up": 0
+                    "special": 0
                 },
                 "keys": {
                     "down": [
-                        "Down",
                         "S"
                     ],
                     "left": [
-                        "Left",
                         "A"
                     ],
                     "right": [
-                        "Right",
                         "D"
                     ],
-                    "shoot": [],
-                    "slow": [],
-                    "special": [],
+                    "shoot": [
+                        "Space",
+                        "Z"
+                    ],
+                    "slow": [
+                        "LShift"
+                    ],
+                    "special": [
+                        "X",
+                        "Enter"
+                    ],
                     "up": [
-                        "Up",
                         "W"
                     ]
                 }
             },
             "pos": {
-                "x": 320.0,
-                "y": 1024.0
+                "x": 267.0,
+                "y": 1013.77783203125
             },
             "rotation": 0,
             "type": "player"

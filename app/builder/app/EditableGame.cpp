@@ -22,8 +22,7 @@ void EditableGame::reload_objects() {
 
         ++idx;
 
-        rtree_.insert(obj->name(), FloatBox(obj->get_bounds()));
-        objects_.emplace(obj->name(), std::move(*obj));
+        add_object(std::move(*obj));
     }
 
     auto err = generate_players();
@@ -32,12 +31,20 @@ void EditableGame::reload_objects() {
     }
 }
 
-GameObject* EditableGame::object_by_pos(const sf::Vector2f& pos) {
+GameObject* EditableGame::get_object(const sf::Vector2f& pos) {
     auto it = rtree_.contains(pos);
     if (it != rtree_.qend()) {
         return &objects_.at(it->second);
     }
     return nullptr;
+}
+
+GameObject* EditableGame::get_object(const std::string& name) {
+    auto it = objects_.find(name);
+    if (it == objects_.end()) {
+        return nullptr;
+    }
+    return &(it->second);
 }
 
 void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
@@ -100,10 +107,9 @@ GameObject& EditableGame::new_object(const std::string& type) {
     }
 
     auto obj_name = obj->name();
-    rtree_.insert(obj_name, obj->get_bounds());
     obj->props().set(kOptsID, level_->objects().size());
 
-    objects_.emplace(obj_name, std::move(*obj));
+    add_object(std::move(*obj));
 
     level_->objects().push_back(std::move(opts));
     level_->prepare_objects();
@@ -119,6 +125,21 @@ void EditableGame::remove_object(const std::string& name) {
     rtree_.remove(name, obj.get_bounds());
     level_->objects().erase(level_->objects().begin() + obj.props().at(kOptsID));
     objects_.erase(name);
+}
+
+GameObject& EditableGame::reload_object(const std::string& name, const ObjectOptions& opts) {
+    const auto& obj = objects_.at(name);
+    rtree_.remove(name, obj.get_bounds());
+
+    size_t id = obj.props().at(kOptsID);
+    level_->objects()[id] = opts;
+    objects_.erase(name);
+
+    auto new_obj = generate_object_debug(id, opts);
+    std::string new_name = new_obj->name();
+
+    add_object(std::move(*new_obj));
+    return objects_.at(new_name);
 }
 
 Error EditableGame::prepare_preview(size_t level) {

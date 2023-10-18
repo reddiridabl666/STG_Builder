@@ -3,6 +3,9 @@
 #include <imgui-SFML.h>
 
 #include "Bus.hpp"
+#include "Combo.hpp"
+
+static const char* object_tags = "enemy\0player\0bullet";
 
 namespace ui {
 const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size", "tag", "speed", ""};
@@ -16,6 +19,7 @@ EntityEntry::EntityEntry(const std::string& name, nl::json* json, std::shared_pt
       data_(json),
       obj_count_(obj_count) {
     nl::from_json(*json, *this);
+    tag_id = combo::get_item_id(object_tags, tag);
     stats_.from_json(*json);
 }
 
@@ -77,9 +81,12 @@ void EntityEntry::draw(const Window&) {
         ImGui::InputText(message(Message::Name), &name);
         ImGui::InputText(message(Message::Desc), &description);
         ImGui::InputText(message(Message::Image), &image);
-        ImGui::InputText(message(Message::Tag), &tag);
-        ImGui::InputFloat(message(Message::Speed), &speed);
 
+        if (ImGui::Combo(message(Message::Tag), &tag_id, object_tags)) {
+            tag = combo::find_item(object_tags, tag_id);
+        }
+
+        ImGui::InputFloat(message(Message::Speed), &speed);
         ImGui::SizeInput(message(Message::Size), &size.x, &size.y);
 
         stats_.draw();
@@ -89,7 +96,7 @@ void EntityEntry::draw(const Window&) {
         if (!shown_) {
             old_name_ = name;
             *data_ = to_json();
-            // Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
+            Bus::get().emit(Bus::Event::ObjectTypeChanged, *data_);
         }
     }
 }

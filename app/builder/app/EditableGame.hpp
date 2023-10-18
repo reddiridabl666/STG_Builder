@@ -24,6 +24,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     GameObject& new_object(const std::string& type);
     void new_object_type(const std::string& type);
     void remove_object(const std::string& name);
+    GameObject& reload_object(const std::string& name, const ObjectOptions& opts);
 
     Error choose_level(size_t);
 
@@ -32,7 +33,8 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     Error prepare_preview(size_t level);
 
     void set_object_pos(GameObject& obj, const sf::Vector2f& pos);
-    GameObject* object_by_pos(const sf::Vector2f& pos);
+    GameObject* get_object(const sf::Vector2f& pos);
+    GameObject* get_object(const std::string& name);
 
     const GameField& field() const {
         return level_->field();

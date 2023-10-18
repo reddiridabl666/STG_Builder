@@ -5,6 +5,7 @@
 #include <SFML/System/Clock.hpp>
 #include <fstream>
 
+#include "EditorWindow.hpp"
 #include "Json.hpp"
 #include "Messages.hpp"
 #include "ObjectEditor.hpp"
@@ -27,7 +28,7 @@ namespace builder {
 static constexpr const char* kImagesPath = "assets/images";
 
 App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
-    : window_(name, width, height),
+    : window_(EditorWindow::init(name, width, height)),
       state_(
           [this](State state) {
               return on_state_start(state);

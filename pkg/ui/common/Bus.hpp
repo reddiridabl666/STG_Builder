@@ -12,6 +12,7 @@ class Bus {
 
     enum class Event {
         ObjectTypesChanged,
+        ObjectTypeChanged,
         ObjectCreated,
         ObjectTypeCreated,
         ObjectDeleted,

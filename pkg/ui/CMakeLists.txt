@@ -9,6 +9,7 @@ set(SOURCES
     elements/FuncInput.cpp
     elements/StringPoint.cpp
     elements/LevelInfo.cpp
+    elements/KeyMapInput.cpp
     elements/tabs/MainTab.cpp
     elements/tabs/EntitiesTab.cpp
     elements/tabs/EntityEntry.cpp

@@ -17,24 +17,44 @@ struct ObjectEntry {
   protected:
     const static inline std::string kDefaultActivityStart = std::to_string(GameObject::kDefaultActivityStart);
 
-    struct VisualDelta {
-        StringPoint pos;
-        int rotation;
+    struct Changes {
+        bool pos = false;
+        bool rotation = false;
+        bool type = false;
     };
 
   public:
-    virtual std::optional<VisualDelta> draw(const std::string& obj_types) = 0;
+    virtual Changes draw(const std::string& obj_types) = 0;
     virtual nl::json to_json() const = 0;
     virtual void set_pos(const sf::Vector2f&) = 0;
+    virtual const std::string& get_type() const = 0;
+    virtual const StringPoint& get_pos() const = 0;
+    virtual int get_rotation() const = 0;
 
     virtual ~ObjectEntry() = default;
 };
 
-struct BasicData {
+struct BasicData : virtual public ObjectEntry {
     BasicData(const std::unordered_set<std::string>& excluded) : stats(excluded) {}
 
     Stats& get_stats() {
         return stats;
+    }
+
+    void set_pos(const sf::Vector2f& new_pos) override {
+        pos = new_pos;
+    }
+
+    const std::string& get_type() const override {
+        return type;
+    }
+
+    const StringPoint& get_pos() const override {
+        return pos;
+    }
+
+    int get_rotation() const override {
+        return rotation;
     }
 
   protected:
@@ -46,7 +66,7 @@ struct BasicData {
     Stats stats;
 };
 
-struct CommonEntry : public ObjectEntry, public BasicData {
+struct CommonEntry : virtual public ObjectEntry, public BasicData {
   private:
     const static inline std::unordered_set<std::string> kExcluded = {"type",  "",    "activity_start", "move",
                                                                      "lives", "pos", "rotation"};
@@ -54,17 +74,9 @@ struct CommonEntry : public ObjectEntry, public BasicData {
   public:
     CommonEntry() : BasicData(kExcluded) {}
 
-    std::optional<VisualDelta> draw(const std::string& obj_types) override;
+    Changes draw(const std::string& obj_types) override;
 
     nl::json to_json() const override;
-
-    void set_pos(const sf::Vector2f& new_pos) override {
-        pos = new_pos;
-    }
-
-    Stats& get_stats() {
-        return stats;
-    }
 
   private:
     std::string activity_start = kDefaultActivityStart;
@@ -75,20 +87,16 @@ struct CommonEntry : public ObjectEntry, public BasicData {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CommonEntry, type, activity_start, pos, rotation, move, lives)
 };
 
-struct PlayerEntry : public ObjectEntry, public BasicData {
+struct PlayerEntry : virtual public ObjectEntry, public BasicData {
   private:
-    const static inline std::unordered_set<std::string> kExcluded = {"type", "pos", "rotation"};
+    const static inline std::unordered_set<std::string> kExcluded = {"type", "pos", "rotation", "opts"};
 
   public:
     PlayerEntry() : BasicData(kExcluded) {}
 
-    std::optional<VisualDelta> draw(const std::string& obj_types) override;
+    Changes draw(const std::string& obj_types) override;
 
     nl::json to_json() const override;
-
-    void set_pos(const sf::Vector2f& new_pos) override {
-        pos = new_pos;
-    }
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(PlayerEntry, type, pos, rotation, opts)
 

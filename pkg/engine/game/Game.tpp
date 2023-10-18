@@ -34,6 +34,12 @@ Error Game<RTreeType>::render(float delta_time) {
 }
 
 template <typename RTreeType>
+void Game<RTreeType>::add_object(GameObject&& obj) {
+    rtree_.insert(obj.name(), obj.get_bounds());
+    objects_.emplace(obj.name(), std::move(obj));
+}
+
+template <typename RTreeType>
 void Game<RTreeType>::draw_objects() {
     if (!level_) {
         return;
@@ -118,10 +124,6 @@ ErrorOr<GameObject> Game<RTreeType>::generate_object(const ObjectOptions& opts) 
     auto obj = types_.at(opts.type).create_object(opts, textures_);
     if (!obj) {
         return tl::unexpected(obj.error());
-    }
-
-    if (!level_) {
-        return Error::New("No level loaded");
     }
 
     return obj;

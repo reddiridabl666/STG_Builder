@@ -3,6 +3,8 @@
 #include <imgui-SFML.h>
 #include <imgui.h>
 
+#include <thread>
+
 #include "Drawable.hpp"
 
 Window::Window(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync,
@@ -42,6 +44,25 @@ void Window::process_events() {
     }
 }
 
+sf::Keyboard::Key Window::await_key_press(float seconds, int sleep_delta) {
+    sf::Clock clock;
+    sf::Event event;
+
+    while (seconds < 0 || clock.getElapsedTime().asSeconds() < seconds) {
+        if (!window_.pollEvent(event)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleep_delta));
+        }
+
+        if (event.type != sf::Event::KeyReleased) {
+            continue;
+        }
+
+        return event.key.code;
+    }
+
+    return sf::Keyboard::Unknown;
+}
+
 void Window::add_handler(const std::string& key, sf::Event::EventType event,
                          const std::function<void(sf::Event)>& handler) {
     handlers_.emplace(key, EventHandler{event, handler});
@@ -53,19 +74,15 @@ void Window::remove_handler(const std::string& key) {
 
 void Window::main_loop(const std::function<void()>& cb) {
     while (is_open()) {
-        frame(cb);
+        process_events();
+        clear();
+
+        update_ui();
+
+        cb();
+
+        display();
     }
-}
-
-void Window::frame(const std::function<void()>& cb) {
-    process_events();
-    clear();
-
-    update_ui();
-
-    cb();
-
-    display();
 }
 
 sf::Vector2u Window::get_size() const {

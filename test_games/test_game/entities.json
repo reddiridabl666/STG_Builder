@@ -6,8 +6,8 @@
             "x": 100.0,
             "y": 100.0
         },
-        "speed": 0.0,
-        "tag": ""
+        "speed": 10.0,
+        "tag": "enemy"
     },
     "enemy": {
         "description": "Simple enemy type",

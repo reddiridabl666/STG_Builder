@@ -47,6 +47,8 @@ struct EntityEntry : public Element {
     std::string image;
     std::string description = "Description goes here";
     std::string tag = "";
+    int tag_id = 0;
+
     sf::Vector2f size = {100, 100};
     float speed = 0;
 

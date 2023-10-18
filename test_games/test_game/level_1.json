@@ -20,11 +20,11 @@
                 "type": "linear"
             },
             "pos": {
-                "x": 106.0,
-                "y": 1298.7777099609375
+                "x": 564.0,
+                "y": 613.77783203125
             },
-            "rotation": 60,
-            "type": "enemy"
+            "rotation": 90,
+            "type": "New object 2"
         },
         {
             "activity_start": "50%",
@@ -64,8 +64,8 @@
                 "type": "circular"
             },
             "pos": {
-                "x": 440.0,
-                "y": 800.77783203125
+                "x": 429.0,
+                "y": 778.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -101,8 +101,8 @@
                 "type": "user_control"
             },
             "pos": {
-                "x": 79.0,
-                "y": 679.77783203125
+                "x": 25.0,
+                "y": 665.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -136,8 +136,8 @@
                 "type": "linear"
             },
             "pos": {
-                "x": 254.0,
-                "y": 744.77783203125
+                "x": 251.0,
+                "y": 697.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -156,9 +156,9 @@
                 "y": 594.77783203125
             },
             "rotation": 0,
-            "type": "New object 2"
+            "type": "enemy"
         }
     ],
-    "last_updated": 1697491256,
+    "last_updated": 1697636572,
     "name": "The first level"
 }

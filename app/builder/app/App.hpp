@@ -49,7 +49,7 @@ class App {
     std::function<void()> game_choice(const fs::path& current_game);
     std::function<void()> new_game();
 
-    Window window_;
+    Window& window_;
     StateManager<State> state_;
 
     fs::path games_dir_;

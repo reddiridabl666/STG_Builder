@@ -18,6 +18,8 @@ class Window {
     bool is_open() const;
     void process_events();
 
+    sf::Keyboard::Key await_key_press(float seconds = -1, int sleep_delta = 100);
+
     sf::Vector2f pixel_to_coords(int x, int y) const {
         return window_.mapPixelToCoords(sf::Vector2i{x, y});
     }
@@ -32,7 +34,6 @@ class Window {
     void remove_handler(const std::string& key);
 
     void main_loop(const std::function<void()>& cb);
-    void frame(const std::function<void()>& cb);
 
     sf::Vector2u get_size() const;
 

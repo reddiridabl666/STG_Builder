@@ -26,6 +26,7 @@ class Lang {
 };
 
 enum class Message {
+    Add,
     Games,
     Levels,
     Run,
@@ -77,7 +78,17 @@ enum class Message {
     CantDelete,
     CantDeleteFull,
     Movement,
-    IsAlive
+    IsAlive,
+    Controls,
+    Keyboard,
+    Gamepad,
+    Left,
+    Right,
+    Up,
+    Down,
+    Shoot,
+    Slow,
+    Bomb
 };
 
 const char* message(Message type);

@@ -22,7 +22,7 @@ struct EntitiesTabContents : public Element {
                       [this, &textures] {
                           auto name = fmt::format("New object {}", box_.size());
 
-                          data_[name] = {{"size", sf::Vector2f{100, 100}}};
+                          data_[name] = {{"size", sf::Vector2f{100, 100}}, {"speed", 10}};
                           Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
                           Bus::get().emit(Bus::Event::ObjectTypeCreated, name);
 
