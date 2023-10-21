@@ -1,9 +1,9 @@
 #include "FuncInput.hpp"
 
+#include "Combo.hpp"
 #include "ImguiUtils.hpp"
 #include "Life.hpp"
 #include "Messages.hpp"
-#include "Movement.hpp"
 
 namespace ui {
 namespace {
@@ -16,16 +16,13 @@ int get_type_id(const char* const* types, size_t size, const std::string& to_fin
     return 0;
 }
 
-void func_input(const char* msg, const char* const* types,
-                const std::unordered_map<std::string, nl::json>& args, size_t size, FuncInfo& func) {
-    ImGui::SeparatorText(msg);
-
+void func_input(const char* const* types, const std::unordered_map<std::string, nl::json>& args, size_t size,
+                FuncInfo& func) {
     int idx = get_type_id(types, size, func.type);
-    auto id = std::string(message(Message::Type)) + "##" + msg;
+    auto id = std::string(message(Message::Type)) + "##" + func.type;
     if (ImGui::Combo(id.c_str(), &idx, types, size)) {
         func.type = types[idx];
         func.args = args.at(func.type);
-        // fmt::println("{}", func.args.dump(4));
     }
 
     for (auto& [key, val] : func.args.items()) {
@@ -51,15 +48,54 @@ void func_input(const char* msg, const char* const* types,
             val = res;
         }
     }
-    ImGui::NewLine();
+}
+
+void func_input(const char* const* types, const std::unordered_map<std::string, nl::json>& args, size_t size,
+                TimedFuncInfo& func) {
+    func_input(types, args, size, static_cast<FuncInfo&>(func));
+    ImGui::InputFloat(message(Message::Time), &func.time);
 }
 }  // namespace
 
+static constexpr size_t alive_types_num = sizeof(alive::types) / sizeof(alive::types[0]);
+
 void AliveFuncInput(FuncInfo& func) {
-    func_input(message(Message::IsAlive), alive::types, alive::args, 4, func);
+    ImGui::SeparatorText(message(Message::IsAlive));
+    func_input(alive::types, alive::args, alive_types_num, func);
+    ImGui::NewLine();
 }
 
-void MoveFuncInput(FuncInfo& func) {
-    func_input(message(Message::Movement), movement::types, movement::args, 4, func);
+static constexpr size_t movement_types_num = sizeof(movement::types) / sizeof(movement::types[0]);
+
+static std::vector<size_t> to_delete_ids;
+
+std::vector<size_t>& MoveFuncInput(movement::MultiInfo& info) {
+    ImGui::SeparatorText(message(Message::Movement));
+
+    int cur_id = static_cast<int>(info.repeat);
+    if (ImGui::Combo(message(Message::Repeat), &cur_id, message(Message::RepeatTypes))) {
+        info.repeat = static_cast<movement::Repeat>(cur_id);
+    }
+
+    ImGui::NewLine();
+
+    size_t idx = 0;
+    for (auto& func : info.rules) {
+        ImGui::PushID(&func);
+        func_input(movement::types, movement::args, movement_types_num, func);
+        ImGui::PopID();
+
+        if (ImGui::Button(message(Message::Delete))) {
+            to_delete_ids.push_back(idx);
+        }
+        ++idx;
+        ImGui::NewLine();
+    }
+
+    if (ImGui::Button(message(Message::Add))) {
+        info.rules.push_back(TimedFuncInfo{"none", nl::json::object(), 0});
+    }
+
+    return to_delete_ids;
 }
 }  // namespace ui

@@ -127,18 +127,19 @@ void EditableGame::remove_object(const std::string& name) {
     objects_.erase(name);
 }
 
-GameObject& EditableGame::reload_object(const std::string& name, const ObjectOptions& opts) {
+GameObject& EditableGame::reload_object(const std::string& name, ObjectOptions&& opts) {
     const auto& obj = objects_.at(name);
     rtree_.remove(name, obj.get_bounds());
 
     size_t id = obj.props().at(kOptsID);
-    level_->objects()[id] = opts;
     objects_.erase(name);
 
     auto new_obj = generate_object_debug(id, opts);
     std::string new_name = new_obj->name();
 
     add_object(std::move(*new_obj));
+    level_->objects()[id] = std::move(opts);
+
     return objects_.at(new_name);
 }
 

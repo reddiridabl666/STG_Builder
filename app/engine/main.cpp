@@ -22,7 +22,7 @@ int main() {
     }
 
     try {
-        auto window = WindowInfo::from_json(*game_json).make_window();
+        auto window = game_json->get<WindowInfo>().make_window();
 
         auto app = engine::App{
             window,

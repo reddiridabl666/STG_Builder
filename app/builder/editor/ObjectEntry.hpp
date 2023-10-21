@@ -81,10 +81,10 @@ struct CommonEntry : virtual public ObjectEntry, public BasicData {
   private:
     std::string activity_start = kDefaultActivityStart;
 
-    FuncInfo move;
+    movement::MultiInfo move;
     FuncInfo lives;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CommonEntry, type, activity_start, pos, rotation, move, lives)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CommonEntry, type, activity_start, pos, move, rotation, lives)
 };
 
 struct PlayerEntry : virtual public ObjectEntry, public BasicData {

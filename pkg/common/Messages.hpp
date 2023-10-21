@@ -27,6 +27,9 @@ class Lang {
 
 enum class Message {
     Add,
+    Repeat,
+    RepeatTypes,
+    Time,
     Games,
     Levels,
     Run,
@@ -91,8 +94,8 @@ enum class Message {
     Bomb
 };
 
-const char* message(Message type);
+const char* message(Message type, Lang::Value lang = Lang::current());
 
 inline std::function<const char*()> message_func(Message type) {
-    return std::bind(message, type);
+    return std::bind(message, type, Lang::current());
 }

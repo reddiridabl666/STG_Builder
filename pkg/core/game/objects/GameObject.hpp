@@ -29,7 +29,7 @@ class GameObject : public ImageContainer {
                int speed = 50, Tag tag = Tag::Object, const Properties& props = {},
                float activity_start = kDefaultActivityStart,
                const alive::update& life_func = kDefaultLifeFunc,
-               const movement::Func& move_func = movement::no_op, sf::Vector2f velocity = {},
+               std::unique_ptr<movement::Rule>&& move_func = movement::no_op(), sf::Vector2f velocity = {},
                bool alive = true, bool active = false);
 
     GameObject(GameObject&& other);
@@ -47,11 +47,7 @@ class GameObject : public ImageContainer {
 
     float width() const;
 
-    void set_movement(const movement::Func& move) {
-        move_update_ = move;
-    }
-
-    void set_movement(movement::Func&& move) {
+    void set_movement(std::unique_ptr<movement::Rule>&& move) {
         move_update_ = std::move(move);
     }
 
@@ -140,7 +136,7 @@ class GameObject : public ImageContainer {
     Properties props_;
 
     sf::Vector2f velocity_;
-    movement::Func move_update_;
+    std::unique_ptr<movement::Rule> move_update_;
     alive::update life_update_ = kDefaultLifeFunc;
 
     bool active_ = false;

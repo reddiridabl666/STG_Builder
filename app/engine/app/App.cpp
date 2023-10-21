@@ -7,7 +7,13 @@
 #include "ui/elements/StatBox.hpp"
 
 namespace engine {
-App::App(Window& window, Game<>&& game) : window_(window), game_(std::move(game)) {}
+App::App(Window& window, Game<>&& game) : window_(window), game_(std::move(game)) {
+    window_.add_handler("app_engine_pause", sf::Event::KeyReleased, [this](sf::Event event) {
+        if (event.key.code == sf::Keyboard::Escape) {
+            paused_ = !paused_;
+        }
+    });
+}
 
 void App::run() {
     sf::Clock timer;
@@ -17,13 +23,21 @@ void App::run() {
         window_.clear();
 
         window_.update_ui();
-
-        auto err = game_.render(timer.restart().asSeconds());
-        if (err) {
-            throw std::runtime_error(err.message());
+        if (!paused_) {
+            auto err = game_.render(timer.restart().asSeconds());
+            if (err) {
+                throw std::runtime_error(err.message());
+            }
+        } else {
+            timer.restart();
+            game_.draw_objects();
         }
 
         window_.display();
     }
+}
+
+App::~App() {
+    window_.remove_handler("app_engine_pause");
 }
 }  // namespace engine

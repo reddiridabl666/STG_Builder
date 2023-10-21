@@ -151,8 +151,12 @@ struct MoveHandler : Handler<ObjectOptions> {
     }
 
     void handle(ObjectOptions& obj, const std::string&, const nl::json& value) override {
-        auto move_info = value.template get<FuncInfo>();
-        obj.move = FuncBuilder::generate<movement::Func>(move_info);
+        if (!value.contains("rules")) {
+            auto move_info = value.template get<FuncInfo>();
+            obj.move = FuncBuilder::generate<std::unique_ptr<movement::Rule>>(move_info);
+            return;
+        }
+        obj.move = FuncBuilder::generate(value.template get<movement::MultiInfo>());
     }
 };
 

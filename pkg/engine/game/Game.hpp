@@ -25,11 +25,10 @@ class Game {
     }
 
     void clear();
+    void draw_objects();
 
   protected:
     Error update(float delta_time);
-
-    void draw_objects();
 
     Error update_level();
 

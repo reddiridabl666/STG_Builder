@@ -5,7 +5,7 @@
 
 #define U8(str) reinterpret_cast<const char*>(u8##str)
 
-const char* message(Message type) {
+const char* message(Message type, Lang::Value lang) {
     static const std::unordered_map<Message, std::array<const char*, Lang::Count>> messages = {
         {Message::Exit, {U8("Выход"), "Quit"}},
         {Message::Games, {U8("Ваши игры"), "Your games"}},
@@ -44,6 +44,7 @@ const char* message(Message type) {
         {Message::ObjectTypes, {U8("Типы объектов"), "Object types"}},
         {Message::ObjectType, {U8("Тип объекта"), "Object type"}},
         {Message::Tag, {U8("Тег"), "Tag"}},
+        {Message::Time, {U8("Время"), "Time"}},
         {Message::Stats, {U8("Характеристики"), "Stats"}},
         {Message::AddStat, {U8("Добавить"), "Add"}},
         {Message::Levels, {U8("Уровней"), "Levels"}},
@@ -63,6 +64,8 @@ const char* message(Message type) {
         {Message::Pixels, {U8("Пикселей"), "Pixels"}},
         {Message::Type, {U8("Тип"), "Type"}},
         {Message::Movement, {U8("Движение"), "Movement"}},
+        {Message::Repeat, {U8("Повтор"), "Repeat"}},
+        {Message::RepeatTypes, {U8("да\0нет\0последний"), "yes\0no\0last"}},
         {Message::IsAlive, {U8("Жизненный цикл"), "Vital signs"}},
         {Message::LastUpdated, {U8("Обновлено: %s"), "Last updated: %s"}},
         {Message::CantDelete, {U8("Невозможно удалить тип объекта"), "Object type can't be deleted"}},
@@ -78,5 +81,5 @@ const char* message(Message type) {
           "All measures are set relative to window`s size, from 0 to 1"}},
     };
 
-    return messages.at(type)[Lang::current()];
+    return messages.at(type)[lang];
 }

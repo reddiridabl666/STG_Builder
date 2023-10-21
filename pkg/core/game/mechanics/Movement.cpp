@@ -6,12 +6,10 @@
 #include "GameObject.hpp"
 #include "LinAlg.hpp"
 
-using Key = sf::Keyboard;
-
 namespace {
 bool keys_are_pressed(const KeyList& keys) {
     for (auto key : keys) {
-        if (Key::isKeyPressed(key)) {
+        if (sf::Keyboard::isKeyPressed(key)) {
             return true;
         }
     }
@@ -44,34 +42,113 @@ int vertical(const KeyControls& keys, const JoyControls&) {
 }  // namespace
 
 namespace movement {
-Func linear(float x, float y) {
+std::unique_ptr<Func> linear(float x, float y) {
     sf::Vector2f velocity;
-    return Func(Func::Type::Pos, [velocity = sf::Vector2f{x, y}](const GameObject& obj, float delta_time) {
-        return obj.pos() + obj.speed() * velocity * delta_time;
-    });
+    return std::make_unique<Func>(Func::Type::Pos,
+                                  [velocity = sf::Vector2f{x, y}](const GameObject& obj, float delta_time) {
+                                      return obj.pos() + obj.speed() * velocity * delta_time;
+                                  });
 }
 
-Func circular(sf::Vector2f center, float speed) {
-    return Func(Func::Type::Pos, [center, speed](const GameObject& obj, float delta_time) mutable {
-        static sf::Vector2f r_vec = center - obj.pos();
-        static float angle = atan(r_vec.y / r_vec.x);
-        static float radius = abs(r_vec);
+std::unique_ptr<Func> circular(sf::Vector2f center, float speed) {
+    return std::make_unique<Func>(Func::Type::Pos,
+                                  [center, speed](const GameObject& obj, float delta_time) mutable {
+                                      static sf::Vector2f r_vec = center - obj.pos();
+                                      static float angle = atan(r_vec.y / r_vec.x);
+                                      static float radius = abs(r_vec);
 
-        angle += speed * delta_time;
+                                      angle += speed * delta_time;
 
-        float x = center.x + radius * cos(angle);
-        float y = center.y + radius * sin(angle);
+                                      float x = center.x + radius * cos(angle);
+                                      float y = center.y + radius * sin(angle);
 
-        return sf::Vector2f{x, y};
-    });
+                                      return sf::Vector2f{x, y};
+                                  });
 }
 
-Func user_control(int user_num, const KeyControls& keys, const JoyControls& joy) {
-    return Func(
+std::unique_ptr<Func> user_control(int user_num, const KeyControls& keys, const JoyControls& joy) {
+    return std::make_unique<Func>(
         Func::Type::Velocity,
         [user_num, keys, joy](const GameObject&, float) {
             return sf::Vector2f{1.f * horizontal(keys, joy), 1.f * vertical(keys, joy)};
         },
         true);
+}
+
+Multi::Multi(std::vector<std::unique_ptr<Rule>>&& funcs, std::vector<float>&& times, Repeat repeat)
+    : funcs_(std::move(funcs)), times_(std::move(times)), repeat_(repeat) {
+    if (funcs_.size() > times_.size()) {
+        throw std::runtime_error("you should supply time limit for each stage of movement rule");
+    }
+}
+
+sf::Vector2f Multi::operator()(GameObject& obj, float delta) {
+    if (current_time_ > times_[current_]) {
+        ++current_;
+        current_time_ = 0;
+    }
+
+    if (current_ >= funcs_.size()) {
+        switch (repeat_) {
+            case Repeat::Repeat:
+                current_ = 0;
+                break;
+            case Repeat::Stop:
+                return (*funcs_[current_ - 1])(obj, delta);
+                break;
+            case Repeat::StopAtLast:
+                current_ = funcs_.size() - 1;
+                break;
+        }
+    }
+
+    current_time_ += delta;
+    return (*funcs_[current_])(obj, delta);
+}
+
+Multi::operator bool() const {
+    if (current_ >= funcs_.size()) {
+        return false;
+    }
+    return bool(funcs_[current_]) && bool(*funcs_[current_]);
+}
+
+Rule::Type Multi::type() const {
+    return funcs_[current_]->type();
+}
+
+bool Multi::moves_with_field() const {
+    return funcs_[current_]->moves_with_field();
+}
+
+std::unique_ptr<Rule> Multi::clone() const {
+    std::vector<std::unique_ptr<Rule>> funcs;
+    funcs.reserve(funcs_.size());
+
+    for (const auto& func : funcs_) {
+        funcs.push_back(func->clone());
+    }
+
+    return std::make_unique<Multi>(std::move(funcs), std::vector(times_), repeat_);
+}
+
+void from_json(const nl::json& json, MultiInfo& info) {
+    [[maybe_unused]] std::string contents = json.dump(4);
+    if (json.contains("rules")) {
+        json.at("rules").get_to(info.rules);
+        json.at("repeat").get_to(info.repeat);
+    } else {
+        info.rules.push_back(json.template get<TimedFuncInfo>());
+        json::get<Repeat>(json, "repeat", Repeat::Repeat);
+    }
+}
+
+void to_json(nl::json& json, const MultiInfo& info) {
+    if (info.rules.size() > 1) {
+        json["rules"] = info.rules;
+    } else {
+        json = info.rules.front();
+    }
+    json["repeat"] = info.repeat;
 }
 }  // namespace movement

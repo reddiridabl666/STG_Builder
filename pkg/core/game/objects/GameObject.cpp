@@ -4,14 +4,15 @@
 
 GameObject::GameObject(const std::string& name, const sf::Vector2f& size,
                        std::unique_ptr<Displayable>&& image, int speed, Tag tag, const Properties& props,
-                       float activity_start, const alive::update& life_func, const movement::Func& move_func,
-                       sf::Vector2f velocity, bool alive, bool active)
+                       float activity_start, const alive::update& life_func,
+                       std::unique_ptr<movement::Rule>&& move_func, sf::Vector2f velocity, bool alive,
+                       bool active)
     : ImageContainer(std::move(image), speed),
       name_(name),
       tag_(tag),
       props_(props),
       velocity_(velocity),
-      move_update_(move_func),
+      move_update_(std::move(move_func)),
       life_update_(life_func),
       active_(active),
       alive_(alive),
@@ -60,20 +61,20 @@ void GameObject::update(const GameField& field, float delta_time) {
 }
 
 void GameObject::update_position(const GameField& field, float delta_time) {
-    if (!move_update_) {
+    if (!move_update_ || !(*move_update_)) {
         return;
     }
 
-    if (move_update_.type() == movement::Func::Type::Pos) {
-        return set_pos(move_update_(*this, delta_time));
-    }
-
-    velocity_ = move_update_(*this, delta_time);
-    move(speed_ * velocity_ * delta_time);
-
-    if (move_update_.moves_with_field()) {
+    if (move_update_->moves_with_field()) {
         move(field.speed() * sf::Vector2f{0, -1} * delta_time);
     }
+
+    if (move_update_->type() == movement::Rule::Type::Pos) {
+        return set_pos(move_update_->operator()(*this, delta_time));
+    }
+
+    velocity_ = move_update_->operator()(*this, delta_time);
+    move(speed_ * velocity_ * delta_time);
 }
 
 bool GameObject::update_activity(const GameField& field) {

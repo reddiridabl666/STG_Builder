@@ -17,6 +17,9 @@ struct ObjectOptions {
     ObjectOptions(const std::string& type, const sf::Vector2f& pos)
         : type(type), pos_x(pos.x), pos_y(pos.y) {}
 
+    ObjectOptions(ObjectOptions&&) = default;
+    ObjectOptions& operator=(ObjectOptions&& other) = default;
+
     void set_props(GameObject& obj) const;
 
     auto operator<=>(const ObjectOptions& other) const {
@@ -25,7 +28,7 @@ struct ObjectOptions {
 
     std::string type;
 
-    movement::Func move;
+    std::unique_ptr<movement::Rule> move = movement::no_op();
     alive::update life_func = GameObject::kDefaultLifeFunc;
 
     Properties props;

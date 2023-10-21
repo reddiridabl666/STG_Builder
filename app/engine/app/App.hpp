@@ -10,10 +10,13 @@ class App {
 
     void run();
 
+    ~App();
+
   private:
     void draw_ui();
 
     Window& window_;
     Game<> game_;
+    bool paused_ = false;
 };
 }  // namespace engine

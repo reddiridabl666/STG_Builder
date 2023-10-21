@@ -15,7 +15,7 @@ ErrorOr<GameObject> ObjectType::create_object(const ObjectOptions& opts, assets:
     auto obj_name = fmt::format("{}-{}", name, obj_count_);
 
     GameObject res(obj_name, size, std::move(displayable), speed, tag, props, opts.activity_start,
-                   opts.life_func, opts.move);
+                   opts.life_func, opts.move->clone());
     opts.set_props(res);
 
     GameState::get().emit(GameState::Event::ObjectCreated, res.tag());

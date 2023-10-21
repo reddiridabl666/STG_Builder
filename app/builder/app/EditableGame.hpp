@@ -24,7 +24,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     GameObject& new_object(const std::string& type);
     void new_object_type(const std::string& type);
     void remove_object(const std::string& name);
-    GameObject& reload_object(const std::string& name, const ObjectOptions& opts);
+    GameObject& reload_object(const std::string& name, ObjectOptions&& opts);
 
     Error choose_level(size_t);
 
