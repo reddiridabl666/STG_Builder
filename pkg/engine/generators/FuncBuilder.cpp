@@ -18,7 +18,7 @@ std::unique_ptr<movement::Rule> FuncBuilder::generate(const FuncInfo& info) {
 
     if (info.type == "circular") {
         return movement::circular(
-            info.args.at("center").get<sf::Vector2f>(),
+            info.args.at("radius").get<sf::Vector2f>(),
             info.args.at("speed").get<float>()
         );
     }

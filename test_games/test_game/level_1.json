@@ -31,11 +31,11 @@
                     },
                     {
                         "args": {
-                            "center": {
-                                "x": 300.0,
-                                "y": 400.0
+                            "radius": {
+                                "x": -50.0,
+                                "y": -50.0
                             },
-                            "speed": 10.0
+                            "speed": 1.0
                         },
                         "time": 2.0,
                         "type": "circular"
@@ -78,9 +78,9 @@
             },
             "move": {
                 "args": {
-                    "center": {
-                        "x": 300.0,
-                        "y": 800.0
+                    "radius": {
+                        "x": -130.0,
+                        "y": 30.0
                     },
                     "speed": 1.0
                 },
@@ -184,6 +184,6 @@
             "type": "enemy"
         }
     ],
-    "last_updated": 1697887253,
+    "last_updated": 1697923444,
     "name": "The first level"
 }

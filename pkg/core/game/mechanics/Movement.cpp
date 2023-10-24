@@ -50,20 +50,23 @@ std::unique_ptr<Func> linear(float x, float y) {
                                   });
 }
 
-std::unique_ptr<Func> circular(sf::Vector2f center, float speed) {
-    return std::make_unique<Func>(Func::Type::Pos,
-                                  [center, speed](const GameObject& obj, float delta_time) mutable {
-                                      static sf::Vector2f r_vec = center - obj.pos();
-                                      static float angle = atan(r_vec.y / r_vec.x);
-                                      static float radius = abs(r_vec);
+std::unique_ptr<Func> circular(sf::Vector2f radius, float speed) {
+    return std::make_unique<Func>(
+        Func::Type::Pos,
+        [radius, speed, angle = atan(radius.y / radius.x), radius_len = abs(radius), started = false,
+         center = sf::Vector2f{}](const GameObject& obj, float delta_time) mutable {
+            if (!started) {
+                center = radius + obj.pos();
+                started = true;
+            }
 
-                                      angle += speed * delta_time;
+            angle += speed * delta_time;
 
-                                      float x = center.x + radius * cos(angle);
-                                      float y = center.y + radius * sin(angle);
+            float x = center.x + radius_len * cos(angle);
+            float y = center.y + radius_len * sin(angle);
 
-                                      return sf::Vector2f{x, y};
-                                  });
+            return sf::Vector2f{x, y};
+        });
 }
 
 std::unique_ptr<Func> user_control(int user_num, const KeyControls& keys, const JoyControls& joy) {

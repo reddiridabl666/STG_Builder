@@ -101,7 +101,7 @@ inline std::unique_ptr<Rule> no_op() {
 
 std::unique_ptr<Func> linear(float x = 0, float y = -1);
 
-std::unique_ptr<Func> circular(sf::Vector2f center, float);
+std::unique_ptr<Func> circular(sf::Vector2f radius, float speed);
 
 std::unique_ptr<Func> user_control(int user_num = 1, const KeyControls& keys = kDefaultKeyControls,
                                    const JoyControls& joy = kDefaultJoyControls);
