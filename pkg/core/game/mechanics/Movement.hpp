@@ -20,23 +20,31 @@ struct Rule {
         Unknown
     };
 
-    virtual sf::Vector2f operator()(GameObject& obj, float delta) = 0;
-    virtual Type type() const = 0;
+    struct Result {
+        Type type;
+        union {
+            sf::Vector2f pos;
+            sf::Vector2f velocity;
+        };
+    };
+
+    virtual Result operator()(const GameObject& obj, float delta) = 0;
     virtual bool moves_with_field() const = 0;
     virtual operator bool() const = 0;
+    virtual void init(const GameObject&) {}
     virtual std::unique_ptr<Rule> clone() const = 0;
     virtual ~Rule() = default;
 };
 
 struct Func : public Rule {
   public:
-    Func() : type_(Type::Unknown), func_(nullptr) {}
+    Func() : func_(nullptr) {}
 
     template <typename T>
-    Func(Type type, T&& func, bool moves_with_field = false)
-        : type_(type), func_(std::forward<T>(func)), moves_with_field_(moves_with_field) {}
+    Func(T&& func, bool moves_with_field = false)
+        : func_(std::forward<T>(func)), moves_with_field_(moves_with_field) {}
 
-    sf::Vector2f operator()(GameObject& obj, float delta) override {
+    Result operator()(const GameObject& obj, float delta) override {
         return func_(obj, delta);
     }
 
@@ -44,26 +52,27 @@ struct Func : public Rule {
         return bool(func_);
     }
 
-    Type type() const override {
-        return type_;
-    }
-
     bool moves_with_field() const override {
         return moves_with_field_;
     }
 
     std::unique_ptr<Rule> clone() const override {
-        return std::make_unique<Func>(type_, func_, moves_with_field_);
+        return std::make_unique<Func>(func_, moves_with_field_);
     }
 
   private:
-    using update = std::function<sf::Vector2f(const GameObject& obj, float delta)>;
+    using update = std::function<Result(const GameObject& obj, float delta)>;
 
-    Type type_;
     update func_;
-
     bool moves_with_field_ = false;
 };
+
+std::unique_ptr<Rule> linear(float x = 0, float y = -1);
+
+std::unique_ptr<Rule> circular(const sf::Vector2f& radius, float speed);
+
+std::unique_ptr<Rule> user_control(int user_num = 1, const KeyControls& keys = kDefaultKeyControls,
+                                   const JoyControls& joy = kDefaultJoyControls);
 
 enum class Repeat {
     Repeat,
@@ -76,11 +85,9 @@ struct Multi : public Rule {
     Multi(std::vector<std::unique_ptr<Rule>>&& funcs, std::vector<float>&& times,
           Repeat repeat = Repeat::Repeat);
 
-    sf::Vector2f operator()(GameObject& obj, float delta) override;
+    Result operator()(const GameObject& obj, float delta) override;
 
     operator bool() const override;
-
-    Type type() const override;
 
     bool moves_with_field() const override;
 
@@ -98,13 +105,6 @@ struct Multi : public Rule {
 inline std::unique_ptr<Rule> no_op() {
     return std::make_unique<Func>();
 }
-
-std::unique_ptr<Func> linear(float x = 0, float y = -1);
-
-std::unique_ptr<Func> circular(sf::Vector2f radius, float speed);
-
-std::unique_ptr<Func> user_control(int user_num = 1, const KeyControls& keys = kDefaultKeyControls,
-                                   const JoyControls& joy = kDefaultJoyControls);
 
 inline const char* const types[4] = {"none", "linear", "circular", "user_control"};
 

@@ -6,6 +6,7 @@
 #include "GameObject.hpp"
 #include "LinAlg.hpp"
 
+namespace movement {
 namespace {
 bool keys_are_pressed(const KeyList& keys) {
     for (auto key : keys) {
@@ -39,41 +40,71 @@ int vertical(const KeyControls& keys, const JoyControls&) {
 
     return 0;
 }
+
+struct Circular : public Rule {
+  public:
+    Circular(const sf::Vector2f& radius, float speed)
+        : radius_(radius), speed_(speed), radius_len_(abs(radius)) {}
+
+    Result operator()(const GameObject&, float delta_time) override {
+        angle_ += speed_ * delta_time;
+
+        float x = center_.x + radius_len_ * cos(angle_);
+        float y = center_.y + radius_len_ * sin(angle_);
+
+        return Result{
+            .type = Rule::Type::Pos,
+            .pos = sf::Vector2f{x, y},
+        };
+    }
+
+    bool moves_with_field() const override {
+        return false;
+    }
+
+    operator bool() const override {
+        return true;
+    }
+
+    void init(const GameObject& obj) override {
+        center_ = radius_ + obj.pos();
+        angle_ = atan(radius_.y / radius_.x);
+    }
+
+    std::unique_ptr<Rule> clone() const override {
+        return std::make_unique<Circular>(radius_, speed_);
+    }
+
+  private:
+    sf::Vector2f radius_;
+    float speed_;
+
+    float angle_;
+    const float radius_len_;
+    sf::Vector2f center_;
+};
 }  // namespace
 
-namespace movement {
-std::unique_ptr<Func> linear(float x, float y) {
-    sf::Vector2f velocity;
-    return std::make_unique<Func>(Func::Type::Pos,
-                                  [velocity = sf::Vector2f{x, y}](const GameObject& obj, float delta_time) {
-                                      return obj.pos() + obj.speed() * velocity * delta_time;
-                                  });
+std::unique_ptr<Rule> linear(float x, float y) {
+    return std::make_unique<Func>([velocity = sf::Vector2f{x, y}](const GameObject&, float) {
+        return Rule::Result{
+            .type = Rule::Type::Velocity,
+            .velocity = velocity,
+        };
+    });
 }
 
-std::unique_ptr<Func> circular(sf::Vector2f radius, float speed) {
-    return std::make_unique<Func>(
-        Func::Type::Pos,
-        [radius, speed, angle = atan(radius.y / radius.x), radius_len = abs(radius), started = false,
-         center = sf::Vector2f{}](const GameObject& obj, float delta_time) mutable {
-            if (!started) {
-                center = radius + obj.pos();
-                started = true;
-            }
-
-            angle += speed * delta_time;
-
-            float x = center.x + radius_len * cos(angle);
-            float y = center.y + radius_len * sin(angle);
-
-            return sf::Vector2f{x, y};
-        });
+std::unique_ptr<Rule> circular(const sf::Vector2f& radius, float speed) {
+    return std::make_unique<Circular>(radius, speed);
 }
 
-std::unique_ptr<Func> user_control(int user_num, const KeyControls& keys, const JoyControls& joy) {
+std::unique_ptr<Rule> user_control(int user_num, const KeyControls& keys, const JoyControls& joy) {
     return std::make_unique<Func>(
-        Func::Type::Velocity,
         [user_num, keys, joy](const GameObject&, float) {
-            return sf::Vector2f{1.f * horizontal(keys, joy), 1.f * vertical(keys, joy)};
+            return Rule::Result{
+                .type = Rule::Type::Velocity,
+                .velocity = sf::Vector2f{1.f * horizontal(keys, joy), 1.f * vertical(keys, joy)},
+            };
         },
         true);
 }
@@ -85,7 +116,11 @@ Multi::Multi(std::vector<std::unique_ptr<Rule>>&& funcs, std::vector<float>&& ti
     }
 }
 
-sf::Vector2f Multi::operator()(GameObject& obj, float delta) {
+Rule::Result Multi::operator()(const GameObject& obj, float delta) {
+    if (current_ == funcs_.size() - 1 && repeat_ == Repeat::StopAtLast) {
+        return (*funcs_[current_])(obj, delta);
+    }
+
     if (current_time_ > times_[current_]) {
         ++current_;
         current_time_ = 0;
@@ -97,12 +132,18 @@ sf::Vector2f Multi::operator()(GameObject& obj, float delta) {
                 current_ = 0;
                 break;
             case Repeat::Stop:
-                return (*funcs_[current_ - 1])(obj, delta);
-                break;
+                return Result{
+                    .type = Rule::Type::Pos,
+                    .pos = obj.pos(),
+                };
             case Repeat::StopAtLast:
                 current_ = funcs_.size() - 1;
-                break;
+                return (*funcs_[current_])(obj, delta);
         }
+    }
+
+    if (abs(current_time_) < 1e-7) {
+        funcs_[current_]->init(obj);
     }
 
     current_time_ += delta;
@@ -110,14 +151,10 @@ sf::Vector2f Multi::operator()(GameObject& obj, float delta) {
 }
 
 Multi::operator bool() const {
-    if (current_ >= funcs_.size()) {
+    if (current_ >= funcs_.size() && repeat_ != Repeat::StopAtLast) {
         return false;
     }
     return bool(funcs_[current_]) && bool(*funcs_[current_]);
-}
-
-Rule::Type Multi::type() const {
-    return funcs_[current_]->type();
 }
 
 bool Multi::moves_with_field() const {

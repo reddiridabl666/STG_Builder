@@ -85,7 +85,8 @@ std::vector<size_t>& MoveFuncInput(movement::MultiInfo& info) {
         func_input(movement::types, movement::args, movement_types_num, func);
         ImGui::PopID();
 
-        if (ImGui::Button(message(Message::Delete))) {
+        auto delete_label = fmt::format("{}##{}", message(Message::Delete), idx);
+        if (ImGui::Button(delete_label.c_str())) {
             to_delete_ids.push_back(idx);
         }
         ++idx;

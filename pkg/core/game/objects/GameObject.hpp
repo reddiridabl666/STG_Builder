@@ -32,9 +32,6 @@ class GameObject : public ImageContainer {
                std::unique_ptr<movement::Rule>&& move_func = movement::no_op(), sf::Vector2f velocity = {},
                bool alive = true, bool active = false);
 
-    GameObject(GameObject&& other);
-    GameObject& operator=(GameObject&& other);
-
     float left() const;
 
     float right() const;
@@ -146,7 +143,6 @@ class GameObject : public ImageContainer {
 
     void update_position(const GameField& field, float delta_time);
     bool update_activity(const GameField& field);
-    void swap(GameObject& other);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const GameObject& obj) {

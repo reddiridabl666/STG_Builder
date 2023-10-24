@@ -21,36 +21,6 @@ GameObject::GameObject(const std::string& name, const sf::Vector2f& size,
     set_size(size);
 }
 
-GameObject::GameObject(GameObject&& other)
-    : GameObject(std::move(other.name_), other.get_size(), std::move(other.image_), other.speed_, other.tag_,
-                 std::move(other.props_), other.activity_start_, std::move(other.life_update_),
-                 std::move(other.move_update_), other.velocity_, other.alive_, other.active_) {}
-
-void GameObject::swap(GameObject& other) {
-    std::swap(name_, other.name_);
-    std::swap(speed_, other.speed_);
-    std::swap(tag_, other.tag_);
-    std::swap(props_, other.props_);
-    std::swap(image_, other.image_);
-
-    std::swap(move_update_, other.move_update_);
-    std::swap(velocity_, other.velocity_);
-    std::swap(alive_, other.alive_);
-    std::swap(active_, other.active_);
-    std::swap(life_update_, other.life_update_);
-    std::swap(activity_start_, other.activity_start_);
-
-    sf::Vector2f tmp = get_size();
-    set_size(other.get_size());
-    other.set_size(tmp);
-}
-
-GameObject& GameObject::operator=(GameObject&& other) {
-    auto tmp = std::move(other);
-    swap(tmp);
-    return *this;
-}
-
 void GameObject::update(const GameField& field, float delta_time) {
     if (!update_activity(field)) {
         return;
@@ -69,16 +39,18 @@ void GameObject::update_position(const GameField& field, float delta_time) {
         move(field.speed() * sf::Vector2f{0, -1} * delta_time);
     }
 
-    if (move_update_->type() == movement::Rule::Type::Pos) {
-        return set_pos(move_update_->operator()(*this, delta_time));
-    }
+    auto result = move_update_->operator()(*this, delta_time);
 
-    velocity_ = move_update_->operator()(*this, delta_time);
-    move(speed_ * velocity_ * delta_time);
+    if (result.type == movement::Rule::Type::Pos) {
+        return set_pos(result.pos);
+    } else {
+        set_velocity(result.velocity);
+        move(speed_ * velocity_ * delta_time);
+    }
 }
 
 bool GameObject::update_activity(const GameField& field) {
-    if (is_active()) {
+    if (active_) {
         return true;
     }
 
@@ -88,7 +60,10 @@ bool GameObject::update_activity(const GameField& field) {
         set_activity(field.center().y <= activity_start());
     }
 
-    return is_active();
+    if (active_ && move_update_) {
+        move_update_->init(*this);
+    }
+    return active_;
 }
 
 float GameObject::left() const {
