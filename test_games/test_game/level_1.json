@@ -1,6 +1,6 @@
 {
     "bg": {
-        "image": "bg.jpg",
+        "image": "level1_bg.jpg",
         "speed": 100.0
     },
     "entities": [
@@ -46,7 +46,7 @@
                 "x": 531.0,
                 "y": 594.77783203125
             },
-            "rotation": 90,
+            "rotation": 0,
             "type": "New object 2"
         },
         {
@@ -152,6 +152,6 @@
             "type": "enemy"
         }
     ],
-    "last_updated": 1698174937,
+    "last_updated": 1698237046,
     "name": "The first level"
 }

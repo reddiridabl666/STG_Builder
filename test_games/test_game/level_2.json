@@ -1,0 +1,9 @@
+{
+    "bg": {
+        "image": "level1_bg.jpg",
+        "speed": 100.0
+    },
+    "entities": [],
+    "last_updated": 1698236531,
+    "name": "New level"
+}

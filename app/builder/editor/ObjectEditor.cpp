@@ -78,16 +78,11 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         }
     });
 
-    Bus::get().on(Bus::Event::ObjectTypesChanged, "obj_editor_changed", [this](const nl::json& data) {
+    Bus<nl::json>::get().on(Event::ObjectTypesChanged, "obj_editor_changed", [this](const nl::json& data) {
         obj_types_ = get_obj_types(data);
     });
 
-    Bus::get().on(Bus::Event::ObjectCreated, "obj_editor_created", [this](const nl::json& data) {
-        if (!data.is_string()) {
-            return;
-        }
-        auto type = data.template get<std::string>();
-
+    Bus<std::string>::get().on(Event::ObjectCreated, "obj_editor_created", [this](const std::string& type) {
         auto& obj = game_.new_object(type);
         obj.props().set(builder::kJsonID, level_data_.at("entities").size());
 
@@ -98,12 +93,10 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
             });
     });
 
-    Bus::get().on(Bus::Event::ObjectTypeCreated, "obj_editor_type_created", [this](const nl::json& data) {
-        if (!data.is_string()) {
-            return;
-        }
-        game_.new_object_type(data.template get<std::string>());
-    });
+    Bus<std::string>::get().on(Event::ObjectTypeCreated, "obj_editor_type_created",
+                               [this](const std::string& name) {
+                                   game_.new_object_type(name);
+                               });
 }
 
 void ObjectEditor::draw(const Window&) {
@@ -147,7 +140,7 @@ void ObjectEditor::draw(const Window&) {
 
         auto btn_label = std::string(message(Message::Delete)) + "##" + obj->name();
         if (ImGui::Button(btn_label.c_str())) {
-            Bus::get().emit(Bus::Event::ObjectDeleted, obj->name().substr(0, obj->name().rfind('-')));
+            Bus<std::string>::get().emit(Event::ObjectDeleted, obj->name().substr(0, obj->name().rfind('-')));
 
             erase_obj(obj);
             shown_.erase(it);
@@ -165,9 +158,9 @@ void ObjectEditor::draw(const Window&) {
 }
 
 ObjectEditor::~ObjectEditor() {
-    Bus::get().off(Bus::Event::ObjectTypesChanged, "obj_editor_changed");
-    Bus::get().off(Bus::Event::ObjectCreated, "obj_editor_created");
-    Bus::get().off(Bus::Event::ObjectTypeCreated, "obj_editor_type_created");
+    Bus<nl::json>::get().off(Event::ObjectTypesChanged, "obj_editor_changed");
+    Bus<std::string>::get().off(Event::ObjectCreated, "obj_editor_created");
+    Bus<std::string>::get().off(Event::ObjectTypeCreated, "obj_editor_type_created");
 
     window_.remove_handler("obj_editor_click");
     window_.remove_handler("obj_editor_release");

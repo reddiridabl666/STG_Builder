@@ -2,8 +2,7 @@
 
 #include "GameInfo.hpp"
 
-GameField::GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
-                     int speed)
+GameField::GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos, int speed)
     : ImageContainer(std::move(image), speed), window_(window) {
     set_pos(0, 0);
 
@@ -71,4 +70,8 @@ sf::FloatRect GameField::get_bounds(float margin) const {
 
 sf::FloatRect GameField::get_bounds() const {
     return get_bounds(0);
+}
+
+void GameField::set_image(std::shared_ptr<sf::Texture>&& texture) {
+    image_ = std::make_unique<SpriteObject>(std::move(texture));
 }

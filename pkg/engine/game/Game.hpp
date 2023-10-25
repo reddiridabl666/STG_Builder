@@ -15,8 +15,8 @@ namespace engine {
 template <typename RTreeType = RTree<>>
 class Game {
   public:
-    Game(Window& window, PlayerLoader&& player_loader, assets::Textures&& textures, assets::Sounds&& sounds,
-         ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
+    Game(Window& window, SpriteObject&& bg, PlayerLoader&& player_loader, assets::Textures&& textures,
+         assets::Sounds&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
 
     Error render(float delta_time);
 
@@ -42,7 +42,10 @@ class Game {
 
     void draw_ui();
 
+    void draw_with_default_view(Drawable&);
+
     Window& window_;
+    SpriteObject bg_;
 
     assets::Textures textures_;
     assets::Sounds sounds_;

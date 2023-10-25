@@ -23,8 +23,8 @@ struct EntitiesTabContents : public Element {
                           auto name = fmt::format("New object {}", box_.size());
 
                           data_[name] = {{"size", sf::Vector2f{100, 100}}, {"speed", 10}};
-                          Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
-                          Bus::get().emit(Bus::Event::ObjectTypeCreated, name);
+                          Bus<nl::json>::get().emit(Event::ObjectTypesChanged, data_);
+                          Bus<std::string>::get().emit(Event::ObjectTypeCreated, name);
 
                           box_.elems().push_back(std::make_unique<EntityEntry>(
                               name, &data_.at(name), *textures.get(assets::kFallbackImage), 0));
@@ -32,22 +32,23 @@ struct EntitiesTabContents : public Element {
                       true, {}, {400, 80}),
           box_(std::move(items), {}),
           data_(data) {
-        Bus::get().on(Bus::Event::ObjectDeleted, "entities_tab_obj_deleted", [this](const nl::json& type) {
-            auto it = std::ranges::find_if(box_.elems(), [&type](const auto& elem) {
-                return elem->get_name() == type.template get<std::string>();
-            });
+        Bus<std::string>::get().on(
+            Event::ObjectDeleted, "entities_tab_obj_deleted", [this](const nl::json& type) {
+                auto it = std::ranges::find_if(box_.elems(), [&type](const auto& elem) {
+                    return elem->get_name() == type.template get<std::string>();
+                });
 
-            if (it != box_.elems().end()) {
-                (*it)->obj_count() -= 1;
-            }
-        });
+                if (it != box_.elems().end()) {
+                    (*it)->obj_count() -= 1;
+                }
+            });
     }
 
     void draw(const Window& window) override {
         std::erase_if(box_.elems(), [this](auto& entry) {
             if (entry->should_delete()) {
                 data_.erase(entry->get_name());
-                Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
+                Bus<nl::json>::get().emit(Event::ObjectTypesChanged, data_);
                 return true;
             }
             return false;
@@ -70,8 +71,8 @@ struct EntitiesTabContents : public Element {
             LOG(e.what());
 #endif
         }
-        Bus::get().emit(Bus::Event::ObjectTypesChanged, data_);
-        Bus::get().off(Bus::Event::ObjectDeleted, "entities_tab_obj_deleted");
+        Bus<nl::json>::get().emit(Event::ObjectTypesChanged, data_);
+        Bus<std::string>::get().off(Event::ObjectDeleted, "entities_tab_obj_deleted");
     }
 
   private:

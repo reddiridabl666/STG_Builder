@@ -1,5 +1,6 @@
 #include "LevelTab.hpp"
 
+#include "Bus.hpp"
 #include "Messages.hpp"
 
 #ifdef DEBUG
@@ -27,6 +28,10 @@ struct LevelTabContents : public Element {
 
         ImGui::SeparatorText(message(Message::GameField));
         ImGui::InputText(message(Message::Image), &field.image);
+        if (ImGui::IsItemDeactivatedAfterEdit()) {
+            Bus<std::string>::get().emit(Event::LevelBgChanged, field.image);
+        }
+
         ImGui::InputFloat(message(Message::Speed), &field.speed);
 
         ImGui::NewLine();

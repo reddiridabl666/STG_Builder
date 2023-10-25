@@ -6,17 +6,21 @@
 #include "Json.hpp"
 
 namespace ui {
+
+enum class Event {
+    ObjectTypesChanged,
+    ObjectTypeChanged,
+    ObjectCreated,
+    ObjectTypeCreated,
+    ObjectDeleted,
+    GameBgChanged,
+    LevelBgChanged,
+};
+
+template <typename Payload>
 class Bus {
   public:
-    using Cb = std::function<void(const nl::json&)>;
-
-    enum class Event {
-        ObjectTypesChanged,
-        ObjectTypeChanged,
-        ObjectCreated,
-        ObjectTypeCreated,
-        ObjectDeleted,
-    };
+    using Cb = std::function<void(const Payload&)>;
 
     void on(Event event, const std::string& key, const Cb& cb) {
         cbs_[event][key] = cb;
@@ -26,7 +30,7 @@ class Bus {
         cbs_[event].erase(key);
     }
 
-    void emit(Event event, const nl::json& payload) {
+    void emit(Event event, const Payload& payload) {
         for (const auto& [_, cb] : cbs_[event]) {
             cb(payload);
         }

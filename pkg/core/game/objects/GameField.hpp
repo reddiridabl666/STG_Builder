@@ -72,6 +72,8 @@ class GameField : public ImageContainer {
         return view_.getCenter().y - view_.getSize().y / 2;
     }
 
+    void set_image(std::shared_ptr<sf::Texture>&&);
+
     bool is_in_bounds(const Transformable& obj, float margin = 0) const;
 
     sf::FloatRect get_bounds(float margin) const;

@@ -9,10 +9,11 @@ namespace engine {
 static constexpr const char* kPlayerNum = "__player_num";
 
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, PlayerLoader&& player_loader, assets::Textures&& textures,
-                      assets::Sounds&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels,
-                      int fps)
+Game<RTreeType>::Game(Window& window, SpriteObject&& bg, PlayerLoader&& player_loader,
+                      assets::Textures&& textures, assets::Sounds&& sounds,
+                      ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
     : window_(window),
+      bg_(std::move(bg)),
       textures_(std::move(textures)),
       sounds_(std::move(sounds)),
       types_(std::move(types)),
@@ -27,10 +28,18 @@ Error Game<RTreeType>::render(float delta_time) {
         return err;
     }
 
+    draw_with_default_view(bg_);
     draw_objects();
     draw_ui();
 
     return Error::OK;
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::draw_with_default_view(Drawable& obj) {
+    window_.set_default_view();
+    obj.draw(window_);
+    window_.set_view(level_->field().view());
 }
 
 template <typename RTreeType>

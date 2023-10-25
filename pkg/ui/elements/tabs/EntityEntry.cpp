@@ -57,7 +57,7 @@ void EntityEntry::draw(const Window&) {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
 
     if (ImGui::Button(message(Message::NewObject))) {
-        Bus::get().emit(Bus::Event::ObjectCreated, name);
+        Bus<std::string>::get().emit(Event::ObjectCreated, name);
         ++obj_count_;
     }
 
@@ -96,7 +96,7 @@ void EntityEntry::draw(const Window&) {
         if (!shown_) {
             old_name_ = name;
             *data_ = to_json();
-            Bus::get().emit(Bus::Event::ObjectTypeChanged, *data_);
+            Bus<nl::json>::get().emit(Event::ObjectTypeChanged, *data_);
         }
     }
 }

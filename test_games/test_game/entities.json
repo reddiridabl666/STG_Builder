@@ -1,7 +1,7 @@
 {
     "New object 2": {
         "description": "Description goes here",
-        "image": "",
+        "image": "red_enemy.png",
         "size": {
             "x": 100.0,
             "y": 100.0

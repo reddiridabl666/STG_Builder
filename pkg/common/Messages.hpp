@@ -61,6 +61,7 @@ enum class Message {
     LevelOpts,
     Speed,
     Image,
+    Background,
     Offset,
     Size,
     LeftEdge,

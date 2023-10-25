@@ -36,6 +36,9 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     GameObject* get_object(const sf::Vector2f& pos);
     GameObject* get_object(const std::string& name);
 
+    void set_game_bg(const std::string& bg_path);
+    void set_level_bg(const std::string& bg_path);
+
     const GameField& field() const {
         return level_->field();
     }

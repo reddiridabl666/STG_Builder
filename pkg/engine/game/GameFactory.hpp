@@ -40,6 +40,7 @@ GameType GameFactory::generate(Window& window, const nl::json& game, const nl::j
 
     return GameType{
         window,
+        SpriteObject(textures.get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
         PlayerLoader(game.at("players")),
         std::move(textures),
         std::move(sounds),
@@ -69,7 +70,17 @@ std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl:
 
     auto fps = json::get<int>(game, "fps", 60);
 
-    return std::make_unique<GameType>(window, PlayerLoader(game.at("players")), std::move(textures),
-                                      std::move(sounds), std::move(types.value()), std::move(levels), fps);
+    // clang-format off
+    return std::make_unique<GameType>(
+        window,
+        SpriteObject(textures.get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
+        PlayerLoader(game.at("players")),
+        std::move(textures),
+        std::move(sounds),
+        std::move(types.value()),
+        std::move(levels),
+        fps
+    );
+    // clang-format on
 }
 }  // namespace engine

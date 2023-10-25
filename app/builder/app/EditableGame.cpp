@@ -2,6 +2,7 @@
 
 namespace builder {
 void EditableGame::render_debug() {
+    draw_with_default_view(bg_);
     draw_objects();
     rtree_.draw(window_);
 }
@@ -45,6 +46,14 @@ GameObject* EditableGame::get_object(const std::string& name) {
         return nullptr;
     }
     return &(it->second);
+}
+
+void EditableGame::set_game_bg(const std::string& bg_path) {
+    bg_ = textures_.get_or(bg_path, assets::kFallbackImage);
+}
+
+void EditableGame::set_level_bg(const std::string& bg_path) {
+    level_->field().set_image(textures_.get_or(bg_path, assets::kFallbackImage));
 }
 
 void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
