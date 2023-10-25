@@ -8,6 +8,10 @@
 
 class Transformable {
   public:
+    virtual sf::Vector2f get_size() const = 0;
+
+    virtual sf::FloatRect get_bounds() const = 0;
+
     virtual sf::Transformable& transformable() = 0;
 
     const sf::Transformable& transformable() const {
@@ -46,8 +50,6 @@ class Transformable {
         transformable().scale(scale);
     }
 
-    virtual sf::Vector2f get_size() const = 0;
-
     void move(const sf::Vector2f& offset) {
         transformable().move(offset);
     }
@@ -63,8 +65,6 @@ class Transformable {
     void rotate(float angle) {
         transformable().rotate(angle);
     }
-
-    virtual sf::FloatRect get_bounds() const = 0;
 
     virtual ~Transformable() = default;
 };

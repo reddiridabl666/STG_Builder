@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1698237046,
+    "last_updated": 1698237750,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -61,6 +61,32 @@
             "type": "player"
         }
     ],
+    "side_menu": {
+        "bg": "level1_bg.jpg",
+        "images": [
+            {
+                "image": "logo.png",
+                "pos": {
+                    "x": "50%",
+                    "y": 0
+                }
+            }
+        ],
+        "stats": [
+            {
+                "font": "ComicSans.ttf",
+                "type": "counter",
+                "value": "score",
+                "size": 24
+            },
+            {
+                "empty": "player_hp_empty.png",
+                "full": "player_hp_full.png",
+                "type": "bar",
+                "value": "health"
+            }
+        ]
+    },
     "size": {
         "x": 1280,
         "y": 720
