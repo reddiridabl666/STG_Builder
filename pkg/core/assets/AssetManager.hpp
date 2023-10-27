@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
 #include "AssetLoader.hpp"
@@ -8,14 +9,14 @@
 
 namespace assets {
 static constexpr const char* kFallbackImage = "fallback.png";
+static constexpr const char* kFallbackFont = "Roboto-Regular.ttf";
 
 template <Loadable T>
-class Manager {
+class TypedManager {
   public:
-    Manager(const std::string& dir = "") : loader_{dir}, storage_() {}
+    TypedManager(const std::string& dir = "") : loader_{dir}, storage_() {}
 
-    Manager(Loader&& loader, Storage<T>&& storage)
-        : loader_(std::move(loader)), storage_(std::move(storage)) {}
+    TypedManager(Loader&& loader, Storage<T>&& storage) : loader_(std::move(loader)), storage_(std::move(storage)) {}
 
     Loader& loader() {
         return loader_;
@@ -55,6 +56,36 @@ class Manager {
     Storage<T> storage_;
 };
 
-using Textures = Manager<sf::Texture>;
-using Sounds = Manager<sf::SoundBuffer>;
+using Textures = TypedManager<sf::Texture>;
+using Sounds = TypedManager<sf::SoundBuffer>;
+using Fonts = TypedManager<sf::Font>;
+
+class Manager {
+  public:
+    Manager(const std::string& textures, const std::string& sounds, const std::string& fonts)
+        : textures_(textures), sounds_(sounds), fonts_(fonts) {}
+
+    auto& textures() {
+        return textures_;
+    }
+
+    auto& sounds() {
+        return sounds_;
+    }
+
+    auto& fonts() {
+        return fonts_;
+    }
+
+    void clear_unused() {
+        textures_.storage().clear_unused();
+        sounds_.storage().clear_unused();
+        fonts_.storage().clear_unused();
+    }
+
+  private:
+    Textures textures_;
+    Sounds sounds_;
+    Fonts fonts_;
+};
 }  // namespace assets

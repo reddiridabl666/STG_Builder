@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game.hpp"
+#include "SideMenu.hpp"
 
 namespace engine {
 class GameFactory {
@@ -10,12 +11,11 @@ class GameFactory {
                              const std::string& base_dir);
 
     template <typename GameType>
-    static std::unique_ptr<GameType> generate_unique(Window& window, const nl::json& game,
-                                                     const nl::json& entities, const std::string& base_dir);
+    static std::unique_ptr<GameType> generate_unique(Window& window, const nl::json& game, const nl::json& entities,
+                                                     const std::string& base_dir);
 
   private:
-    static PlayerList generate_players(const nl::json& game);
-    static ObjectOptionsFactory opts_factory_;
+    static SideMenu create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets);
 };
 
 template <typename GameType = Game<>>
@@ -29,21 +29,20 @@ GameType GameFactory::generate(Window& window, const nl::json& game, const nl::j
     // TODO: do something about the side menu
     // TODO: should directories be hardcoded?
     const auto img_path = base_dir + "/assets/images";
-    assets::Textures textures(img_path);
-    assets::Sounds sounds(base_dir + "/assets/sounds");
+
+    assets::Manager manager(img_path, base_dir + "/assets/sounds", base_dir + "/assets/fonts");
 
     LevelLoader level_loader(base_dir + "/level",
-                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio),
-                             img_path);
+                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio), img_path);
 
     LevelManager levels(json::get<int>(game, "levels"), std::move(level_loader));
 
     return GameType{
         window,
-        SpriteObject(textures.get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
+        SpriteObject(manager.textures().get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
+        create_side_menu(window, game.at("side_menu"), manager),
         PlayerLoader(game.at("players")),
-        std::move(textures),
-        std::move(sounds),
+        std::move(manager),
         std::move(types.value()),
         std::move(levels),
         json::get<int>(game, "fps", 60),
@@ -51,8 +50,7 @@ GameType GameFactory::generate(Window& window, const nl::json& game, const nl::j
 }
 
 template <typename GameType>
-std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl::json& game,
-                                                       const nl::json& entities,
+std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl::json& game, const nl::json& entities,
                                                        const std::string& base_dir) {
     auto types = ObjectTypeFactory::generate(entities);
     if (!types) {
@@ -60,12 +58,10 @@ std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl:
     }
 
     const auto img_path = base_dir + "/assets/images";
-    assets::Textures textures(img_path);
-    assets::Sounds sounds(base_dir + "/assets/sounds");
+    assets::Manager manager(img_path, base_dir + "/assets/sounds", base_dir + "/assets/fonts");
 
     LevelLoader level_loader(base_dir + "/level",
-                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio),
-                             img_path);
+                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio), img_path);
     LevelManager levels(json::get<int>(game, "levels"), std::move(level_loader));
 
     auto fps = json::get<int>(game, "fps", 60);
@@ -73,14 +69,22 @@ std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl:
     // clang-format off
     return std::make_unique<GameType>(
         window,
-        SpriteObject(textures.get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
+        SpriteObject(manager.textures().get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
+        create_side_menu(window, game.at("side_menu"), manager),
         PlayerLoader(game.at("players")),
-        std::move(textures),
-        std::move(sounds),
+        std::move(manager),
         std::move(types.value()),
         std::move(levels),
         fps
     );
     // clang-format on
+}
+
+SideMenu GameFactory::create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets) {
+    return SideMenu{
+        window,
+        menu.at("size").get<sf::FloatRect>(),
+        assets.textures().get_or(menu.at("bg").get<std::string>(), assets::kFallbackImage),
+    };
 }
 }  // namespace engine

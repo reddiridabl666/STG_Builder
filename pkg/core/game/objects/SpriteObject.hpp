@@ -23,6 +23,14 @@ class SpriteObject : public Displayable {
         sprite_.setTexture(*texture);
     }
 
+    void set_texture_rect(const sf::IntRect& rect) {
+        sprite_.setTextureRect(rect);
+    }
+
+    sf::Vector2u texture_size() {
+        return texture_->getSize();
+    }
+
     sf::Vector2f get_size() const override {
         return texture_->getSize() * sprite_.getScale();
     }

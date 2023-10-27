@@ -9,13 +9,12 @@ namespace engine {
 static constexpr const char* kPlayerNum = "__player_num";
 
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, SpriteObject&& bg, PlayerLoader&& player_loader,
-                      assets::Textures&& textures, assets::Sounds&& sounds,
-                      ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
+Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerLoader&& player_loader,
+                      assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
     : window_(window),
       bg_(std::move(bg)),
-      textures_(std::move(textures)),
-      sounds_(std::move(sounds)),
+      menu_(std::move(menu)),
+      assets_(std::move(assets)),
       types_(std::move(types)),
       levels_(std::move(levels)),
       fps_(fps),
@@ -83,8 +82,7 @@ Error Game<RTreeType>::update(float delta_time) {
 
     clear_dead();
 
-    textures_.storage().clear_unused();
-    sounds_.storage().clear_unused();
+    assets_.clear_unused();
 
     return Error::OK;
 }
@@ -109,7 +107,7 @@ Error Game<RTreeType>::update_level() {
 
 template <typename RTreeType>
 Error Game<RTreeType>::generate_players() {
-    auto players = player_loader_.load_players(textures_, level_->field(), types_);
+    auto players = player_loader_.load_players(assets_.textures(), level_->field(), types_);
     if (!players) {
         return players.error();
     }
@@ -130,7 +128,7 @@ ErrorOr<GameObject> Game<RTreeType>::generate_object(const ObjectOptions& opts) 
         return Error::New(fmt::format("Object type '{}' not found", opts.type));
     }
 
-    auto obj = types_.at(opts.type).create_object(opts, textures_);
+    auto obj = types_.at(opts.type).create_object(opts, assets_.textures());
     if (!obj) {
         return tl::unexpected(obj.error());
     }
@@ -191,9 +189,11 @@ void Game<RTreeType>::draw_ui() {
         ui::StatLine{"Objects active", &objects_},
         ui::StatLine{"Objects not loaded", &(level_->objects())},
         ui::StatLine{"View pos", level_->field().view().getCenter().y},
-        ui::StatLine{"Textures loaded", &textures_.storage()},
+        ui::StatLine{"Textures loaded", &assets_.textures().storage()},
         ui::StatLine{"Enemies left", GameState::get().enemy_count()}
     );
     // clang-format on
+
+    menu_.draw(window_);
 }
 }  // namespace engine

@@ -9,14 +9,15 @@
 #include "Player.hpp"
 #include "PlayerLoader.hpp"
 #include "RTree.hpp"
+#include "SideMenu.hpp"
 #include "Window.hpp"
 
 namespace engine {
 template <typename RTreeType = RTree<>>
 class Game {
   public:
-    Game(Window& window, SpriteObject&& bg, PlayerLoader&& player_loader, assets::Textures&& textures,
-         assets::Sounds&& sounds, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
+    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerLoader&& player_loader, assets::Manager&& assets,
+         ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
 
     Error render(float delta_time);
 
@@ -46,9 +47,9 @@ class Game {
 
     Window& window_;
     SpriteObject bg_;
+    SideMenu menu_;
 
-    assets::Textures textures_;
-    assets::Sounds sounds_;
+    assets::Manager assets_;
 
     std::unordered_map<std::string, GameObject> objects_;
     ObjectTypeFactory::res_type types_;

@@ -22,7 +22,7 @@ class Transformable {
         return transformable().getPosition();
     }
 
-    void set_pos(const sf::Vector2f& pos) {
+    virtual void set_pos(const sf::Vector2f& pos) {
         transformable().setPosition(pos);
     }
 
@@ -31,26 +31,30 @@ class Transformable {
     }
 
     void set_width(float size, bool save_proportions = true) {
-        float scale = size / get_size().x;
+        float new_scale = size / get_size().x;
 
         if (save_proportions) {
-            return transformable().scale(scale, scale);
+            return scale(new_scale, new_scale);
         }
 
-        transformable().scale(scale, 1);
+        scale(new_scale, 1);
     }
 
     void set_size(const sf::Vector2f& size, bool save_proportions = true) {
-        sf::Vector2f scale = size / get_size();
+        sf::Vector2f new_scale = size / get_size();
 
         if (save_proportions) {
-            scale.y = scale.x;
+            new_scale.y = new_scale.x;
         }
 
-        transformable().scale(scale);
+        scale(new_scale.x, new_scale.y);
     }
 
-    void move(const sf::Vector2f& offset) {
+    virtual void scale(float x, float y) {
+        transformable().scale(x, y);
+    }
+
+    virtual void move(const sf::Vector2f& offset) {
         transformable().move(offset);
     }
 
@@ -58,11 +62,11 @@ class Transformable {
         move(sf::Vector2f{x, y});
     }
 
-    void set_rotation(float angle) {
+    virtual void set_rotation(float angle) {
         transformable().setRotation(angle);
     }
 
-    void rotate(float angle) {
+    virtual void rotate(float angle) {
         transformable().rotate(angle);
     }
 

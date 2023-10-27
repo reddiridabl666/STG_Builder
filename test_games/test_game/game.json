@@ -63,6 +63,12 @@
     ],
     "side_menu": {
         "bg": "level1_bg.jpg",
+        "size": {
+            "height": 0.9,
+            "left": 0.7,
+            "top": 0.05,
+            "width": 0.25
+        },
         "images": [
             {
                 "image": "logo.png",

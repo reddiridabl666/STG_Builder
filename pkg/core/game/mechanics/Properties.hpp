@@ -10,7 +10,7 @@
 
 struct Properties {
   public:
-    using Data = std::unordered_map<std::string, Value<>>;
+    using Data = std::unordered_map<std::string, Value>;
 
     Properties(Data data = Data{}) : values_(std::move(data)) {}
 
@@ -18,11 +18,11 @@ struct Properties {
         return values_.contains(key);
     }
 
-    Value<>& at(const std::string& key) {
+    Value& at(const std::string& key) {
         return values_.at(key);
     }
 
-    const Value<>& at(const std::string& key) const {
+    const Value& at(const std::string& key) const {
         return const_cast<Properties*>(this)->at(key);
     }
 
@@ -41,5 +41,5 @@ struct Properties {
     }
 
   private:
-    std::unordered_map<std::string, Value<>> values_;
+    std::unordered_map<std::string, Value> values_;
 };

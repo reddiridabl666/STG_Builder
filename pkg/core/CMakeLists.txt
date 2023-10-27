@@ -18,6 +18,7 @@ set(INCLUDE_DIRS
     base
     assets
     game/objects
+    game/ui
     game/mechanics
     game/collisions
     game/collisions/hitbox

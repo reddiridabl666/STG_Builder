@@ -1,29 +1,28 @@
 #pragma once
 
-#include <cstddef>
+#include <functional>
 
-template <typename T = int>
 class Value {
   public:
-    Value(T val = 0) : val_(val) {}
+    Value(float val = 0) : val_(val) {}
 
-    void set(T val) {
+    void set(float val) {
         val_ = val;
     }
 
-    T get() const {
+    float get() const {
         return val_;
     }
 
-    operator T() const {
+    operator float() const {
         return val_;
     }
 
-    void add(T val) {
+    void add(float val) {
         val_ += val;
     }
 
-    void sub(T val) {
+    void sub(float val) {
         val_ -= val;
     }
 
@@ -35,10 +34,10 @@ class Value {
         --val_;
     }
 
-    void mul(T val) {
+    void mul(float val) {
         val_ *= val;
     }
 
   private:
-    T val_;
+    float val_;
 };
