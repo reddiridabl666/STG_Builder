@@ -4,7 +4,10 @@ namespace builder {
 void EditableGame::render_debug() {
     draw_with_default_view(bg_);
     draw_objects();
+
+    menu_.update(GameState::get().players());
     menu_.draw(window_);
+
     rtree_.draw(window_);
 }
 

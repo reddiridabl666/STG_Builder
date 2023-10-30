@@ -1,16 +1,114 @@
 #include "SideMenuTab.hpp"
 
+#include <memory>
+
+#include "Combo.hpp"
 #include "ImguiUtils.hpp"
 #include "Messages.hpp"
 #include "SideMenu.hpp"
 #include "ui/common/Bus.hpp"
 
+#ifdef DEBUG
+#include "Debug.hpp"
+#endif
+
 namespace ui {
 namespace {
 
+const std::string ui_types = "counter\0max_counter\0bar";
+
+struct GameUiProps {
+    virtual void draw() = 0;
+    virtual nl::json to_json() const = 0;
+    virtual std::string get_type() const = 0;
+    virtual void set_type(const std::string&) = 0;
+    virtual ~GameUiProps() = default;
+};
+
+struct CounterProps : public GameUiProps {
+  public:
+    virtual void draw() override {
+        ImGui::InputText(message(Message::Value), &value);
+        ImGui::InputText(message(Message::Prefix), &prefix);
+        ImGui::InputText(message(Message::Font), &font);
+        ImGui::InputInt(message(Message::Size), &size);
+    }
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CounterProps, value, type, prefix, font, size)
+
+    nl::json to_json() const override {
+        return *this;
+    }
+
+    std::string get_type() const override {
+        return type;
+    }
+
+    void set_type(const std::string& new_type) override {
+        type = new_type;
+    }
+
+  private:
+    std::string value;
+    std::string type;
+    std::string prefix;
+    std::string font;
+    int size;
+};
+
+struct BarProps : public GameUiProps {
+  public:
+    virtual void draw() override {
+        ImGui::InputText(message(Message::Value), &value);
+        ImGui::InputText(message(Message::BarEmpty), &empty);
+        ImGui::InputText(message(Message::BarFull), &full);
+        ImGui::InputInt(message(Message::Width), &width);
+    }
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(BarProps, value, type, empty, full, width)
+
+    nl::json to_json() const override {
+        return *this;
+    }
+
+    std::string get_type() const override {
+        return type;
+    }
+
+    void set_type(const std::string& new_type) override {
+        type = new_type;
+    }
+
+  private:
+    std::string value;
+    std::string type;
+    std::string empty;
+    std::string full;
+    int width;
+};
+
+struct GameUiPropsFactory {
+    static std::unique_ptr<GameUiProps> create(const nl::json& json);
+};
+
+std::unique_ptr<GameUiProps> GameUiPropsFactory::create(const nl::json& json) {
+    auto type = json.at("type").get<std::string>();
+
+    if (type == "counter" || type == "max_counter") {
+        return json.get<std::unique_ptr<CounterProps>>();
+    }
+
+    if (type == "bar") {
+        return json.get<std::unique_ptr<BarProps>>();
+    }
+
+    return nullptr;
+}
+
 struct SideMenuTabContents : public Element {
   public:
-    SideMenuTabContents(engine::SideMenuProps&& props) : props_(std::move(props)) {}
+    SideMenuTabContents(engine::SideMenuProps&& props, std::vector<std::unique_ptr<GameUiProps>>&& stats)
+        : props_(std::move(props)), stats_(std::move(stats)) {}
 
     void draw(const Window&) override {
         ImGui::BeginGroup();
@@ -32,6 +130,25 @@ struct SideMenuTabContents : public Element {
         ImGui::InputFloat(message(Message::Gap), &props_.gap);
         ImGui::InputFloat(message(Message::PlayerGap), &props_.player_gap);
 
+        ImGui::SeparatorText(message(Message::Stats));
+
+        for (size_t i = 0; i < stats_.size(); ++i) {
+            ImGui::BeginGroup();
+            auto& elem = stats_[i];
+
+            int id = combo::get_item_id(ui_types, elem->get_type());
+            if (ImGui::Combo(message(Message::Type), &id, ui_types.data())) {
+                elem->set_type(combo::find_item(ui_types, id));
+            }
+
+            elem->draw();
+            ImGui::EndGroup();
+            if (ImGui::IsItemDeactivatedAfterEdit()) {
+                props_.stats[i] = elem->to_json();
+            }
+            ImGui::NewLine();
+        }
+
         ImGui::EndGroup();
 
         if (ImGui::IsItemDeactivatedAfterEdit()) {
@@ -41,11 +158,26 @@ struct SideMenuTabContents : public Element {
 
   private:
     engine::SideMenuProps props_;
+    std::vector<std::unique_ptr<GameUiProps>> stats_;
 };
 }  // namespace
 
 Menu::Tab SideMenuTab(nl::json& json) {
-    auto tab = std::make_unique<SideMenuTabContents>(json.get<engine::SideMenuProps>());
+    std::vector<std::unique_ptr<GameUiProps>> stats;
+    stats.reserve(json.at("stats").size());
+
+    for (auto& [_, elem] : json.at("stats").items()) {
+        auto ui = GameUiPropsFactory::create(elem);
+        if (!ui) {
+#ifdef DEBUG
+            LOG(fmt::format("Error creating GameUI_Props, got: {}", elem.dump(4)));
+#endif
+            continue;
+        }
+        stats.push_back(std::move(ui));
+    }
+
+    auto tab = std::make_unique<SideMenuTabContents>(json.get<engine::SideMenuProps>(), std::move(stats));
     return Menu::Tab(std::move(tab), message_func(Message::SideMenu));
 }
 }  // namespace ui

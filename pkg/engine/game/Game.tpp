@@ -202,6 +202,7 @@ void Game<RTreeType>::draw_ui() {
     // clang-format on
 #endif
 
+    menu_.update(GameState::get().players());
     menu_.draw(window_);
 }
 }  // namespace engine

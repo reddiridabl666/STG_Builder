@@ -27,6 +27,8 @@ class Lang {
 
 enum class Message {
     Add,
+    BarEmpty,
+    BarFull,
     Repeat,
     RepeatTypes,
     Time,
@@ -96,7 +98,10 @@ enum class Message {
     Down,
     Shoot,
     Slow,
-    Bomb
+    Bomb,
+    Value,
+    Prefix,
+    Font,
 };
 
 const char* message(Message type);

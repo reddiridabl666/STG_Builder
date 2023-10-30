@@ -2,6 +2,10 @@
 
 #include "StatDisplayFactory.hpp"
 
+#ifdef DEBUG
+#include "Debug.hpp"
+#endif
+
 namespace engine {
 SideMenu::SideMenu(const Window& window, const sf::Vector2f& offset, float gap, float player_gap,
                    const sf::FloatRect& screen_pos, std::shared_ptr<sf::Texture>&& bg, const nl::json& settings)
@@ -32,6 +36,12 @@ void SideMenu::add_player(const GameObject& player, assets::Manager& assets) {
     for (const auto& [key, value] : settings_.items()) {
         auto stat = value.at("value").get<std::string>();
         auto ui_elem = StatDisplayFactory::create(player.props().get(stat), value, assets);
+        if (!ui_elem) {
+#ifdef DEBUG
+            LOG(fmt::format("Error creating GameUI, got: {}", value.dump(4)));
+#endif
+            continue;
+        }
         ui_elem->set_pos(prev_pos_ + sf::Vector2f{0, prev_height + gap_});
 
         prev_height = ui_elem->get_size().y;

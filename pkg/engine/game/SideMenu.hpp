@@ -34,8 +34,12 @@ class SideMenu {
     template <typename PlayerList>
     void update(const PlayerList& players) {
         for (size_t i = 0; i < players.size(); ++i) {
+            if (players[i].expired()) {
+                continue;
+            }
+
             for (auto& [stat_name, stat] : player_stats_[i]) {
-                stat->update(players[i]->props().get(stat_name));
+                stat->update(players[i].lock()->props().get(stat_name));
             }
         }
     }

@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1698672284,
+    "last_updated": 1698696663,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -63,11 +63,48 @@
             "type": "player"
         },
         {
-            "opts": {},
-            "pos": {
-                "x": 406.0,
-                "y": 938.77783203125
+            "opts": {
+                "joy": {
+                    "shoot": 0,
+                    "slow": 0,
+                    "special": 0
+                },
+                "keys": {
+                    "down": [
+                        "Down",
+                        "S"
+                    ],
+                    "left": [
+                        "Left",
+                        "A"
+                    ],
+                    "right": [
+                        "Right",
+                        "D"
+                    ],
+                    "shoot": [
+                        "Space",
+                        "Z"
+                    ],
+                    "slow": [
+                        "LShift",
+                        "RShift"
+                    ],
+                    "special": [
+                        "X",
+                        "Enter"
+                    ],
+                    "up": [
+                        "Up",
+                        "W"
+                    ]
+                }
             },
+            "pos": {
+                "x": 397.0,
+                "y": 922.77783203125
+            },
+            "rotation": 0,
             "type": "player"
         }
     ],
@@ -83,7 +120,7 @@
             "height": 0.8999999761581421,
             "left": 0.6700000166893005,
             "top": 0.05000000074505806,
-            "width": 0.27000001072883606
+            "width": 250.0
         },
         "stats": [
             {
@@ -91,7 +128,7 @@
                 "prefix": "Score:",
                 "size": 48,
                 "type": "counter",
-                "value": "score"
+                "value": "health"
             },
             {
                 "empty": "player_hp_empty.png",
