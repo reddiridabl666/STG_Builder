@@ -5,7 +5,6 @@
 #include <functional>
 #include <unordered_map>
 
-#include "Collection.hpp"
 #include "LinAlg.hpp"
 
 class Drawable;
@@ -28,8 +27,7 @@ class Window {
         return window_.mapPixelToCoords(vec);
     }
 
-    void add_handler(const std::string& key, sf::Event::EventType event,
-                     const std::function<void(sf::Event)>& handler);
+    void add_handler(const std::string& key, sf::Event::EventType event, const std::function<void(sf::Event)>& handler);
 
     void remove_handler(const std::string& key);
 

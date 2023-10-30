@@ -21,11 +21,10 @@ class ObjectType {
 
     ObjectType(const std::string& name = "", const sf::Vector2f& size = {}) : name(name), size(size) {}
 
-    ErrorOr<GameObject> create_object(const ObjectOptions& opts, assets::Textures& textures
-                                      /*assets::Sounds& sounds*/);
+    ErrorOr<std::shared_ptr<GameObject>> create_object(const ObjectOptions& opts, assets::Manager& assets);
 
-    ErrorOr<GameObject> create_player(const ObjectOptions& obj_opts, assets::Textures& textures,
-                                      const PlayerOptions& opts);
+    ErrorOr<std::shared_ptr<GameObject>> create_player(const ObjectOptions& obj_opts, assets::Manager& assets,
+                                                       const PlayerOptions& opts);
 
     void reset_count() {
         obj_count_ = 0;

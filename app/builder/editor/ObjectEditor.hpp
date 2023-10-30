@@ -19,12 +19,12 @@ class ObjectEditor : public Element {
     ~ObjectEditor() override;
 
   private:
-    nl::json& json_by_obj(GameObject* obj);
-    void erase_obj(GameObject* obj);
+    nl::json& json_by_obj(const GameObject& obj);
+    void erase_obj(const GameObject& obj);
     void update_dragged_obj_pos();
 
     Window& window_;
-    std::unordered_map<GameObject*, std::unique_ptr<ObjectEntry>> shown_;
+    std::unordered_map<std::shared_ptr<GameObject>, std::unique_ptr<ObjectEntry>> shown_;
 
     nl::json& level_data_;
     nl::json& game_data_;
@@ -32,7 +32,7 @@ class ObjectEditor : public Element {
 
     bool drag_n_drop_ = false;
     sf::Vector2f drag_pos_;
-    GameObject* drag_target_ = nullptr;
+    std::shared_ptr<GameObject> drag_target_;
 
     std::string obj_types_;
 };

@@ -8,8 +8,6 @@ GameState::GameState() {
             case GameObject::Tag::Enemy:
                 enemy_count_ += 1;
                 break;
-            case GameObject::Tag::Player:
-                player_count_ += 1;
         }
     });
 
@@ -18,8 +16,6 @@ GameState::GameState() {
             case GameObject::Tag::Enemy:
                 enemy_count_ -= 1;
                 break;
-            case GameObject::Tag::Player:
-                player_count_ -= 1;
         }
     });
 }

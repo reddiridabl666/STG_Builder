@@ -259,9 +259,8 @@ std::function<void()> App::game_choice(const fs::path& current_game) {
 std::function<void()> App::new_game() {
     return [this] {
         ++games_num_;
-        current_game_ = fmt::format("New Game {}", games_num_);
 
-        builder_.new_game(games_dir_ / current_game_);
+        current_game_ = builder_.new_game(games_dir_ / fmt::format("New Game {}", games_num_)).stem();
 
         state_.schedule_state_change(State::GameMenu);
     };

@@ -4,13 +4,13 @@
 
 class MaxCounter : public Counter {
   public:
-    MaxCounter(float max, std::shared_ptr<sf::Font>&& font, size_t size)
-        : Counter(max, std::move(font), size), max_(max) {
+    MaxCounter(float max, const std::string& prefix, std::shared_ptr<sf::Font>&& font, size_t size)
+        : Counter(max, prefix, std::move(font), size), max_(max) {
         update(max_);
     }
 
     void update(float val) override {
-        set_contents(fmt::format("{}/{}", val, max_));
+        set_contents(fmt::format("{} {}/{}", prefix_, val, max_));
     }
 
   private:

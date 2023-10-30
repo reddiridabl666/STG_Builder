@@ -1,7 +1,5 @@
 #include "GameField.hpp"
 
-#include "GameInfo.hpp"
-
 GameField::GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos, int speed)
     : ImageContainer(std::move(image), speed), window_(window) {
     set_pos(0, 0);

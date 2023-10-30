@@ -13,8 +13,8 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
 
     using Game<DrawableRTree<>>::Game;
 
-    auto& textures() {
-        return textures_;
+    auto& assets() {
+        return assets_;
     }
 
     void scroll(float);
@@ -33,8 +33,8 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     Error prepare_preview(size_t level);
 
     void set_object_pos(GameObject& obj, const sf::Vector2f& pos);
-    GameObject* get_object(const sf::Vector2f& pos);
-    GameObject* get_object(const std::string& name);
+    std::shared_ptr<GameObject> get_object(const sf::Vector2f& pos);
+    std::shared_ptr<GameObject> get_object(const std::string& name);
 
     void set_game_bg(const std::string& bg_path);
     void set_level_bg(const std::string& bg_path);
@@ -46,7 +46,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     ~EditableGame();
 
   private:
-    ErrorOr<GameObject> generate_object_debug(size_t idx, const ObjectOptions& opts);
+    ErrorOr<std::shared_ptr<GameObject>> generate_object_debug(size_t idx, const ObjectOptions& opts);
     void scroll_back();
 
     float scrolled_ = 0;

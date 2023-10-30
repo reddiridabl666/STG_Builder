@@ -33,9 +33,9 @@ class Game {
 
     Error update_level();
 
-    ErrorOr<GameObject> generate_object(const ObjectOptions& opts);
+    ErrorOr<std::shared_ptr<GameObject>> generate_object(const ObjectOptions& opts);
 
-    void add_object(GameObject&&);
+    void add_object(std::shared_ptr<GameObject>&&);
     Error generate_objects();
     Error generate_players();
 
@@ -51,7 +51,7 @@ class Game {
 
     assets::Manager assets_;
 
-    std::unordered_map<std::string, GameObject> objects_;
+    std::unordered_map<std::string, std::shared_ptr<GameObject>> objects_;
     ObjectTypeFactory::res_type types_;
 
     std::shared_ptr<Level> level_;

@@ -14,16 +14,12 @@ class GameBuilder {
   public:
     GameBuilder() = default;
 
-    GameBuilder(const fs::path& game_dir, nl::json&& game, nl::json&& entities,
-                std::vector<nl::json>&& levels)
-        : game_dir_(game_dir),
-          game_(std::move(game)),
-          entities_(std::move(entities)),
-          levels_(std::move(levels)) {}
+    GameBuilder(const fs::path& game_dir, nl::json&& game, nl::json&& entities, std::vector<nl::json>&& levels)
+        : game_dir_(game_dir), game_(std::move(game)), entities_(std::move(entities)), levels_(std::move(levels)) {}
 
     void init(const fs::path& game_dir);
 
-    void new_game(const fs::path& game) const;
+    fs::path new_game(const fs::path& game) const;
 
     void save() const;
 
@@ -62,6 +58,8 @@ class GameBuilder {
     static std::string level_filename(size_t num) {
         return fmt::format("level_{}.json", num);
     }
+
+    static fs::path create_unique_filename(const fs::path& path);
 
     void backup(const fs::path& path);
 

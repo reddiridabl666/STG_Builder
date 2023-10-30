@@ -2,6 +2,6 @@
 
 #include "Displayable.hpp"
 
-class GameUi : public Displayable {
+class GameUi : virtual public Displayable {
     virtual void update(float) = 0;
 };

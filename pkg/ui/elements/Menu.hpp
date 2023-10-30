@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "UiElement.hpp"
 
 namespace ui {
@@ -7,8 +9,7 @@ namespace ui {
 class Menu : public Element {
   public:
     struct Tab {
-        Tab(std::unique_ptr<Element>&& elem, const VariableText& name)
-            : name_(name), elem_(std::move(elem)) {}
+        Tab(std::unique_ptr<Element>&& elem, const VariableText& name) : name_(name), elem_(std::move(elem)) {}
 
         void draw(const Window&) const;
 

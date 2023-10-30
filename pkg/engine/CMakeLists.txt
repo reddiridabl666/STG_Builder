@@ -8,6 +8,7 @@ set(SOURCES
     generators/FuncBuilder.cpp
     objects/ObjectOptions.cpp
     objects/ObjectType.cpp
+    game/GameInfo.cpp
     level/Level.cpp
     level/LevelLoader.cpp
     level/LevelManager.cpp
@@ -25,8 +26,11 @@ set(INCLUDE_DIRS
 
 set(LIBS
     stg_builder_core
-    stg_builder_ui
 )
+
+if (DEBUG)
+    set(LIBS ${LIBS} stg_builder_ui)
+endif()
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})

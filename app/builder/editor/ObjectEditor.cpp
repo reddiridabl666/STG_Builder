@@ -22,39 +22,38 @@ std::string get_obj_types(const nl::json& json) {
 }
 }  // namespace
 
-ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json& level_data,
-                           nl::json& game_data, const nl::json& entities)
+ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json& level_data, nl::json& game_data,
+                           const nl::json& entities)
     : window_(window),
       level_data_(level_data),
       game_data_(game_data),
       game_(game),
       obj_types_(get_obj_types(entities)) {
-    window.add_handler("obj_editor_click", sf::Event::MouseButtonPressed,
-                       [&window, this](const sf::Event& event) {
-                           auto coords = window.pixel_to_coords(event.mouseButton.x, event.mouseButton.y);
+    window.add_handler("obj_editor_click", sf::Event::MouseButtonPressed, [&window, this](const sf::Event& event) {
+        auto coords = window.pixel_to_coords(event.mouseButton.x, event.mouseButton.y);
 
-                           auto obj = game_.get_object(coords);
-                           if (!obj) {
-                               return;
-                           }
+        auto obj = game_.get_object(coords);
+        if (!obj) {
+            return;
+        }
 
-                           switch (event.mouseButton.button) {
-                               case sf::Mouse::Left:
-                                   drag_n_drop_ = true;
-                                   drag_target_ = obj;
-                                   drag_pos_ = obj->pos();
-                                   return;
-                               case sf::Mouse::Right:
-                                   break;
-                               default:
-                                   return;
-                           }
+        switch (event.mouseButton.button) {
+            case sf::Mouse::Left:
+                drag_n_drop_ = true;
+                drag_target_ = obj;
+                drag_pos_ = obj->pos();
+                return;
+            case sf::Mouse::Right:
+                break;
+            default:
+                return;
+        }
 
-                           auto json = json_by_obj(obj);
-                           auto entry = ObjectEntryFactory::create(json, obj->tag());
+        auto json = json_by_obj(*obj);
+        auto entry = ObjectEntryFactory::create(json, obj->tag());
 
-                           shown_.emplace(obj, std::move(entry));
-                       });
+        shown_.emplace(obj, std::move(entry));
+    });
 
     window.add_handler("obj_editor_release", sf::Event::MouseButtonReleased, [this](const sf::Event& event) {
         if (!drag_n_drop_ || event.mouseButton.button != sf::Mouse::Left) {
@@ -73,7 +72,7 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         if (event.key.code == sf::Keyboard::Z && event.key.control) {
             game_.set_object_pos(*drag_target_, drag_pos_);
             update_dragged_obj_pos();
-            drag_target_ = nullptr;
+            drag_target_.reset();
             drag_n_drop_ = false;
         }
     });
@@ -93,10 +92,9 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
             });
     });
 
-    Bus<std::string>::get().on(Event::ObjectTypeCreated, "obj_editor_type_created",
-                               [this](const std::string& name) {
-                                   game_.new_object_type(name);
-                               });
+    Bus<std::string>::get().on(Event::ObjectTypeCreated, "obj_editor_type_created", [this](const std::string& name) {
+        game_.new_object_type(name);
+    });
 }
 
 void ObjectEditor::draw(const Window&) {
@@ -121,10 +119,9 @@ void ObjectEditor::draw(const Window&) {
         auto changes = obj_data->draw(obj_types_);
 
         if (changes.type) {
-            json_by_obj(obj) = obj_data->to_json();
+            json_by_obj(*obj) = obj_data->to_json();
 
-            game_.reload_object(obj->name(),
-                                *ObjectOptionsFactory(game_.field()).generate(obj_data->to_json()));
+            game_.reload_object(obj->name(), *ObjectOptionsFactory(game_.field()).generate(obj_data->to_json()));
             shown_.erase(it);
             it = next;
             ImGui::End();
@@ -142,14 +139,14 @@ void ObjectEditor::draw(const Window&) {
         if (ImGui::Button(btn_label.c_str())) {
             Bus<std::string>::get().emit(Event::ObjectDeleted, obj->name().substr(0, obj->name().rfind('-')));
 
-            erase_obj(obj);
+            erase_obj(*obj);
             shown_.erase(it);
         }
 
         ImGui::End();
 
         if (!open) {
-            json_by_obj(obj) = obj_data->to_json();
+            json_by_obj(*obj) = obj_data->to_json();
             shown_.erase(it);
         }
 
@@ -167,20 +164,20 @@ ObjectEditor::~ObjectEditor() {
     window_.remove_handler("obj_editor_undo");
 }
 
-nl::json& ObjectEditor::json_by_obj(GameObject* obj) {
-    if (obj->tag() == GameObject::Tag::Player) {
-        return game_data_.at("players").at(obj->props().at(engine::kPlayerNum));
+nl::json& ObjectEditor::json_by_obj(const GameObject& obj) {
+    if (obj.tag() == GameObject::Tag::Player) {
+        return game_data_.at("players").at(obj.props().at(engine::kPlayerNum));
     }
-    return level_data_.at("entities").at(obj->props().at(builder::kJsonID));
+    return level_data_.at("entities").at(obj.props().at(builder::kJsonID));
 }
 
-void ObjectEditor::erase_obj(GameObject* obj) {
-    if (obj->tag() == GameObject::Tag::Player) {
-        game_data_.at("players").erase(obj->props().at(engine::kPlayerNum));
+void ObjectEditor::erase_obj(const GameObject& obj) {
+    if (obj.tag() == GameObject::Tag::Player) {
+        game_data_.at("players").erase(obj.props().at(engine::kPlayerNum));
     } else {
-        level_data_.at("entities").erase(obj->props().at(builder::kJsonID));
+        level_data_.at("entities").erase(obj.props().at(builder::kJsonID));
     }
-    game_.remove_object(obj->name());
+    game_.remove_object(obj.name());
 }
 
 void ObjectEditor::update_dragged_obj_pos() {
@@ -188,6 +185,6 @@ void ObjectEditor::update_dragged_obj_pos() {
     if (it != shown_.end()) {
         it->second->set_pos(drag_target_->pos());
     }
-    json_by_obj(drag_target_)["pos"] = drag_target_->pos();
+    json_by_obj(*drag_target_)["pos"] = drag_target_->pos();
 }
 }  // namespace ui

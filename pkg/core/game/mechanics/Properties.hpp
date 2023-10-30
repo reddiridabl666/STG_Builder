@@ -22,6 +22,14 @@ struct Properties {
         return values_.at(key);
     }
 
+    Value get(const std::string& key) const {
+        auto it = values_.find(key);
+        if (it == values_.end()) {
+            return 0;
+        }
+        return it->second;
+    }
+
     const Value& at(const std::string& key) const {
         return const_cast<Properties*>(this)->at(key);
     }

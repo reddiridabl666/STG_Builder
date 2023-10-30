@@ -9,7 +9,8 @@
 #include "MaxCounter.hpp"
 
 class StatDisplayFactory {
-    std::unique_ptr<GameUi> create(float init_val, const nl::json&, assets::Manager&);
+  public:
+    static std::unique_ptr<GameUi> create(float init_val, const nl::json&, assets::Manager&);
 };
 
 // clang-format off
@@ -17,9 +18,11 @@ std::unique_ptr<GameUi> StatDisplayFactory::create(float init_val, const nl::jso
     auto type = json::get<std::string>(json, "type");
 
     if (type == "bar") {
+        auto empty = assets.textures().get_or(json.at("empty").get<std::string>(), assets::kFallbackImage);
         return std::make_unique<Bar>(
             init_val,
-            assets.textures().get_or(json.at("empty").get<std::string>(), assets::kFallbackImage),
+            json::get<float>(json, "width", empty->getSize().x),
+            std::move(empty),
             assets.textures().get_or(json.at("full").get<std::string>(), assets::kFallbackImage)
         );
     }
@@ -27,6 +30,7 @@ std::unique_ptr<GameUi> StatDisplayFactory::create(float init_val, const nl::jso
     if (type == "counter") {
         return std::make_unique<Counter>(
             init_val,
+            json::get<std::string>(json, "prefix"),
             assets.fonts().get_or(json.at("font").get<std::string>(), assets::kFallbackFont),
             json::get<size_t>(json, "size", 30)
         );
@@ -35,6 +39,7 @@ std::unique_ptr<GameUi> StatDisplayFactory::create(float init_val, const nl::jso
     if (type == "max_counter") {
         return std::make_unique<MaxCounter>(
             init_val,
+            json::get<std::string>(json, "prefix"),
             assets.fonts().get_or(json.at("font").get<std::string>(), assets::kFallbackFont),
             json::get<size_t>(json, "size", 30)
         );

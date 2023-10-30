@@ -10,4 +10,4 @@ struct PlayerOptions {
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(PlayerOptions, keys, joy)
 
-using PlayerList = std::vector<GameObject>;
+using PlayerList = std::vector<std::shared_ptr<GameObject>>;

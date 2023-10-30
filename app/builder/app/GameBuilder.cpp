@@ -39,35 +39,49 @@ void GameBuilder::init(const fs::path& game_dir) {
     *this = GameBuilder(game_dir, std::move(*game), std::move(*entities), std::move(levels));
 }
 
-void GameBuilder::new_game(const fs::path& game) const {
-    if (!fs::create_directory(game)) {
+fs::path GameBuilder::create_unique_filename(const fs::path& path) {
+    if (fs::exists(path)) {
+        return create_unique_filename(path.string() + " (1)");
+    }
+    return path;
+}
+
+fs::path GameBuilder::new_game(const fs::path& game) const {
+    auto path = create_unique_filename(game);
+
+    if (!fs::create_directory(path)) {
         throw std::runtime_error("Game directory creation failure");
     }
 
-    if (!fs::create_directories(game / "assets/images")) {
+    if (!fs::create_directories(path / "assets/images")) {
         throw std::runtime_error("Assets directory creation failure");
     }
 
-    fmt::println("{}", fs::current_path().string());
+    if (!fs::create_directories(path / "assets/fonts")) {
+        throw std::runtime_error("Assets directory creation failure");
+    }
 
-    fs::copy(game.parent_path() / assets::kFallbackImage, game / "assets/images");
+    fs::copy(path.parent_path() / assets::kFallbackImage, path / "assets/images");
+    fs::copy(path.parent_path() / assets::kFallbackFont, path / "assets/fonts");
 
     nl::json game_json{
-        {"name", game.stem().string()},
+        {"name", path.stem().string()},
         {"description", ui::GameInfo::kDefaultDesc},
         {"levels", 0},
         {"field_size", GameField::kDefaultRatio},
-        {"player",
-         {
-             {"image", assets::kFallbackImage},
-             {"size", sf::Vector2f{100, 100}},
-             {"speed", 300},
-         }},
+        {"players", nl::json::array({
+                        {"image", assets::kFallbackImage},
+                        {"size", sf::Vector2f{100, 100}},
+                        {"speed", 300},
+                    })},
+        {"side_menu", }
     };
 
-    json::create(game / "game.json", game_json);
+    json::create(path / "game.json", game_json);
 
-    json::create(game / "entities.json");
+    json::create(path / "entities.json");
+
+    return path;
 }
 
 void GameBuilder::save() const {

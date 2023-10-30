@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1698237750,
+    "last_updated": 1698594188,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -21,6 +21,7 @@
     "name": "My first game",
     "players": [
         {
+            "health": 100,
             "opts": {
                 "joy": {
                     "shoot": 0,
@@ -58,17 +59,13 @@
                 "y": 1013.77783203125
             },
             "rotation": 0,
+            "score": 0,
             "type": "player"
         }
     ],
     "side_menu": {
         "bg": "level1_bg.jpg",
-        "size": {
-            "height": 0.9,
-            "left": 0.7,
-            "top": 0.05,
-            "width": 0.25
-        },
+        "gap": 25,
         "images": [
             {
                 "image": "logo.png",
@@ -78,18 +75,31 @@
                 }
             }
         ],
+        "offset": {
+            "x": 50,
+            "y": 100
+        },
+        "player_gap": 75,
+        "size": {
+            "height": 0.9,
+            "left": 0.7,
+            "top": 0.05,
+            "width": 0.25
+        },
         "stats": [
             {
                 "font": "ComicSans.ttf",
+                "prefix": "Score:",
+                "size": 48,
                 "type": "counter",
-                "value": "score",
-                "size": 24
+                "value": "score"
             },
             {
                 "empty": "player_hp_empty.png",
                 "full": "player_hp_full.png",
                 "type": "bar",
-                "value": "health"
+                "value": "health",
+                "width": 250
             }
         ]
     },

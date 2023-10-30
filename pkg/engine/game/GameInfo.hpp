@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "GameField.hpp"
+#include "GameObject.hpp"
 #include "Observable.hpp"
 
 class GameState : public Observable<int, size_t> {
@@ -13,13 +14,6 @@ class GameState : public Observable<int, size_t> {
         LevelChanged
     };
 
-  private:
-    GameState();
-
-    size_t enemy_count_ = 0;
-    size_t player_count_ = 0;
-
-  public:
     GameState(const GameState& other) = delete;
     GameState(GameState&& other) = delete;
     GameState& operator=(const GameState& other) = delete;
@@ -35,11 +29,26 @@ class GameState : public Observable<int, size_t> {
     }
 
     size_t player_count() {
-        return player_count_;
+        return players_.size();
+    }
+
+    void add_player(std::weak_ptr<const GameObject> player) {
+        players_.push_back(player);
     }
 
     void reset() {
         enemy_count_ = 0;
-        player_count_ = 0;
+        players_.clear();
     }
+
+    const auto& players() const {
+        return players_;
+    }
+
+  private:
+    GameState();
+
+    size_t enemy_count_ = 0;
+
+    std::vector<std::weak_ptr<const GameObject>> players_;
 };

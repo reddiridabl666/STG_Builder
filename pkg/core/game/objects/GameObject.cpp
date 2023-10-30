@@ -1,12 +1,11 @@
 #include "GameObject.hpp"
 
-#include "GameInfo.hpp"
+#include "GameField.hpp"
 
-GameObject::GameObject(const std::string& name, const sf::Vector2f& size,
-                       std::unique_ptr<Displayable>&& image, int speed, Tag tag, const Properties& props,
-                       float activity_start, const alive::update& life_func,
-                       std::unique_ptr<movement::Rule>&& move_func, sf::Vector2f velocity, bool alive,
-                       bool active)
+GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
+                       int speed, Tag tag, const Properties& props, float activity_start,
+                       const alive::update& life_func, std::unique_ptr<movement::Rule>&& move_func,
+                       sf::Vector2f velocity, bool alive, bool active)
     : ImageContainer(std::move(image), speed),
       name_(name),
       tag_(tag),

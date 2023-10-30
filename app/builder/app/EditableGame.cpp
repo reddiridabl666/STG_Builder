@@ -32,28 +32,28 @@ void EditableGame::reload_objects() {
     }
 }
 
-GameObject* EditableGame::get_object(const sf::Vector2f& pos) {
+std::shared_ptr<GameObject> EditableGame::get_object(const sf::Vector2f& pos) {
     auto it = rtree_.contains(pos);
     if (it != rtree_.qend()) {
-        return &objects_.at(it->second);
+        return objects_.at(it->second);
     }
     return nullptr;
 }
 
-GameObject* EditableGame::get_object(const std::string& name) {
+std::shared_ptr<GameObject> EditableGame::get_object(const std::string& name) {
     auto it = objects_.find(name);
     if (it == objects_.end()) {
         return nullptr;
     }
-    return &(it->second);
+    return it->second;
 }
 
 void EditableGame::set_game_bg(const std::string& bg_path) {
-    bg_ = textures_.get_or(bg_path, assets::kFallbackImage);
+    bg_ = assets_.textures().get_or(bg_path, assets::kFallbackImage);
 }
 
 void EditableGame::set_level_bg(const std::string& bg_path) {
-    level_->field().set_image(textures_.get_or(bg_path, assets::kFallbackImage));
+    level_->field().set_image(assets_.textures().get_or(bg_path, assets::kFallbackImage));
 }
 
 void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
@@ -62,13 +62,13 @@ void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
     rtree_.insert(obj.name(), obj.get_bounds());
 }
 
-inline ErrorOr<GameObject> EditableGame::generate_object_debug(size_t idx, const ObjectOptions& opts) {
+inline ErrorOr<std::shared_ptr<GameObject>> EditableGame::generate_object_debug(size_t idx, const ObjectOptions& opts) {
     auto obj = generate_object(opts);
     if (!obj) {
         return obj;
     }
-    obj->props().set(kOptsID, idx);
-    obj->props().set(kJsonID, opts.json_id);
+    (*obj)->props().set(kOptsID, idx);
+    (*obj)->props().set(kJsonID, opts.json_id);
     return obj;
 }
 
@@ -110,19 +110,19 @@ GameObject& EditableGame::new_object(const std::string& type) {
 
     ObjectOptions opts(type, window_.get_view().getCenter());
 
-    auto obj = it->second.create_object(opts, textures_);
+    auto obj = it->second.create_object(opts, assets_);
     if (!obj) {
         throw std::runtime_error(fmt::format("Error creating object: {}", obj.error().message()));
     }
 
-    auto obj_name = obj->name();
-    obj->props().set(kOptsID, level_->objects().size());
+    auto obj_name = (*obj)->name();
+    (*obj)->props().set(kOptsID, level_->objects().size());
 
     add_object(std::move(*obj));
 
     level_->objects().push_back(std::move(opts));
     level_->prepare_objects();
-    return objects_.at(obj_name);
+    return *objects_.at(obj_name);
 }
 
 void EditableGame::new_object_type(const std::string& type) {
@@ -131,25 +131,25 @@ void EditableGame::new_object_type(const std::string& type) {
 
 void EditableGame::remove_object(const std::string& name) {
     const auto& obj = objects_.at(name);
-    rtree_.remove(name, obj.get_bounds());
-    level_->objects().erase(level_->objects().begin() + obj.props().at(kOptsID));
+    rtree_.remove(name, obj->get_bounds());
+    level_->objects().erase(level_->objects().begin() + obj->props().at(kOptsID));
     objects_.erase(name);
 }
 
 GameObject& EditableGame::reload_object(const std::string& name, ObjectOptions&& opts) {
     const auto& obj = objects_.at(name);
-    rtree_.remove(name, obj.get_bounds());
+    rtree_.remove(name, obj->get_bounds());
 
-    size_t id = obj.props().at(kOptsID);
+    size_t id = obj->props().at(kOptsID);
     objects_.erase(name);
 
     auto new_obj = generate_object_debug(id, opts);
-    std::string new_name = new_obj->name();
+    std::string new_name = (*new_obj)->name();
 
     add_object(std::move(*new_obj));
     level_->objects()[id] = std::move(opts);
 
-    return objects_.at(new_name);
+    return *objects_.at(new_name);
 }
 
 Error EditableGame::prepare_preview(size_t level) {

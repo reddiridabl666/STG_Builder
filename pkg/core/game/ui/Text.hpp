@@ -2,7 +2,7 @@
 
 #include "Displayable.hpp"
 
-class Text : public Displayable {
+class Text : virtual public Displayable {
   public:
     Text(const std::string& content, std::shared_ptr<sf::Font>&& font, size_t size)
         : font_(std::move(font)), text_(content, *font_, size) {}

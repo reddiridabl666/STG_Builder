@@ -7,7 +7,6 @@ set(SOURCES
     game/collisions/hitbox/Hitbox.cpp
     game/mechanics/Movement.cpp
     game/mechanics/Life.cpp
-    game/objects/GameInfo.cpp
     game/objects/GameField.cpp
     game/objects/GameObject.cpp
 )

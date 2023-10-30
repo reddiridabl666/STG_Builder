@@ -2,7 +2,10 @@
 #include "GameInfo.hpp"
 #include "ObjectTypeFactory.hpp"
 #include "Utils.hpp"
+
+#ifdef DEBUG
 #include "ui/elements/StatBox.hpp"
+#endif
 
 namespace engine {
 
@@ -42,9 +45,9 @@ void Game<RTreeType>::draw_with_default_view(Drawable& obj) {
 }
 
 template <typename RTreeType>
-void Game<RTreeType>::add_object(GameObject&& obj) {
-    rtree_.insert(obj.name(), obj.get_bounds());
-    objects_.emplace(obj.name(), std::move(obj));
+void Game<RTreeType>::add_object(std::shared_ptr<GameObject>&& obj) {
+    rtree_.insert(obj->name(), obj->get_bounds());
+    objects_.emplace(obj->name(), std::move(obj));
 }
 
 template <typename RTreeType>
@@ -56,7 +59,7 @@ void Game<RTreeType>::draw_objects() {
     level_->field().draw(window_);
 
     for (const auto& [_, obj] : objects_) {
-        obj.draw(window_);
+        obj->draw(window_);
     }
 }
 
@@ -75,9 +78,9 @@ Error Game<RTreeType>::update(float delta_time) {
     level_->field().update(delta_time);
 
     for (auto& [_, obj] : objects_) {
-        rtree_.remove(obj.name(), obj.get_bounds());
-        obj.update(level_->field(), delta_time);
-        rtree_.insert(obj.name(), obj.get_bounds());
+        rtree_.remove(obj->name(), obj->get_bounds());
+        obj->update(level_->field(), delta_time);
+        rtree_.insert(obj->name(), obj->get_bounds());
     }
 
     clear_dead();
@@ -107,28 +110,31 @@ Error Game<RTreeType>::update_level() {
 
 template <typename RTreeType>
 Error Game<RTreeType>::generate_players() {
-    auto players = player_loader_.load_players(assets_.textures(), level_->field(), types_);
+    auto players = player_loader_.load_players(assets_, level_->field(), types_);
     if (!players) {
         return players.error();
     }
 
     for (auto&& player : *players) {
-        int id = std::stoi(player.name().substr(player.name().rfind('-')));
-        player.props().set(kPlayerNum, id);
+        GameState::get().add_player(player);
+        menu_.add_player(*player, assets_);
 
-        rtree_.insert(player.name(), FloatBox(player.get_bounds()));
-        objects_.emplace(player.name(), std::move(player));
+        int id = std::stoi(player->name().substr(player->name().rfind('-')));
+        player->props().set(kPlayerNum, id);
+
+        rtree_.insert(player->name(), FloatBox(player->get_bounds()));
+        objects_.emplace(player->name(), std::move(player));
     }
     return Error::OK;
 }
 
 template <typename RTreeType>
-ErrorOr<GameObject> Game<RTreeType>::generate_object(const ObjectOptions& opts) {
+ErrorOr<std::shared_ptr<GameObject>> Game<RTreeType>::generate_object(const ObjectOptions& opts) {
     if (!types_.contains(opts.type)) {
         return Error::New(fmt::format("Object type '{}' not found", opts.type));
     }
 
-    auto obj = types_.at(opts.type).create_object(opts, assets_.textures());
+    auto obj = types_.at(opts.type).create_object(opts, assets_);
     if (!obj) {
         return tl::unexpected(obj.error());
     }
@@ -154,7 +160,7 @@ Error Game<RTreeType>::generate_objects() {
             return res.error();
         }
 
-        objects_.emplace(res->name(), std::move(*res));
+        objects_.emplace((*res)->name(), std::move(*res));
         level_->objects().pop_front();
     }
 
@@ -164,8 +170,8 @@ Error Game<RTreeType>::generate_objects() {
 template <typename RTreeType>
 void Game<RTreeType>::clear_dead() {
     std::erase_if(objects_, [](auto& el) {
-        if (!el.second.is_alive()) {
-            GameState::get().emit(GameState::Event::ObjectDestroyed, el.second.tag());
+        if (!el.second->is_alive()) {
+            GameState::get().emit(GameState::Event::ObjectDestroyed, el.second->tag());
             return true;
         }
         return false;
@@ -184,6 +190,7 @@ void Game<RTreeType>::clear() {
 
 template <typename RTreeType>
 void Game<RTreeType>::draw_ui() {
+#ifdef DEBUG
     // clang-format off
     ui::StatBox::draw("Debug",
         ui::StatLine{"Objects active", &objects_},
@@ -193,6 +200,7 @@ void Game<RTreeType>::draw_ui() {
         ui::StatLine{"Enemies left", GameState::get().enemy_count()}
     );
     // clang-format on
+#endif
 
     menu_.draw(window_);
 }

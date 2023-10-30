@@ -5,9 +5,10 @@
 
 class Bar : public GameUi {
   public:
-    Bar(float max, std::shared_ptr<sf::Texture>&& empty, std::shared_ptr<sf::Texture>&& full)
+    Bar(float max, float width, std::shared_ptr<sf::Texture>&& empty, std::shared_ptr<sf::Texture>&& full)
         : empty_(std::move(empty)), full_(std::move(full)), max_(max) {
         update(max_);
+        set_width(width);
     }
 
     sf::Drawable& drawable() override {
@@ -51,9 +52,19 @@ class Bar : public GameUi {
         full_.scale(x, y);
     }
 
+    void draw(Window& window) const override {
+        empty_.draw(window);
+        full_.draw(window);
+    }
+
     void update(float val) override {
         auto size = full_.texture_size();
-        full_.set_texture_rect(sf::IntRect{0, 0, val / max_ * size.x, size.y});
+        full_.set_texture_rect(sf::IntRect{
+            0,
+            0,
+            static_cast<int>(val / max_ * size.x),
+            static_cast<int>(size.y),
+        });
     }
 
   private:
