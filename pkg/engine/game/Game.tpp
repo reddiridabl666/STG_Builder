@@ -9,8 +9,6 @@
 
 namespace engine {
 
-static constexpr const char* kPlayerNum = "__player_num";
-
 template <typename RTreeType>
 Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerLoader&& player_loader,
                       assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
@@ -110,22 +108,24 @@ Error Game<RTreeType>::update_level() {
 
 template <typename RTreeType>
 Error Game<RTreeType>::generate_players() {
+    menu_.clear();
+
     auto players = player_loader_.load_players(assets_, level_->field(), types_);
     if (!players) {
         return players.error();
     }
 
     for (auto&& player : *players) {
-        GameState::get().add_player(player);
-        menu_.add_player(*player, assets_);
-
-        int id = std::stoi(player->name().substr(player->name().rfind('-')));
-        player->props().set(kPlayerNum, id);
-
-        rtree_.insert(player->name(), FloatBox(player->get_bounds()));
-        objects_.emplace(player->name(), std::move(player));
+        add_player(std::move(player));
     }
     return Error::OK;
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::add_player(std::shared_ptr<GameObject>&& player) {
+    GameState::get().add_player(player);
+    menu_.add_player(*player, assets_);
+    add_object(std::move(player));
 }
 
 template <typename RTreeType>

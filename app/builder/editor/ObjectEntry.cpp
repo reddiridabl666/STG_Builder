@@ -15,6 +15,10 @@ nl::json CommonEntry::to_json() const {
         res.erase("activity_start");
     }
 
+    if (move.rules.empty()) {
+        res.erase("move");
+    }
+
     return res;
 }
 

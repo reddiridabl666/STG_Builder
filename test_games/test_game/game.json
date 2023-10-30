@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1698594188,
+    "last_updated": 1698672284,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -61,30 +61,29 @@
             "rotation": 0,
             "score": 0,
             "type": "player"
+        },
+        {
+            "opts": {},
+            "pos": {
+                "x": 406.0,
+                "y": 938.77783203125
+            },
+            "type": "player"
         }
     ],
     "side_menu": {
         "bg": "level1_bg.jpg",
-        "gap": 25,
-        "images": [
-            {
-                "image": "logo.png",
-                "pos": {
-                    "x": "50%",
-                    "y": 0
-                }
-            }
-        ],
+        "gap": 25.0,
         "offset": {
-            "x": 50,
-            "y": 100
+            "x": 60.0,
+            "y": 50.0
         },
-        "player_gap": 75,
+        "player_gap": 75.0,
         "size": {
-            "height": 0.9,
-            "left": 0.7,
-            "top": 0.05,
-            "width": 0.25
+            "height": 0.8999999761581421,
+            "left": 0.6700000166893005,
+            "top": 0.05000000074505806,
+            "width": 0.27000001072883606
         },
         "stats": [
             {

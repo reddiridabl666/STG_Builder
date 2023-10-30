@@ -9,6 +9,10 @@ class Bar : public GameUi {
         : empty_(std::move(empty)), full_(std::move(full)), max_(max) {
         update(max_);
         set_width(width);
+
+        if (max_ <= 1e-6) {
+            full_.set_texture_rect(sf::IntRect{0, 0, 0, 0});
+        }
     }
 
     sf::Drawable& drawable() override {
@@ -58,6 +62,10 @@ class Bar : public GameUi {
     }
 
     void update(float val) override {
+        if (max_ <= 1e-6) {
+            return;
+        }
+
         auto size = full_.texture_size();
         full_.set_texture_rect(sf::IntRect{
             0,

@@ -4,6 +4,7 @@ namespace builder {
 void EditableGame::render_debug() {
     draw_with_default_view(bg_);
     draw_objects();
+    menu_.draw(window_);
     rtree_.draw(window_);
 }
 
@@ -54,6 +55,11 @@ void EditableGame::set_game_bg(const std::string& bg_path) {
 
 void EditableGame::set_level_bg(const std::string& bg_path) {
     level_->field().set_image(assets_.textures().get_or(bg_path, assets::kFallbackImage));
+}
+
+void EditableGame::update_side_menu(const engine::SideMenuProps& props) {
+    menu_.set_bg(assets_.textures().get_or(props.bg, assets::kFallbackImage));
+    menu_.update_layout(window_, props);
 }
 
 void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
@@ -125,6 +131,22 @@ GameObject& EditableGame::new_object(const std::string& type) {
     return *objects_.at(obj_name);
 }
 
+void EditableGame::new_player(const std::string& type) {
+    auto it = types_.find(type);
+    if (it == types_.end()) {
+        throw std::runtime_error(fmt::format("No such object type {}", type));
+    }
+
+    ObjectOptions opts(type, window_.get_view().getCenter());
+
+    auto player = it->second.create_player(opts, assets_, PlayerOptions{.num = GameState::get().player_count()});
+    if (!player) {
+        throw std::runtime_error(fmt::format("Error creating object: {}", player.error().message()));
+    }
+
+    add_player(std::move(*player));
+}
+
 void EditableGame::new_object_type(const std::string& type) {
     types_[type] = ObjectType{type, kInitSize};
 }
@@ -132,7 +154,13 @@ void EditableGame::new_object_type(const std::string& type) {
 void EditableGame::remove_object(const std::string& name) {
     const auto& obj = objects_.at(name);
     rtree_.remove(name, obj->get_bounds());
-    level_->objects().erase(level_->objects().begin() + obj->props().at(kOptsID));
+    if (obj->tag() != GameObject::Tag::Player) {
+        level_->objects().erase(level_->objects().begin() + obj->props().at(kOptsID));
+    } else {
+        size_t id = obj->props().at(kPlayerNum);
+        GameState::get().erase_player(id);
+        menu_.erase(id);
+    }
     objects_.erase(name);
 }
 

@@ -5,7 +5,7 @@
 
 #define U8(str) reinterpret_cast<const char*>(u8##str)
 
-const char* message(Message type, Lang::Value lang) {
+const char* message(Message type) {
     static const std::unordered_map<Message, std::array<const char*, Lang::Count>> messages = {
         {Message::Exit, {U8("Выход"), "Quit"}},
         {Message::Background, {U8("Фон"), "Background"}},
@@ -25,19 +25,23 @@ const char* message(Message type, Lang::Value lang) {
         {Message::Name, {U8("Название"), "Name"}},
         {Message::Desc, {U8("Описание"), "Description"}},
         {Message::GameField, {U8("Настройки игрового поля"), "Game field options"}},
-        {Message::SideMenu, {U8("Настройки бокового меню"), "Side menu options"}},
-        {Message::GameOpts, {U8("Настройки игры"), "Game"}},
+        {Message::SideMenu, {U8("Боковое меню"), "Side menu options"}},
+        {Message::GameOpts, {U8("Игра"), "Game"}},
         {Message::ScreenOpts, {U8("Настройки экрана"), "Screen options"}},
         {Message::WindowSize, {U8("Размер окна"), "Window size"}},
         {Message::Fullscreen, {U8("Полноэкранный режим"), "Fullscreen"}},
         {Message::FPS, {U8("Кадры в секунду"), "Frames per second"}},
         {Message::GameFieldSize, {U8("Отступы и размер игрового поля"), "Game field offset and size"}},
         {Message::Menu, {U8("Меню"), "Menu"}},
-        {Message::LevelOpts, {U8("Настройки уровня"), "Level"}},
+        {Message::Layout, {U8("Взаимное расположение эл-тов"), "Layout"}},
+        {Message::SizeAndOffset, {U8("Отступы и размер"), "Size and offset"}},
+        {Message::LevelOpts, {U8("Уровень"), "Level"}},
         {Message::Speed, {U8("Скорость"), "Speed"}},
         {Message::Image, {U8("Изображение"), "Image"}},
         {Message::Offset, {U8("Отступы"), "Offset"}},
         {Message::Size, {U8("Размер"), "Size"}},
+        {Message::Gap, {U8("Интервал"), "Gap"}},
+        {Message::PlayerGap, {U8("Интервал между блоками хар-тик игроков"), "Gap between player's stats"}},
         {Message::LeftEdge, {U8("Слева"), "Left"}},
         {Message::TopEdge, {U8("Сверху"), "Top"}},
         {Message::Height, {U8("Высота"), "Height"}},
@@ -82,5 +86,5 @@ const char* message(Message type, Lang::Value lang) {
           "All measures are set relative to window`s size, from 0 to 1"}},
     };
 
-    return messages.at(type)[lang];
+    return messages.at(type)[Lang::current()];
 }

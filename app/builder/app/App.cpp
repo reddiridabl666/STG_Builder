@@ -9,6 +9,7 @@
 #include "Json.hpp"
 #include "Messages.hpp"
 #include "ObjectEditor.hpp"
+#include "SideMenuTab.hpp"
 #include "TimedAction.hpp"
 #include "ui/common/Bus.hpp"
 #include "ui/common/Fonts.hpp"
@@ -96,6 +97,22 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
             game_->set_level_bg(bg);
         }
     });
+
+    ui::Bus<nl::json>::get().on(ui::Event::SideMenuChanged, "app_side_menu_changed", [this](const nl::json& json) {
+        if (game_) {
+            builder_.game().at("side_menu") = json;
+            game_->update_side_menu(json.get<engine::SideMenuProps>());
+        }
+    });
+}
+
+App::~App() {
+    ui_.clear();
+    builder_.save();
+
+    ui::Bus<std::string>::get().off(ui::Event::GameBgChanged, "app_bg_changed");
+    ui::Bus<std::string>::get().off(ui::Event::LevelBgChanged, "app_level_bg_changed");
+    ui::Bus<nl::json>::get().off(ui::Event::SideMenuChanged, "app_side_menu_changed");
 }
 
 void App::run() noexcept {
@@ -234,7 +251,7 @@ ui::DefaultBox::Items App::load_levels() {
 
 std::unique_ptr<ui::Element> App::make_menu() {
     std::vector<ui::Menu::Tab> tabs;
-    tabs.reserve(3);
+    tabs.reserve(4);
 
     tabs.push_back(ui::MainTab(builder_.game()));
 
@@ -242,6 +259,8 @@ std::unique_ptr<ui::Element> App::make_menu() {
         builder_.delete_level();
         state_.schedule_state_change(State::Back);
     }));
+
+    tabs.push_back(ui::SideMenuTab(builder_.game().at("side_menu")));
 
     tabs.push_back(
         ui::EntitiesTab(current_game_, textures_, builder_.entities(), builder_.current_level().at("entities")));
@@ -264,14 +283,6 @@ std::function<void()> App::new_game() {
 
         state_.schedule_state_change(State::GameMenu);
     };
-}
-
-App::~App() {
-    ui_.clear();
-    builder_.save();
-
-    ui::Bus<std::string>::get().off(ui::Event::GameBgChanged, "app_bg_changed");
-    ui::Bus<std::string>::get().off(ui::Event::LevelBgChanged, "app_level_bg_changed");
 }
 
 void App::draw_ui() {

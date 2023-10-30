@@ -11,10 +11,12 @@ enum class Event {
     ObjectTypesChanged,
     ObjectTypeChanged,
     ObjectCreated,
+    PlayerCreated,
     ObjectTypeCreated,
     ObjectDeleted,
     GameBgChanged,
     LevelBgChanged,
+    SideMenuChanged,
 };
 
 template <typename Payload>

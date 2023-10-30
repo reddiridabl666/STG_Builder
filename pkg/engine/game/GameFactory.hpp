@@ -81,14 +81,11 @@ std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl:
 }
 
 SideMenu GameFactory::create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets) {
+    auto props = menu.get<SideMenuProps>();
     return SideMenu{
         window,
-        json::get<sf::Vector2f>(menu, "offset"),
-        json::get<float>(menu, "gap", 25),
-        json::get<float>(menu, "player_gap", 50),
-        menu.at("size").get<sf::FloatRect>(),
-        assets.textures().get_or(menu.at("bg").get<std::string>(), assets::kFallbackImage),
-        menu.at("stats"),
+        assets.textures().get_or(props.bg, assets::kFallbackImage),
+        props,
     };
 }
 }  // namespace engine

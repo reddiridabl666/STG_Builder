@@ -3,7 +3,7 @@
 #include "Controls.hpp"
 
 struct PlayerOptions {
-    int num;
+    size_t num;
     KeyControls keys = kDefaultKeyControls;
     JoyControls joy = kDefaultJoyControls;
 };

@@ -22,6 +22,7 @@ inline ErrorOr<PlayerList> PlayerLoader::load_players(assets::Manager& assets, c
     PlayerList res;
 
     res.reserve(players_.size());
+    size_t idx = 0;
 
     for (auto& [_, player_json] : players_.items()) {
         auto opts = opts_factory_.generate(player_json);
@@ -29,8 +30,13 @@ inline ErrorOr<PlayerList> PlayerLoader::load_players(assets::Manager& assets, c
             return tl::unexpected(opts.error());
         }
 
-        auto player = types.at(opts->type).create_player(*opts, assets, player_json.at("opts").get<PlayerOptions>());
+        auto player_opts = player_json.at("opts").get<PlayerOptions>();
+        player_opts.num = idx;
+
+        auto player = types.at(opts->type).create_player(*opts, assets, player_opts);
         res.push_back(std::move(*player));
+
+        ++idx;
     }
 
     return res;

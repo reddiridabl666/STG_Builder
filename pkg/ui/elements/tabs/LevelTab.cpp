@@ -14,7 +14,7 @@ struct FieldOptions {
     std::string image = "";
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(FieldOptions, speed, image);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(FieldOptions, speed, image)
 
 struct LevelTabContents : public Element {
   public:

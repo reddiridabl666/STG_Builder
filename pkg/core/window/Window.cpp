@@ -7,10 +7,8 @@
 
 #include "Drawable.hpp"
 
-Window::Window(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync,
-               bool default_font)
-    : window_(sf::VideoMode(width, height), name,
-              is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default) {
+Window::Window(const std::string& name, uint width, uint height, bool is_fullscreen, bool vsync, bool default_font)
+    : window_(sf::VideoMode(width, height), name, is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default) {
     window_.setVerticalSyncEnabled(vsync);
 
     if (!ImGui::SFML::Init(window_, default_font)) {

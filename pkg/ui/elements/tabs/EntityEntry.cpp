@@ -12,12 +12,7 @@ const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size
 
 EntityEntry::EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image,
                          size_t obj_count)
-    : texture_(std::move(image)),
-      name(name),
-      old_name_(name),
-      stats_(kBaseValues),
-      data_(json),
-      obj_count_(obj_count) {
+    : texture_(std::move(image)), name(name), old_name_(name), stats_(kBaseValues), data_(json), obj_count_(obj_count) {
     nl::from_json(*json, *this);
     tag_id = combo::get_item_id(object_tags, tag);
     stats_.from_json(*json);
@@ -57,7 +52,7 @@ void EntityEntry::draw(const Window&) {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
 
     if (ImGui::Button(message(Message::NewObject))) {
-        Bus<std::string>::get().emit(Event::ObjectCreated, name);
+        Bus<std::string>::get().emit(tag == "player" ? Event::PlayerCreated : Event::ObjectCreated, name);
         ++obj_count_;
     }
 

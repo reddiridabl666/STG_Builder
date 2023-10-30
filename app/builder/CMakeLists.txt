@@ -9,6 +9,7 @@ set(SOURCES
     app/EditableGame.cpp
     editor/ObjectEditor.cpp
     editor/ObjectEntry.cpp
+    editor/SideMenuTab.cpp
 )
 
 set(INCLUDE_DIRS

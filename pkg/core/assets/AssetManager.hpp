@@ -8,8 +8,8 @@
 #include "AssetStorage.hpp"
 
 namespace assets {
-static constexpr const char* kFallbackImage = "fallback.png";
-static constexpr const char* kFallbackFont = "Roboto-Regular.ttf";
+static inline const std::string kFallbackImage = "fallback.png";
+static inline const std::string kFallbackFont = "Roboto-Regular.ttf";
 
 template <Loadable T>
 class TypedManager {

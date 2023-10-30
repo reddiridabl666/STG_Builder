@@ -92,9 +92,29 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
             });
     });
 
+    Bus<std::string>::get().on(Event::PlayerCreated, "obj_editor_player_created", [this](const std::string& type) {
+        game_.new_player(type);
+        game_data_.at("players").push_back({
+            {"type", type},
+            {"pos", window_.get_view().getCenter()},
+            {"opts", nl::json::object()},
+        });
+    });
+
     Bus<std::string>::get().on(Event::ObjectTypeCreated, "obj_editor_type_created", [this](const std::string& name) {
         game_.new_object_type(name);
     });
+}
+
+ObjectEditor::~ObjectEditor() {
+    Bus<nl::json>::get().off(Event::ObjectTypesChanged, "obj_editor_changed");
+    Bus<std::string>::get().off(Event::ObjectCreated, "obj_editor_created");
+    Bus<std::string>::get().off(Event::PlayerCreated, "obj_editor_player_created");
+    Bus<std::string>::get().off(Event::ObjectTypeCreated, "obj_editor_type_created");
+
+    window_.remove_handler("obj_editor_click");
+    window_.remove_handler("obj_editor_release");
+    window_.remove_handler("obj_editor_undo");
 }
 
 void ObjectEditor::draw(const Window&) {
@@ -154,26 +174,16 @@ void ObjectEditor::draw(const Window&) {
     }
 }
 
-ObjectEditor::~ObjectEditor() {
-    Bus<nl::json>::get().off(Event::ObjectTypesChanged, "obj_editor_changed");
-    Bus<std::string>::get().off(Event::ObjectCreated, "obj_editor_created");
-    Bus<std::string>::get().off(Event::ObjectTypeCreated, "obj_editor_type_created");
-
-    window_.remove_handler("obj_editor_click");
-    window_.remove_handler("obj_editor_release");
-    window_.remove_handler("obj_editor_undo");
-}
-
 nl::json& ObjectEditor::json_by_obj(const GameObject& obj) {
     if (obj.tag() == GameObject::Tag::Player) {
-        return game_data_.at("players").at(obj.props().at(engine::kPlayerNum));
+        return game_data_.at("players").at(obj.props().at(kPlayerNum));
     }
     return level_data_.at("entities").at(obj.props().at(builder::kJsonID));
 }
 
 void ObjectEditor::erase_obj(const GameObject& obj) {
     if (obj.tag() == GameObject::Tag::Player) {
-        game_data_.at("players").erase(obj.props().at(engine::kPlayerNum));
+        game_data_.at("players").erase(obj.props().at(kPlayerNum));
     } else {
         level_data_.at("entities").erase(obj.props().at(builder::kJsonID));
     }

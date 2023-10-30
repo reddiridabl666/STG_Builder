@@ -64,10 +64,14 @@ enum class Message {
     Background,
     Offset,
     Size,
+    Gap,
+    PlayerGap,
     LeftEdge,
     TopEdge,
     Height,
     Width,
+    Layout,
+    SizeAndOffset,
     GameFieldHint,
     ObjectTypes,
     Stats,
@@ -95,8 +99,8 @@ enum class Message {
     Bomb
 };
 
-const char* message(Message type, Lang::Value lang = Lang::current());
+const char* message(Message type);
 
 inline std::function<const char*()> message_func(Message type) {
-    return std::bind(message, type, Lang::current());
+    return std::bind(message, type);
 }

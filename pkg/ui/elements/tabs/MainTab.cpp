@@ -1,7 +1,5 @@
 #include "MainTab.hpp"
 
-#include <iostream>
-
 #include "Bus.hpp"
 #include "ImguiUtils.hpp"
 #include "Json.hpp"
@@ -19,7 +17,7 @@ struct SideMenuOptions {
     std::vector<std::pair<std::string, float>> stats;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SideMenuOptions, size, stats);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SideMenuOptions, size, stats)
 
 struct MainTabContents : public Element {
   public:

@@ -2,7 +2,8 @@
 
 namespace ui {
 void Menu::draw(const Window& window) {
-    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    auto id = name_() + std::string("##Menu");
+    ImGui::Begin(id.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
     if (ImGui::BeginTabBar("##")) {
         for (auto& tab : tabs_) {
@@ -17,7 +18,9 @@ void Menu::draw(const Window& window) {
 }
 
 void Menu::Tab::draw(const Window& window) const {
-    if (ImGui::BeginTabItem(name_())) {
+    auto id = name_() + std::string("##");
+
+    if (ImGui::BeginTabItem(id.c_str())) {
         elem_->draw(window);
         ImGui::EndTabItem();
     }

@@ -22,6 +22,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     void zoom(float);
 
     GameObject& new_object(const std::string& type);
+    void new_player(const std::string& type);
     void new_object_type(const std::string& type);
     void remove_object(const std::string& name);
     GameObject& reload_object(const std::string& name, ObjectOptions&& opts);
@@ -38,6 +39,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
 
     void set_game_bg(const std::string& bg_path);
     void set_level_bg(const std::string& bg_path);
+    void update_side_menu(const engine::SideMenuProps& props);
 
     const GameField& field() const {
         return level_->field();

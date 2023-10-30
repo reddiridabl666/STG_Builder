@@ -20,7 +20,7 @@ class SpriteObject : public Displayable {
 
     void set_texture(std::shared_ptr<sf::Texture>&& texture) {
         texture_ = std::move(texture);
-        sprite_.setTexture(*texture);
+        sprite_.setTexture(*texture_);
     }
 
     void set_texture_rect(const sf::IntRect& rect) {

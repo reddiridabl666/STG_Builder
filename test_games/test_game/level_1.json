@@ -43,8 +43,8 @@
                 ]
             },
             "pos": {
-                "x": 531.0,
-                "y": 594.77783203125
+                "x": 549.0,
+                "y": 605.77783203125
             },
             "rotation": 0,
             "type": "New object 2"
@@ -62,11 +62,13 @@
                     "x": 0.0,
                     "y": 10.0
                 },
+                "repeat": "repeat",
+                "time": 0.0,
                 "type": "linear"
             },
             "pos": {
-                "x": 251.0,
-                "y": 348.77783203125
+                "x": 409.0,
+                "y": 589.77783203125
             },
             "rotation": 0,
             "type": "enemy"
@@ -107,11 +109,13 @@
                     "x": -1.0,
                     "y": 3.0
                 },
+                "repeat": "repeat",
+                "time": 0.0,
                 "type": "linear"
             },
             "pos": {
-                "x": 401.0,
-                "y": 259.7778015136719
+                "x": 367.0,
+                "y": 306.0
             },
             "rotation": 270,
             "type": "enemy"
@@ -123,11 +127,13 @@
             },
             "move": {
                 "args": {},
+                "repeat": "repeat",
+                "time": 0.0,
                 "type": "user_control"
             },
             "pos": {
-                "x": 25.0,
-                "y": 665.77783203125
+                "x": -10.0,
+                "y": 700.77783203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -142,16 +148,18 @@
                     "x": 5.0,
                     "y": 0
                 },
+                "repeat": "repeat",
+                "time": 0.0,
                 "type": "linear"
             },
             "pos": {
-                "x": 251.0,
-                "y": 697.77783203125
+                "x": 240.0,
+                "y": 584.0
             },
             "rotation": 180,
             "type": "enemy"
         }
     ],
-    "last_updated": 1698594188,
+    "last_updated": 1698672284,
     "name": "The first level"
 }

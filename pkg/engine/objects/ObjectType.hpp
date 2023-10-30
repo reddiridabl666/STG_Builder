@@ -15,6 +15,8 @@
 class Player;
 struct PlayerOptions;
 
+static constexpr const char* kPlayerNum = "__player_num";
+
 class ObjectType {
   public:
     using AssetPaths = std::vector<std::string>;

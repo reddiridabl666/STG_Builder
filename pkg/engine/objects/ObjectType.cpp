@@ -37,6 +37,7 @@ ErrorOr<std::shared_ptr<GameObject>> ObjectType::create_player(const ObjectOptio
 
     (*player)->set_life_update(alive::always);
     (*player)->set_movement(movement::user_control(opts.num, opts.keys, opts.joy));
+    (*player)->props().set(kPlayerNum, opts.num);
 
     return player;
 }

@@ -36,6 +36,8 @@ class Game {
     ErrorOr<std::shared_ptr<GameObject>> generate_object(const ObjectOptions& opts);
 
     void add_object(std::shared_ptr<GameObject>&&);
+    void add_player(std::shared_ptr<GameObject>&&);
+
     Error generate_objects();
     Error generate_players();
 

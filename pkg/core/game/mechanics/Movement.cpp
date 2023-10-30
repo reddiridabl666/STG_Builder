@@ -43,8 +43,7 @@ int vertical(const KeyControls& keys, const JoyControls&) {
 
 struct Circular : public Rule {
   public:
-    Circular(const sf::Vector2f& radius, float speed)
-        : radius_(radius), speed_(speed), radius_len_(abs(radius)) {}
+    Circular(const sf::Vector2f& radius, float speed) : radius_(radius), speed_(speed), radius_len_(abs(radius)) {}
 
     Result operator()(const GameObject&, float delta_time) override {
         angle_ += speed_ * delta_time;
@@ -173,7 +172,6 @@ std::unique_ptr<Rule> Multi::clone() const {
 }
 
 void from_json(const nl::json& json, MultiInfo& info) {
-    [[maybe_unused]] std::string contents = json.dump(4);
     if (json.contains("rules")) {
         json.at("rules").get_to(info.rules);
         json.at("repeat").get_to(info.repeat);
@@ -184,6 +182,10 @@ void from_json(const nl::json& json, MultiInfo& info) {
 }
 
 void to_json(nl::json& json, const MultiInfo& info) {
+    if (info.rules.empty()) {
+        return;
+    }
+
     if (info.rules.size() > 1) {
         json["rules"] = info.rules;
     } else {
