@@ -21,18 +21,19 @@ void GameBuilder::init(const fs::path& game_dir) {
         throw std::runtime_error(entities.error().message());
     }
 
-    std::vector<nl::json> levels;
-    for (const auto& file : fs::directory_iterator(game_dir)) {
-        fs::path filename = file.path().filename();
+    auto level_num = game->at("levels").get<size_t>();
 
-        if (!filename.string().starts_with("level") || !file.is_regular_file()) {
-            continue;
-        }
+    std::vector<nl::json> levels;
+    levels.reserve(level_num);
+
+    for (size_t num = 1; num <= level_num; ++num) {
+        auto filename = fmt::format("level_{}.json", num);
 
         auto level = json::read(game_dir / filename);
         if (!level) {
             throw std::runtime_error(level.error().message());
         }
+
         levels.push_back(std::move(*level));
     }
 
@@ -64,18 +65,18 @@ fs::path GameBuilder::new_game(const fs::path& game) const {
     fs::copy(path.parent_path() / assets::kFallbackImage, path / "assets/images");
     fs::copy(path.parent_path() / assets::kFallbackFont, path / "assets/fonts");
 
-    nl::json game_json{
-        {"name", path.stem().string()},
-        {"description", ui::GameInfo::kDefaultDesc},
-        {"levels", 0},
-        {"field_size", GameField::kDefaultRatio},
-        {"players", nl::json::array({
-                        {"image", assets::kFallbackImage},
-                        {"size", sf::Vector2f{100, 100}},
-                        {"speed", 300},
-                    })},
-        {"side_menu", }
-    };
+    nl::json game_json{{"name", path.stem().string()},
+                       {"description", ui::GameInfo::kDefaultDesc},
+                       {"levels", 0},
+                       {"field_size", GameField::kDefaultRatio},
+                       {"players", nl::json::array({
+                                       {"image", assets::kFallbackImage},
+                                       {"size", sf::Vector2f{100, 100}},
+                                       {"speed", 300},
+                                   })},
+                       {
+                           "side_menu",
+                       }};
 
     json::create(path / "game.json", game_json);
 

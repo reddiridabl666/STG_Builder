@@ -195,7 +195,9 @@ ui::DefaultBox::Items App::load_levels() {
     fs::path game_dir = games_dir_ / current_game_;
 
     ui::DefaultBox::Items res;
-    res.reserve(4);
+
+    size_t level_num = builder_.game().at("levels").get<size_t>();
+    res.reserve(level_num + 1);
 
     res.push_back(std::make_unique<ui::ImageButton>(
         message_func(Message::CreateLevel), textures_.get_or("plus.png", assets::kFallbackImage), ImVec2{50, 50},
@@ -205,15 +207,9 @@ ui::DefaultBox::Items App::load_levels() {
         },
         true, ImVec2{}, ImVec2{0, 70}));
 
-    static size_t num_pos = sizeof("level");
+    for (size_t num = 1; num <= level_num; ++num) {
+        auto filename = fmt::format("level_{}.json", num);
 
-    for (const auto& file : fs::directory_iterator(game_dir)) {
-        auto filename = file.path().filename().string();
-        if (!filename.starts_with("level") || !(file.path().extension() == ".json")) {
-            continue;
-        }
-
-        size_t num = std::stoi(filename.substr(num_pos, filename.find(".") - num_pos));
         auto level = json::read(game_dir / filename);
 
         if (!level) {
@@ -309,11 +305,12 @@ void App::on_state_start(State state) {
             return;
         }
         case State::GameMenu: {
+            auto game_dir = games_dir_ / current_game_;
+            builder_.init(game_dir);
+
             ui_.emplace("back", back_button());
             ui_.emplace("levels", std::make_unique<ui::DefaultBox>(message_func(Message::YourLevels), load_levels(),
                                                                    ImVec2{400, 400}, window_.get_center()));
-            auto game_dir = games_dir_ / current_game_;
-            builder_.init(game_dir);
             game_ = builder_.create_engine(window_);
             return;
         }
@@ -360,6 +357,7 @@ void App::on_state_end(State state) {
             builder_.save();
             ui_.erase("obj_editor");
             ui_.erase("play_btn");
+            game_->clear();
             return;
         default:
             return;
