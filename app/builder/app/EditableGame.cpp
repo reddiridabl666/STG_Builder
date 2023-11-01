@@ -65,6 +65,18 @@ void EditableGame::update_side_menu(const engine::SideMenuProps& props) {
     menu_.update_layout(window_, props);
 }
 
+void EditableGame::update_menu_item(size_t id, const nl::json& item) {
+    menu_.update_item(id, GameState::get().players(), assets_, item);
+}
+
+void EditableGame::erase_menu_item(size_t id) {
+    menu_.erase_item(id);
+}
+
+void EditableGame::add_menu_item(const nl::json& json) {
+    menu_.add_item(GameState::get().players(), assets_, json);
+}
+
 void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
     rtree_.remove(obj.name(), obj.get_bounds());
     obj.set_pos(pos);
@@ -162,7 +174,7 @@ void EditableGame::remove_object(const std::string& name) {
     } else {
         size_t id = obj->props().at(kPlayerNum);
         GameState::get().erase_player(id);
-        menu_.erase(id);
+        menu_.erase_player(id);
     }
     objects_.erase(name);
 }

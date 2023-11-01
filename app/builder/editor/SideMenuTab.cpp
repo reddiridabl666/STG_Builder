@@ -15,13 +15,14 @@
 namespace ui {
 namespace {
 
-const std::string ui_types = "counter\0max_counter\0bar";
+static const std::vector<std::string> ui_types = {"counter", "max_counter", "bar"};
 
 struct GameUiProps {
     virtual void draw() = 0;
     virtual nl::json to_json() const = 0;
     virtual std::string get_type() const = 0;
     virtual void set_type(const std::string&) = 0;
+    virtual std::string get_value() const = 0;
     virtual ~GameUiProps() = default;
 };
 
@@ -42,6 +43,10 @@ struct CounterProps : public GameUiProps {
 
     std::string get_type() const override {
         return type;
+    }
+
+    std::string get_value() const override {
+        return value;
     }
 
     void set_type(const std::string& new_type) override {
@@ -75,6 +80,10 @@ struct BarProps : public GameUiProps {
         return type;
     }
 
+    std::string get_value() const override {
+        return value;
+    }
+
     void set_type(const std::string& new_type) override {
         type = new_type;
     }
@@ -84,7 +93,7 @@ struct BarProps : public GameUiProps {
     std::string type;
     std::string empty;
     std::string full;
-    int width;
+    int width = 200;
 };
 
 struct GameUiPropsFactory {
@@ -132,24 +141,58 @@ struct SideMenuTabContents : public Element {
 
         ImGui::SeparatorText(message(Message::Stats));
 
+        bool add = false;
+
         for (size_t i = 0; i < stats_.size(); ++i) {
             ImGui::BeginGroup();
             auto& elem = stats_[i];
 
+            ImGui::PushID(&elem);
+
             int id = combo::get_item_id(ui_types, elem->get_type());
-            if (ImGui::Combo(message(Message::Type), &id, ui_types.data())) {
-                elem->set_type(combo::find_item(ui_types, id));
+            if (ImGui::Combo(message(Message::Type), &id, ui_types)) {
+                auto type = combo::find_item(ui_types, id);
+                elem = GameUiPropsFactory::create(nl::json{
+                    {"type", type},
+                    {"value", elem->get_value()},
+                });
             }
 
             elem->draw();
+
+            if (ImGui::Button(message(Message::Delete))) {
+                to_delete_ = i;
+            }
+            ImGui::PopID();
+
             ImGui::EndGroup();
             if (ImGui::IsItemDeactivatedAfterEdit()) {
-                props_.stats[i] = elem->to_json();
+                auto json = elem->to_json();
+                props_.stats[i] = json;
+                json["id"] = i;
+                Bus<nl::json>::get().emit(Event::SideMenuElemChanged, json);
             }
             ImGui::NewLine();
         }
 
+        if (ImGui::Button(message(Message::Add))) {
+            add = true;
+        }
         ImGui::EndGroup();
+
+        if (to_delete_ != -1) {
+            stats_.erase(stats_.begin() + to_delete_);
+            props_.stats.erase(to_delete_);
+            Bus<int>::get().emit(Event::SideMenuElemDeleted, to_delete_);
+            to_delete_ = -1;
+        }
+
+        if (add) {
+            nl::json new_elem = {{"type", "counter"}, {"value", "score"}};
+            stats_.push_back(GameUiPropsFactory::create(new_elem));
+            props_.stats.push_back(new_elem);
+            Bus<nl::json>::get().emit(Event::SideMenuElemAdded, new_elem);
+        }
 
         if (ImGui::IsItemDeactivatedAfterEdit()) {
             Bus<nl::json>::get().emit(Event::SideMenuChanged, props_);
@@ -159,6 +202,7 @@ struct SideMenuTabContents : public Element {
   private:
     engine::SideMenuProps props_;
     std::vector<std::unique_ptr<GameUiProps>> stats_;
+    int to_delete_ = -1;
 };
 }  // namespace
 

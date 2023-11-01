@@ -18,20 +18,22 @@ std::unique_ptr<GameUi> StatDisplayFactory::create(float init_val, const nl::jso
     auto type = json::get<std::string>(json, "type");
 
     if (type == "bar") {
-        auto empty = assets.textures().get_or(json.at("empty").get<std::string>(), assets::kFallbackImage);
+        auto empty = assets.textures().get_or(json::get<std::string>(json, "empty"), assets::kFallbackImage);
         return std::make_unique<Bar>(
             init_val,
             json::get<float>(json, "width", empty->getSize().x),
             std::move(empty),
-            assets.textures().get_or(json.at("full").get<std::string>(), assets::kFallbackImage)
+            assets.textures().get_or(json::get<std::string>(json, "full"), assets::kFallbackImage)
         );
     }
+    
+    auto font = json::get<std::string>(json, "font");
 
     if (type == "counter") {
         return std::make_unique<Counter>(
             init_val,
             json::get<std::string>(json, "prefix"),
-            assets.fonts().get_or(json.at("font").get<std::string>(), assets::kFallbackFont),
+            assets.fonts().get_or(font, assets::kFallbackFont),
             json::get<size_t>(json, "size", 30)
         );
     }
@@ -40,7 +42,7 @@ std::unique_ptr<GameUi> StatDisplayFactory::create(float init_val, const nl::jso
         return std::make_unique<MaxCounter>(
             init_val,
             json::get<std::string>(json, "prefix"),
-            assets.fonts().get_or(json.at("font").get<std::string>(), assets::kFallbackFont),
+            assets.fonts().get_or(font, assets::kFallbackFont),
             json::get<size_t>(json, "size", 30)
         );
     }

@@ -39,7 +39,11 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
 
     void set_game_bg(const std::string& bg_path);
     void set_level_bg(const std::string& bg_path);
+
     void update_side_menu(const engine::SideMenuProps& props);
+    void update_menu_item(size_t id, const nl::json& item);
+    void erase_menu_item(size_t id);
+    void add_menu_item(const nl::json&);
 
     const GameField& field() const {
         return level_->field();

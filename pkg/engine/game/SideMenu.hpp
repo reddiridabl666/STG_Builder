@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "AssetManager.hpp"
@@ -22,7 +21,15 @@ struct SideMenuProps {
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(SideMenuProps, offset, gap, player_gap, bg, size, stats)
 
+struct PlayerStat {
+    std::string key;
+    std::unique_ptr<GameUi> ui;
+};
+
 class SideMenu {
+  private:
+    using Players = const std::vector<std::weak_ptr<const GameObject>>&;
+
   public:
     SideMenu(const Window& window, const sf::Vector2f& offset, float gap, float player_gap,
              const sf::FloatRect& screen_pos, std::shared_ptr<sf::Texture>&& bg, const nl::json& settings);
@@ -31,22 +38,15 @@ class SideMenu {
 
     void draw(Window& window);
 
-    template <typename PlayerList>
-    void update(const PlayerList& players) {
-        for (size_t i = 0; i < players.size(); ++i) {
-            if (players[i].expired()) {
-                continue;
-            }
-
-            for (auto& [stat_name, stat] : player_stats_[i]) {
-                stat->update(players[i].lock()->props().get(stat_name));
-            }
-        }
-    }
+    void update(Players players);
 
     void update_layout(const Window& window, const SideMenuProps& props);
+    void update_item(size_t id, Players players, assets::Manager& assets, const nl::json& updated);
+    void add_item(Players players, assets::Manager& assets, const nl::json& item);
+
     void clear();
-    void erase(size_t id);
+    void erase_player(size_t id);
+    void erase_item(size_t id);
     void set_bg(std::shared_ptr<sf::Texture>&& bg);
 
     void add_player(const GameObject&, assets::Manager& assets);
@@ -55,10 +55,11 @@ class SideMenu {
         return bg_.pos();
     }
 
-    using PlayerStats = std::unordered_map<std::string, std::unique_ptr<GameUi>>;
+    using PlayerStats = std::vector<PlayerStat>;
 
   private:
     void initialize_view(const Window& window, const sf::FloatRect& screen_pos);
+    void update_layout();
 
     std::vector<PlayerStats> player_stats_;
     SpriteObject bg_;

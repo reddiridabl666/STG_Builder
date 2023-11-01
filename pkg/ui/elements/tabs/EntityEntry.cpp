@@ -5,7 +5,7 @@
 #include "Bus.hpp"
 #include "Combo.hpp"
 
-static const char* object_tags = "enemy\0player\0bullet";
+static const std::vector<std::string> object_tags = {"enemy", "player", "bullet"};
 
 namespace ui {
 const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size", "tag", "speed", ""};

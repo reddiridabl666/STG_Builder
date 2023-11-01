@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1698732229,
+    "last_updated": 1698818031,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -101,8 +101,8 @@
                 }
             },
             "pos": {
-                "x": 397.0,
-                "y": 922.77783203125
+                "x": 428.0,
+                "y": 910.77783203125
             },
             "rotation": 0,
             "type": "player"
@@ -112,15 +112,15 @@
         "bg": "level1_bg.jpg",
         "gap": 25.0,
         "offset": {
-            "x": 60.0,
-            "y": 50.0
+            "x": 65.0,
+            "y": 40.0
         },
-        "player_gap": 75.0,
+        "player_gap": 50.0,
         "size": {
             "height": 0.8999999761581421,
             "left": 0.6700000166893005,
             "top": 0.05000000074505806,
-            "width": 250.0
+            "width": 0.27000001072883606
         },
         "stats": [
             {
@@ -128,14 +128,14 @@
                 "prefix": "Score:",
                 "size": 48,
                 "type": "counter",
-                "value": "health"
+                "value": "score"
             },
             {
                 "empty": "player_hp_empty.png",
                 "full": "player_hp_full.png",
                 "type": "bar",
                 "value": "health",
-                "width": 250
+                "width": 200
             }
         ]
     },

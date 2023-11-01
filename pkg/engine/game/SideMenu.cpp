@@ -22,11 +22,23 @@ void SideMenu::draw(Window& window) {
     window.set_view(view_);
     bg_.draw(window);
     for (auto& player : player_stats_) {
-        for (auto& [_, stat] : player) {
-            stat->draw(window);
+        for (auto& stat : player) {
+            stat.ui->draw(window);
         }
     }
     window.set_view(init_view);
+}
+
+void SideMenu::update(Players players) {
+    for (size_t i = 0; i < players.size(); ++i) {
+        if (players[i].expired()) {
+            continue;
+        }
+
+        for (auto& stat : player_stats_[i]) {
+            stat.ui->update(players[i].lock()->props().get(stat.key));
+        }
+    }
 }
 
 void SideMenu::add_player(const GameObject& player, assets::Manager& assets) {
@@ -42,16 +54,45 @@ void SideMenu::add_player(const GameObject& player, assets::Manager& assets) {
 #endif
             continue;
         }
-        ui_elem->set_pos(prev_pos_ + sf::Vector2f{0, prev_height + gap_});
+
+        prev_pos_.y += prev_height + gap_;
+        ui_elem->set_pos(prev_pos_);
 
         prev_height = ui_elem->get_size().y;
-        prev_pos_ = ui_elem->pos();
 
-        stats.emplace(stat, std::move(ui_elem));
+        stats.push_back(PlayerStat{
+            .key = stat,
+            .ui = std::move(ui_elem),
+        });
     }
 
     player_stats_.push_back(std::move(stats));
-    prev_pos_ += sf::Vector2f{0, player_gap_};
+    prev_pos_.y += player_gap_;
+}
+
+void SideMenu::update_item(size_t id, Players players, assets::Manager& assets, const nl::json& updated) {
+    settings_[id] = updated;
+
+    size_t player_id = 0;
+    for (auto& player_ui : player_stats_) {
+        player_ui[id].key = updated.at("value").get<std::string>();
+
+        float value = players[player_id].lock()->props().get(player_ui[id].key);
+
+        auto ui = StatDisplayFactory::create(value, updated, assets);
+        if (!ui) {
+#ifdef DEBUG
+            LOG(fmt::format("Error creating GameUI, got: {}", updated.dump(4)));
+#endif
+            ++player_id;
+            continue;
+        }
+
+        player_ui[id].ui = std::move(ui);
+        ++player_id;
+    }
+
+    update_layout();
 }
 
 void SideMenu::set_bg(std::shared_ptr<sf::Texture>&& bg) {
@@ -63,9 +104,16 @@ void SideMenu::clear() {
     player_stats_.clear();
 }
 
-void SideMenu::erase(size_t id) {
+void SideMenu::erase_player(size_t id) {
     player_stats_.erase(player_stats_.begin() + id);
-    // TODO:: add layout fixes
+    update_layout();
+}
+
+void SideMenu::erase_item(size_t id) {
+    for (auto& player : player_stats_) {
+        player.erase(player.begin() + id);
+    }
+    update_layout();
 }
 
 void SideMenu::initialize_view(const Window& window, const sf::FloatRect& screen_pos) {
@@ -91,15 +139,40 @@ void SideMenu::update_layout(const Window& window, const SideMenuProps& props) {
     gap_ = props.gap;
     player_gap_ = props.player_gap;
 
+    update_layout();
+}
+
+void SideMenu::add_item(Players players, assets::Manager& assets, const nl::json& item) {
+    settings_.push_back(item);
+    auto key = item.at("value").get<std::string>();
+
+    for (size_t i = 0; i < player_stats_.size(); ++i) {
+        auto ui = StatDisplayFactory::create(players[i].lock()->props().get(key), item, assets);
+        if (!ui) {
+#ifdef DEBUG
+            LOG(fmt::format("Error creating GameUI, got: {}", item.dump(4)));
+#endif
+        }
+        player_stats_[i].push_back(PlayerStat{
+            .key = key,
+            .ui = std::move(ui),
+        });
+    }
+}
+
+void SideMenu::update_layout() {
     prev_pos_ = bg_.pos() + offset_;
-    float prev_height = -gap_;
 
     for (auto& player : player_stats_) {
-        for (auto& [_, stat] : player) {
-            stat->set_pos(prev_pos_ + sf::Vector2f{0, prev_height + gap_});
-            prev_height = stat->get_size().y;
-            prev_pos_ = stat->pos();
+        float prev_height = -gap_;
+
+        for (auto& stat : player) {
+            prev_pos_.y += prev_height + gap_;
+            stat.ui->set_pos(prev_pos_);
+            prev_height = stat.ui->get_size().y;
         }
+
+        prev_pos_.y += player_gap_;
     }
 }
 }  // namespace engine

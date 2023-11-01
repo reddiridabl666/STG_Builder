@@ -117,13 +117,11 @@ void ImGui::EndGroupPanel() {
                 break;
             // top
             case 2:
-                ImGui::PushClipRect(ImVec2(labelRect.Min.x, -FLT_MAX),
-                                    ImVec2(labelRect.Max.x, labelRect.Min.y), true);
+                ImGui::PushClipRect(ImVec2(labelRect.Min.x, -FLT_MAX), ImVec2(labelRect.Max.x, labelRect.Min.y), true);
                 break;
             // bottom
             case 3:
-                ImGui::PushClipRect(ImVec2(labelRect.Min.x, labelRect.Max.y),
-                                    ImVec2(labelRect.Max.x, FLT_MAX), true);
+                ImGui::PushClipRect(ImVec2(labelRect.Min.x, labelRect.Max.y), ImVec2(labelRect.Max.x, FLT_MAX), true);
                 break;
         }
 
@@ -147,4 +145,18 @@ void ImGui::EndGroupPanel() {
     ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
     ImGui::EndGroup();
+}
+
+bool ImGui::Combo(const char* name, int* cur, const std::vector<std::string>& values) {
+    if (BeginCombo(name, values[*cur].c_str())) {
+        for (size_t i = 0; i < values.size(); ++i) {
+            if (Selectable(values[i].c_str())) {
+                *cur = i;
+                EndCombo();
+                return true;
+            }
+        }
+        EndCombo();
+    }
+    return false;
 }

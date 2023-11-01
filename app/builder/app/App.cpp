@@ -28,6 +28,7 @@
 namespace builder {
 
 static constexpr const char* kImagesPath = "assets/images";
+static const auto kStatsLocator = "/side_menu/stats"_json_pointer;
 
 App::App(const std::string& games_dir, const std::string& name, uint width, uint height)
     : window_(EditorWindow::init(name, width, height)),
@@ -104,6 +105,31 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
             game_->update_side_menu(json.get<engine::SideMenuProps>());
         }
     });
+
+    ui::Bus<nl::json>::get().on(ui::Event::SideMenuElemChanged, "app_ui_elem_changed", [this](const nl::json& json) {
+        if (game_) {
+            auto id = json.at("id").get<size_t>();
+            auto tmp = json;
+            tmp.erase("id");
+
+            builder_.game().at(kStatsLocator).at(id) = tmp;
+            game_->update_menu_item(id, tmp);
+        }
+    });
+
+    ui::Bus<int>::get().on(ui::Event::SideMenuElemDeleted, "app_ui_elem_deleted", [this](int id) {
+        if (game_) {
+            game_->erase_menu_item(id);
+            builder_.game().at(kStatsLocator).erase(id);
+        }
+    });
+
+    ui::Bus<nl::json>::get().on(ui::Event::SideMenuElemAdded, "app_ui_elem_added", [this](const nl::json& json) {
+        if (game_) {
+            game_->add_menu_item(json);
+            builder_.game().at(kStatsLocator).push_back(json);
+        }
+    });
 }
 
 App::~App() {
@@ -113,6 +139,8 @@ App::~App() {
     ui::Bus<std::string>::get().off(ui::Event::GameBgChanged, "app_bg_changed");
     ui::Bus<std::string>::get().off(ui::Event::LevelBgChanged, "app_level_bg_changed");
     ui::Bus<nl::json>::get().off(ui::Event::SideMenuChanged, "app_side_menu_changed");
+    ui::Bus<int>::get().off(ui::Event::SideMenuElemDeleted, "app_ui_elem_deleted");
+    ui::Bus<int>::get().off(ui::Event::SideMenuElemAdded, "app_ui_elem_added");
 }
 
 void App::run() noexcept {

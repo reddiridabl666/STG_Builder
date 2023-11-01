@@ -17,6 +17,9 @@ enum class Event {
     GameBgChanged,
     LevelBgChanged,
     SideMenuChanged,
+    SideMenuElemChanged,
+    SideMenuElemDeleted,
+    SideMenuElemAdded,
 };
 
 template <typename Payload>
