@@ -12,6 +12,15 @@
     "enemy": {
         "description": "Simple enemy type",
         "health": 50,
+        "hitbox": {
+            "color": "red",
+            "outline": 1,
+            "size": {
+                "x": 20,
+                "y": 40
+            },
+            "type": "rect"
+        },
         "image": "enemy.png",
         "score": 100,
         "shots": 10,
@@ -24,6 +33,12 @@
     },
     "player": {
         "description": "Description goes here",
+        "hitbox": {
+            "color": "green",
+            "outline": 2,
+            "radius": 20,
+            "type": "circle"
+        },
         "image": "player.png",
         "size": {
             "x": 100.0,

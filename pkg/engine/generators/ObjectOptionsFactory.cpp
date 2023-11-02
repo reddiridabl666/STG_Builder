@@ -6,8 +6,7 @@
 #include "Debug.hpp"
 #endif
 
-ObjectOptionsFactory::ObjectOptionsFactory(const GameField& field)
-    : handler_chain_(init_handler_chain(field)) {}
+ObjectOptionsFactory::ObjectOptionsFactory(const GameField& field) : handler_chain_(init_handler_chain(field)) {}
 
 ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const nl::json& json) const {
     ObjectOptions res;
@@ -24,8 +23,7 @@ ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const nl::json& json) cons
     return res;
 }
 
-ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(
-    const std::vector<nl::json>& json) const {
+ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(const std::vector<nl::json>& json) const {
 #ifdef DEBUG
     LOG("Generating object instance options");
 #endif

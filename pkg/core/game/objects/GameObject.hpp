@@ -4,12 +4,14 @@
 #include <memory>
 
 #include "Errors.hpp"
+#include "Hideable.hpp"
+#include "Hitbox.hpp"
 #include "ImageContainer.hpp"
 #include "Life.hpp"
 #include "Movement.hpp"
 #include "Properties.hpp"
 
-class GameObject : public ImageContainer {
+class GameObject : public ImageContainer, public Hideable {
   public:
     static constexpr float kDefaultActivityStart = 0;
     static constexpr float kLoadDelta = 100;
@@ -25,12 +27,12 @@ class GameObject : public ImageContainer {
         PlayerBuller
     };
 
-    GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
-               int speed = 50, Tag tag = Tag::Object, const Properties& props = {},
-               float activity_start = kDefaultActivityStart,
+    GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image, int speed = 50,
+               Tag tag = Tag::Object, const Properties& props = {}, float activity_start = kDefaultActivityStart,
                const alive::update& life_func = kDefaultLifeFunc,
-               std::unique_ptr<movement::Rule>&& move_func = movement::no_op(), sf::Vector2f velocity = {},
-               bool alive = true, bool active = false);
+               std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
+               std::unique_ptr<Hitbox>&& hitbox = nullptr, sf::Vector2f velocity = {}, bool alive = true,
+               bool active = false);
 
     float left() const;
 
@@ -48,9 +50,9 @@ class GameObject : public ImageContainer {
         move_update_ = std::move(move);
     }
 
-    // Hitbox& hitbox() {
-    //     return hitbox_;
-    // }
+    const auto& hitbox() const {
+        return hitbox_;
+    }
 
     Properties& props() {
         return props_;
@@ -127,6 +129,12 @@ class GameObject : public ImageContainer {
         life_update_ = func;
     }
 
+    void draw(Window&) const override;
+    void set_pos(const sf::Vector2f&) override;
+    using ImageContainer::set_pos;
+    void set_rotation(float rotation) override;
+    void scale(float x, float y) override;
+
   private:
     std::string name_;
     Tag tag_;
@@ -135,6 +143,8 @@ class GameObject : public ImageContainer {
     sf::Vector2f velocity_;
     std::unique_ptr<movement::Rule> move_update_;
     alive::update life_update_ = kDefaultLifeFunc;
+
+    std::unique_ptr<Hitbox> hitbox_;
 
     bool active_ = false;
     bool alive_ = true;

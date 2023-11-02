@@ -5,19 +5,15 @@
 
 #include "Geometry.hpp"
 #include "Hitbox.hpp"
+#include "ShapeObject.hpp"
 
-class CircleShapeHitbox : public CircleHitbox {
+class CircleShapeHitbox : public CircleHitbox, public CircleObject {
   public:
-    CircleShapeHitbox(const sf::CircleShape& shape) : shape_(shape) {
+    CircleShapeHitbox(float radius, sf::Color color = sf::Color::White, size_t outline = 1) : CircleObject(radius) {
         set_origin();
-    }
-
-    CircleShapeHitbox(sf::CircleShape&& shape) : shape_(std::move(shape)) {
-        set_origin();
-    }
-
-    FloatBox get_frame() const {
-        return shape_.getGlobalBounds();
+        shape_.setFillColor(sf::Color::Transparent);
+        shape_.setOutlineColor(color);
+        shape_.setOutlineThickness(outline);
     }
 
     float radius() const override {
@@ -30,27 +26,21 @@ class CircleShapeHitbox : public CircleHitbox {
 
   private:
     void set_origin() {
-        shape_.setOrigin(sf::Vector2f{radius(), radius()} / 2.f);
+        shape_.setOrigin(sf::Vector2f{radius(), radius()});
     }
-
-    sf::CircleShape shape_;
 };
 
-class RectShapeHitbox : public RectHitbox {
+class RectShapeHitbox : public RectHitbox, public RectObject {
   public:
-    RectShapeHitbox(const sf::RectangleShape& shape) : shape_(shape) {
+    RectShapeHitbox(const sf::Vector2f& size, sf::Color color = sf::Color::White, size_t outline = 1)
+        : RectObject(size) {
         set_origin();
+        shape_.setFillColor(sf::Color::Transparent);
+        shape_.setOutlineColor(color);
+        shape_.setOutlineThickness(outline);
     }
 
-    RectShapeHitbox(sf::RectangleShape&& shape) : shape_(std::move(shape)) {
-        set_origin();
-    }
-
-    FloatBox get_bounds() const {
-        return shape_.getGlobalBounds();
-    }
-
-    const FloatRect& rect() const override {
+    FloatRect rect() const override {
         sf::Transform matrix = shape_.getTransform();
         FloatRect::point_container points;
 
@@ -65,6 +55,4 @@ class RectShapeHitbox : public RectHitbox {
     void set_origin() {
         shape_.setOrigin(shape_.getSize() / 2.f);
     }
-
-    sf::RectangleShape shape_;
 };

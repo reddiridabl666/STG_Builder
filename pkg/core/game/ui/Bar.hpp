@@ -36,16 +36,6 @@ class Bar : public GameUi {
         full_.set_pos(pos);
     }
 
-    void move(const sf::Vector2f& offset) override {
-        empty_.move(offset);
-        full_.move(offset);
-    }
-
-    void rotate(float angle) override {
-        empty_.rotate(angle);
-        full_.rotate(angle);
-    }
-
     void set_rotation(float angle) override {
         empty_.set_rotation(angle);
         full_.set_rotation(angle);

@@ -3,12 +3,14 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#include "Displayable.hpp"
 #include "Geometry.hpp"
+#include "Hideable.hpp"
 
 class RectHitbox;
 class CircleHitbox;
 
-class Hitbox {
+class Hitbox : virtual public Displayable, public Hideable {
   public:
     enum class Type {
         Circle,
@@ -34,7 +36,7 @@ class Hitbox {
 class RectHitbox : public Hitbox {
   public:
     RectHitbox() : Hitbox(Hitbox::Type::Rect) {}
-    virtual const FloatRect& rect() const = 0;
+    virtual FloatRect rect() const = 0;
 
   protected:
     bool intersects_with_rect(const RectHitbox& other) const override;
@@ -54,3 +56,5 @@ class CircleHitbox : public Hitbox {
     bool intersects_with_rect(const RectHitbox& other) const override;
     bool intersects_with_circle(const CircleHitbox& other) const override;
 };
+
+#undef HITBOX_TYPE_TO_STR

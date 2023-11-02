@@ -41,8 +41,7 @@ struct Func : public Rule {
     Func() : func_(nullptr) {}
 
     template <typename T>
-    Func(T&& func, bool moves_with_field = false)
-        : func_(std::forward<T>(func)), moves_with_field_(moves_with_field) {}
+    Func(T&& func, bool moves_with_field = false) : func_(std::forward<T>(func)), moves_with_field_(moves_with_field) {}
 
     Result operator()(const GameObject& obj, float delta) override {
         return func_(obj, delta);
@@ -82,8 +81,7 @@ enum class Repeat {
 
 struct Multi : public Rule {
   public:
-    Multi(std::vector<std::unique_ptr<Rule>>&& funcs, std::vector<float>&& times,
-          Repeat repeat = Repeat::Repeat);
+    Multi(std::vector<std::unique_ptr<Rule>>&& funcs, std::vector<float>&& times, Repeat repeat = Repeat::Repeat);
 
     Result operator()(const GameObject& obj, float delta) override;
 
@@ -133,4 +131,6 @@ struct MultiInfo {
 
 void from_json(const nl::json&, MultiInfo&);
 void to_json(nl::json&, const MultiInfo&);
+
+#undef REPEAT_TO_STR
 }  // namespace movement

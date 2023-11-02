@@ -9,6 +9,7 @@
 #include "Asset.hpp"
 #include "AssetManager.hpp"
 #include "GameObject.hpp"
+#include "HitboxProps.hpp"
 #include "ObjectOptions.hpp"
 #include "Properties.hpp"
 
@@ -43,10 +44,10 @@ class ObjectType {
     AssetPaths images;
     AssetPaths sounds;
 
+    HitboxProps hitbox_props;
+
   private:
     size_t obj_count_ = 0;
 
     ErrorOr<std::shared_ptr<sf::Texture>> get_texture(assets::Textures& textures);
-    // collision::Props
-    // hitbox options
 };

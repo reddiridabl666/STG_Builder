@@ -11,7 +11,7 @@ template <typename T>
 concept Shape = std::is_base_of<sf::Shape, T>::value;
 
 template <Shape T>
-class ShapeObject : public Displayable {
+class ShapeObject : virtual public Displayable {
   public:
     ShapeObject(const T& shape) : shape_(shape) {}
 
@@ -45,7 +45,8 @@ class ShapeObject : public Displayable {
 
 class RectObject : public ShapeObject<sf::RectangleShape> {
   public:
-    RectObject(float x = 0, float y = 0) : ShapeObject(sf::RectangleShape(sf::Vector2f{x, y})) {}
+    RectObject(const sf::Vector2f& size = {}) : ShapeObject(sf::RectangleShape(size)) {}
+    RectObject(float x, float y) : RectObject(sf::Vector2f{x, y}) {}
 
     sf::Vector2f get_size() const override {
         return shape_.getSize();

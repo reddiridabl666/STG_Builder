@@ -5,6 +5,8 @@ project(stg_builder_core)
 set(SOURCES
     window/Window.cpp
     game/collisions/hitbox/Hitbox.cpp
+    game/collisions/hitbox/HitboxProps.cpp
+    game/collisions/hitbox/HitboxFactory.cpp
     game/mechanics/Movement.cpp
     game/mechanics/Life.cpp
     game/objects/GameField.cpp

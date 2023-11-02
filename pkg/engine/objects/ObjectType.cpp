@@ -2,6 +2,7 @@
 
 #include "AssetManager.hpp"
 #include "GameInfo.hpp"
+#include "HitboxFactory.hpp"
 #include "Player.hpp"
 #include "SpriteObject.hpp"
 
@@ -14,8 +15,10 @@ ErrorOr<std::shared_ptr<GameObject>> ObjectType::create_object(const ObjectOptio
     auto displayable = std::make_unique<SpriteObject>(std::move(*texture));
     auto obj_name = fmt::format("{}-{}", name, obj_count_);
 
+    auto hitbox = HitboxFactory::create(hitbox_props);
+
     auto res = std::make_shared<GameObject>(obj_name, size, std::move(displayable), speed, tag, props,
-                                            opts.activity_start, opts.life_func, opts.move->clone());
+                                            opts.activity_start, opts.life_func, opts.move->clone(), std::move(hitbox));
     opts.set_props(*res);
 
     GameState::get().emit(GameState::Event::ObjectCreated, res->tag());
