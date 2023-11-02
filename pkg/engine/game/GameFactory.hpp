@@ -32,20 +32,19 @@ GameType GameFactory::generate(Window& window, const nl::json& game, const nl::j
 
     assets::Manager manager(img_path, base_dir + "/assets/sounds", base_dir + "/assets/fonts");
 
-    LevelLoader level_loader(base_dir + "/level",
-                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio), img_path);
+    LevelLoader level_loader(base_dir + "/level", game.value("field_size", GameField::kDefaultRatio), img_path);
 
-    LevelManager levels(json::get<int>(game, "levels"), std::move(level_loader));
+    LevelManager levels(game.value("levels", 0), std::move(level_loader));
 
     return GameType{
         window,
-        SpriteObject(manager.textures().get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
+        SpriteObject(manager.textures().get_or(game.value("bg", ""), assets::kFallbackImage)),
         create_side_menu(window, game.at("side_menu"), manager),
         PlayerLoader(game.at("players")),
         std::move(manager),
         std::move(types.value()),
         std::move(levels),
-        json::get<int>(game, "fps", 60),
+        game.value("fps", 60),
     };
 }
 
@@ -60,16 +59,16 @@ std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl:
     const auto img_path = base_dir + "/assets/images";
     assets::Manager manager(img_path, base_dir + "/assets/sounds", base_dir + "/assets/fonts");
 
-    LevelLoader level_loader(base_dir + "/level",
-                             json::get<sf::FloatRect>(game, "field_size", GameField::kDefaultRatio), img_path);
-    LevelManager levels(json::get<int>(game, "levels"), std::move(level_loader));
+    LevelLoader level_loader(base_dir + "/level", game.value("field_size", GameField::kDefaultRatio), img_path);
 
-    auto fps = json::get<int>(game, "fps", 60);
+    LevelManager levels(game.value("levels", 0), std::move(level_loader));
+
+    auto fps = game.value("fps", 60);
 
     // clang-format off
     return std::make_unique<GameType>(
         window,
-        SpriteObject(manager.textures().get_or(json::get<std::string>(game, "bg"), assets::kFallbackImage)),
+        SpriteObject(manager.textures().get_or(game.value("bg", ""), assets::kFallbackImage)),
         create_side_menu(window, game.at("side_menu"), manager),
         PlayerLoader(game.at("players")),
         std::move(manager),

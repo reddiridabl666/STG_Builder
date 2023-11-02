@@ -177,7 +177,7 @@ void from_json(const nl::json& json, MultiInfo& info) {
         json.at("repeat").get_to(info.repeat);
     } else {
         info.rules.push_back(json.template get<TimedFuncInfo>());
-        json::get<Repeat>(json, "repeat", Repeat::Repeat);
+        json.value("repeat", Repeat::Repeat);
     }
 }
 

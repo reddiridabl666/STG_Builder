@@ -17,8 +17,8 @@ namespace {
 struct EntitiesTabContents : public Element {
   public:
     EntitiesTabContents(assets::Textures& textures, Box<EntityEntry>::Items&& items, nl::json& data)
-        : create_btn_(message_func(Message::CreateObjectType),
-                      textures.get_or("plus.png", assets::kFallbackImage), ImVec2{50, 50},
+        : create_btn_(message_func(Message::CreateObjectType), textures.get_or("plus.png", assets::kFallbackImage),
+                      ImVec2{50, 50},
                       [this, &textures] {
                           auto name = fmt::format("New object {}", box_.size());
 
@@ -32,16 +32,15 @@ struct EntitiesTabContents : public Element {
                       true, {}, {400, 80}),
           box_(std::move(items), {}),
           data_(data) {
-        Bus<std::string>::get().on(
-            Event::ObjectDeleted, "entities_tab_obj_deleted", [this](const nl::json& type) {
-                auto it = std::ranges::find_if(box_.elems(), [&type](const auto& elem) {
-                    return elem->get_name() == type.template get<std::string>();
-                });
-
-                if (it != box_.elems().end()) {
-                    (*it)->obj_count() -= 1;
-                }
+        Bus<std::string>::get().on(Event::ObjectDeleted, "entities_tab_obj_deleted", [this](const nl::json& type) {
+            auto it = std::ranges::find_if(box_.elems(), [&type](const auto& elem) {
+                return elem->get_name() == type.template get<std::string>();
             });
+
+            if (it != box_.elems().end()) {
+                (*it)->obj_count() -= 1;
+            }
+        });
     }
 
     void draw(const Window& window) override {
@@ -82,16 +81,14 @@ struct EntitiesTabContents : public Element {
 };
 }  // namespace
 
-Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, assets::Textures& textures,
-                      nl::json& entities_json, const nl::json& level_objects) {
+Menu::Tab EntitiesTab(const std::filesystem::path& game_dir, assets::Textures& textures, nl::json& entities_json,
+                      const nl::json& level_objects) {
     Box<EntityEntry>::Items entries;
     entries.reserve(entities_json.size());
 
     for (auto& [key, val] : entities_json.items()) {
         entries.push_back(std::make_unique<EntityEntry>(
-            key, &val,
-            textures.get_or(game_dir / "assets/images" / json::get<std::string>(val, "image"),
-                            assets::kFallbackImage),
+            key, &val, textures.get_or(game_dir / "assets/images" / val.value("image", ""), assets::kFallbackImage),
             std::ranges::count_if(level_objects, [&key](const auto& elem) {
                 return elem.at("type") == key;
             })));

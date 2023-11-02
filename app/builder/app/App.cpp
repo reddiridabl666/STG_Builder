@@ -259,7 +259,7 @@ ui::DefaultBox::Items App::load_levels() {
                 builder_.choose_level(num - 1);
                 state_.schedule_state_change(State::LevelEditor);
             },
-            json::get<int>(*level, "last_updated", time(nullptr))));
+            level->value("last_updated", time(nullptr))));
     }
 
     res.push_back(std::make_unique<ui::ImageButton>(

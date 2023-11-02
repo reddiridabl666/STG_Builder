@@ -5,17 +5,21 @@
 #include "Bus.hpp"
 #include "Combo.hpp"
 
+namespace {
 static const std::vector<std::string> object_tags = {"enemy", "player", "bullet"};
+}  // namespace
 
 namespace ui {
 const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size", "tag", "speed", ""};
 
 EntityEntry::EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image,
                          size_t obj_count)
-    : texture_(std::move(image)), name(name), old_name_(name), stats_(kBaseValues), data_(json), obj_count_(obj_count) {
+    : texture_(std::move(image)), name(name), stats_(kBaseValues), old_name_(name), data_(json), obj_count_(obj_count) {
     nl::from_json(*json, *this);
     tag_id = combo::get_item_id(object_tags, tag);
     stats_.from_json(*json);
+    outline_color_ = hitbox.outline_color;
+    fill_color_ = hitbox.fill_color;
 }
 
 nl::json EntityEntry::to_json() const {
@@ -85,6 +89,34 @@ void EntityEntry::draw(const Window&) {
         ImGui::SizeInput(message(Message::Size), &size.x, &size.y);
 
         stats_.draw();
+
+        ImGui::NewLine();
+
+        if (ImGui::CollapsingHeader(message(Message::Hitbox))) {
+            static const std::vector<std::string> hitbox_types = {"rect", "circle"};
+            ImGui::Combo("##hitbox_type", (int*)&hitbox.type, hitbox_types);
+
+            if (hitbox.type == Hitbox::Type::Rect) {
+                ImGui::SizeInput(message(Message::Size), &hitbox.size.x, &hitbox.size.y);
+            } else {
+                ImGui::InputFloat(message(Message::Radius), &hitbox.radius);
+            }
+
+            ImGui::Checkbox(message(Message::Shown), &hitbox.shown);
+            if (hitbox.shown) {
+                ImGui::InputInt(message(Message::Outline), &hitbox.outline);
+
+                ImGui::ColorEdit4(message(Message::OutlineColor), &outline_color_.x, ImGuiColorEditFlags_Uint8);
+                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                    hitbox.outline_color = outline_color_;
+                }
+
+                ImGui::ColorEdit4(message(Message::FillColor), &fill_color_.x, ImGuiColorEditFlags_Uint8);
+                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                    hitbox.outline_color = fill_color_;
+                }
+            }
+        }
 
         ImGui::End();
 

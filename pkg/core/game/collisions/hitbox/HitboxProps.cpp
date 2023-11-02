@@ -18,10 +18,10 @@ void from_json(const nl::json& json, Color& color) {
         return;
     }
 
-    color.r = json::get<sf::Uint8>(json, "r");
-    color.g = json::get<sf::Uint8>(json, "g");
-    color.b = json::get<sf::Uint8>(json, "b");
-    color.a = json::get<sf::Uint8>(json, "a");
+    color.r = json.value("r", 0);
+    color.g = json.value("g", 0);
+    color.b = json.value("b", 0);
+    color.a = json.value("a", 0);
 }
 
 void to_json(nl::json& json, const Color& color) {
@@ -48,3 +48,7 @@ void to_json(nl::json& json, const Color& color) {
     }
 }
 }  // namespace sf
+
+// void from_json(const nl::json& json, HitboxProps& hitbox) {}
+
+// void to_json(nl::json& json, const HitboxProps& hitbox) {}
