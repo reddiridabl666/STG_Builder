@@ -48,6 +48,9 @@ void StateManager<State>::set_prev_state() {
 
 template <typename State>
 State StateManager<State>::state() const {
+    if (states_.empty()) {
+        return State::Undefined;
+    }
     return states_.top();
 }
 

@@ -180,15 +180,24 @@ GameObject& EditableGame::reload_object(const std::string& name, ObjectOptions&&
 void EditableGame::update_object_type(const std::string& name, ObjectType&& obj_type) {
     types_[name] = obj_type;
 
-    for (auto& [name, obj] : objects_) {
-        if (obj->type_name() != name) {
-            continue;
-        }
+    reload_objects();
 
-        // if (obj->tag() == GameObject::Tag::Player) {
-        //     obj =
-        // }
-    }
+    // for (auto& [name, obj] : objects_) {
+    //     if (obj->type_name() != name) {
+    //         continue;
+    //     }
+
+    //     if (obj->tag() == GameObject::Tag::Player) {
+    //         auto player_num = obj->props().at(kPlayerNum);
+    //         obj = player_loader_.load_player(player_num, assets_, obj_type, ObjectOptionsFactory(level_->field()));
+    //         continue;
+    //     }
+
+    //     auto opts_num = obj->props().at(kOptsID);
+    //     obj = obj_type.create_object(level_->objects()[opts_num], assets_);
+    // }
+
+    // types_[name] = obj_type;
 }
 
 void EditableGame::prepare_preview(size_t level) {

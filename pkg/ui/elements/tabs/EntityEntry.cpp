@@ -93,6 +93,8 @@ void EntityEntry::draw(const Window&) {
         ImGui::NewLine();
 
         if (ImGui::CollapsingHeader(message(Message::Hitbox))) {
+            ImGui::PushID(&hitbox);
+
             static const std::vector<std::string> hitbox_types = {"rect", "circle", "none"};
             ImGui::Combo("##hitbox_type", (int*)&hitbox.type, hitbox_types);
 
@@ -118,17 +120,24 @@ void EntityEntry::draw(const Window&) {
 
                 ImGui::ColorEdit4(message(Message::FillColor), &fill_color_.x);
                 if (ImGui::IsItemDeactivatedAfterEdit()) {
-                    hitbox.outline_color = fill_color_;
+                    hitbox.fill_color = fill_color_;
                 }
             }
+
+            ImGui::PopID();
         }
 
         ImGui::End();
 
         if (!shown_) {
             old_name_ = name;
+
             *data_ = to_json();
-            Bus<nl::json>::get().emit(Event::ObjectTypeChanged, *data_);
+
+            auto tmp = *data_;
+            tmp["name"] = name;
+
+            Bus<nl::json>::get().emit(Event::ObjectTypeChanged, tmp);
         }
     }
 }

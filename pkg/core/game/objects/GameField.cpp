@@ -57,9 +57,27 @@ void GameField::zoom(float value) {
 }
 
 bool GameField::is_in_bounds(const Transformable& obj, float margin) const {
-    // return abs(view_.getCenter().x - obj.pos().x) <= view_.getSize().x / 2 + margin &&
-    //        abs(view_.getCenter().y - obj.pos().y) <= view_.getSize().y / 2 + margin;
     return get_bounds(margin).intersects(obj.get_bounds());
+}
+
+void GameField::keep_in_bounds(Transformable& obj) const {
+    auto bounds = get_bounds();
+    auto obj_bounds = obj.get_bounds();
+    sf::Vector2f new_pos = obj.pos();
+
+    if (obj_bounds.top < bounds.top) {
+        new_pos.y = bounds.top + obj.get_size().y / 2;
+    } else if (obj_bounds.top + obj_bounds.height > bounds.top + bounds.height) {
+        new_pos.y = bounds.top + bounds.height - obj.get_size().y / 2;
+    }
+
+    if (obj_bounds.left < bounds.left) {
+        new_pos.x = bounds.left + obj.get_size().x / 2;
+    } else if (obj_bounds.left + obj_bounds.width > bounds.left + bounds.width) {
+        new_pos.x = bounds.left + bounds.width - obj.get_size().x / 2;
+    }
+
+    obj.set_pos(new_pos);
 }
 
 sf::FloatRect GameField::get_bounds(float margin) const {

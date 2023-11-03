@@ -9,10 +9,12 @@
 
 class CircleShapeHitbox : public CircleHitbox, public CircleObject {
   public:
-    CircleShapeHitbox(float radius, sf::Color color = sf::Color::White, size_t outline = 1) : CircleObject(radius) {
+    CircleShapeHitbox(float radius, sf::Color outline_color = sf::Color::White,
+                      sf::Color fill_color = sf::Color::Transparent, size_t outline = 1)
+        : CircleObject(radius) {
         set_origin();
-        shape_.setFillColor(sf::Color::Transparent);
-        shape_.setOutlineColor(color);
+        shape_.setFillColor(fill_color);
+        shape_.setOutlineColor(outline_color);
         shape_.setOutlineThickness(outline);
     }
 
@@ -32,11 +34,12 @@ class CircleShapeHitbox : public CircleHitbox, public CircleObject {
 
 class RectShapeHitbox : public RectHitbox, public RectObject {
   public:
-    RectShapeHitbox(const sf::Vector2f& size, sf::Color color = sf::Color::White, size_t outline = 1)
+    RectShapeHitbox(const sf::Vector2f& size, sf::Color outline_color = sf::Color::White,
+                    sf::Color fill_color = sf::Color::Transparent, size_t outline = 1)
         : RectObject(size) {
         set_origin();
-        shape_.setFillColor(sf::Color::Transparent);
-        shape_.setOutlineColor(color);
+        shape_.setFillColor(fill_color);
+        shape_.setOutlineColor(outline_color);
         shape_.setOutlineThickness(outline);
     }
 

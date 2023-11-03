@@ -177,11 +177,22 @@ struct ActivityHandler : public Handler<ObjectOptions> {
     const GameField& field_;
 };
 
+struct BoundsConditionHandler : public Handler<ObjectOptions> {
+  public:
+    bool should_handle(const std::string& key) const override {
+        return key == "stop_at_bounds";
+    }
+
+    void handle(ObjectOptions& obj, const std::string&, const nl::json& json) override {
+        obj.stop_at_bounds = json.get<bool>();
+    }
+};
+
 }  // namespace
 
 HandlerChain<ObjectOptions> ObjectOptionsFactory::init_handler_chain(const GameField& field) {
     std::vector<std::unique_ptr<Handler<ObjectOptions>>> res;
-    res.reserve(7);
+    res.reserve(8);
 
     res.push_back(std::make_unique<TypeHandler>());
     res.push_back(std::make_unique<PosHandler>(field));
@@ -189,6 +200,7 @@ HandlerChain<ObjectOptions> ObjectOptionsFactory::init_handler_chain(const GameF
     res.push_back(std::make_unique<LifeHandler>());
     res.push_back(std::make_unique<ActivityHandler>(field));
     res.push_back(std::make_unique<RotationHandler>());
+    res.push_back(std::make_unique<BoundsConditionHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectOptions>>());
 
     return res;

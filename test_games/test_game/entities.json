@@ -1,7 +1,22 @@
 {
     "New object 2": {
         "description": "Description goes here",
-        "hitbox": null,
+        "hitbox": {
+            "fill_color": {
+                "a": 72,
+                "b": 0,
+                "g": 116,
+                "r": 255
+            },
+            "outline": 2,
+            "outline_color": "red",
+            "shown": true,
+            "size": {
+                "x": 90.0,
+                "y": 95.0
+            },
+            "type": "rect"
+        },
         "image": "red_enemy.png",
         "size": {
             "x": 100.0,
@@ -14,17 +29,23 @@
         "description": "Simple enemy type",
         "health": 50,
         "hitbox": {
+            "fill_color": {
+                "a": 72,
+                "b": 0,
+                "g": 116,
+                "r": 255
+            },
             "outline": 3,
             "outline_color": {
                 "a": 255,
-                "b": 124,
-                "g": 255,
+                "b": 0,
+                "g": 71,
                 "r": 255
             },
             "shown": true,
             "size": {
-                "x": 20.0,
-                "y": 40.0
+                "x": 70.0,
+                "y": 70.0
             },
             "type": "rect"
         },
@@ -42,10 +63,20 @@
         "description": "Description goes here",
         "health": 100,
         "hitbox": {
+            "fill_color": {
+                "a": 72,
+                "b": 0,
+                "g": 255,
+                "r": 0
+            },
             "outline": 2,
-            "radius": 20.0,
+            "outline_color": "green",
             "shown": true,
-            "type": "circle"
+            "size": {
+                "x": 20.0,
+                "y": 25.0
+            },
+            "type": "rect"
         },
         "image": "player.png",
         "score": 0,

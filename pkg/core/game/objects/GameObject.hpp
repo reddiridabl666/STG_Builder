@@ -31,8 +31,8 @@ class GameObject : public ImageContainer, public Hideable {
                Tag tag = Tag::Object, const Properties& props = {}, float activity_start = kDefaultActivityStart,
                const alive::update& life_func = kDefaultLifeFunc,
                std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
-               std::unique_ptr<Hitbox>&& hitbox = nullptr, sf::Vector2f velocity = {}, bool alive = true,
-               bool active = false);
+               std::unique_ptr<Hitbox>&& hitbox = nullptr, bool stop_at_bounds = false, sf::Vector2f velocity = {},
+               bool alive = true, bool active = false);
 
     float left() const;
 
@@ -150,6 +150,7 @@ class GameObject : public ImageContainer, public Hideable {
 
     bool active_ = false;
     bool alive_ = true;
+    bool stop_at_bounds_ = false;
 
     float activity_start_ = kDefaultActivityStart;
 

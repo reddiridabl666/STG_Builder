@@ -5,7 +5,8 @@
 GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
                        int speed, Tag tag, const Properties& props, float activity_start,
                        const alive::update& life_func, std::unique_ptr<movement::Rule>&& move_func,
-                       std::unique_ptr<Hitbox>&& hitbox, sf::Vector2f velocity, bool alive, bool active)
+                       std::unique_ptr<Hitbox>&& hitbox, bool stop_at_bounds, sf::Vector2f velocity, bool alive,
+                       bool active)
     : ImageContainer(std::move(image), speed),
       name_(name),
       tag_(tag),
@@ -16,6 +17,7 @@ GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::u
       //   hitbox_(std::move(hitbox)),
       active_(active),
       alive_(alive),
+      stop_at_bounds_(stop_at_bounds),
       activity_start_(activity_start) {
     set_origin(get_size() / 2);
     set_size(size);
@@ -79,6 +81,10 @@ void GameObject::update_position(const GameField& field, float delta_time) {
     } else {
         set_velocity(result.velocity);
         move(speed_ * velocity_ * delta_time);
+    }
+
+    if (stop_at_bounds_) {
+        field.keep_in_bounds(*this);
     }
 }
 

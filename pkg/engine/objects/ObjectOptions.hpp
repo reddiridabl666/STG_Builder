@@ -14,8 +14,7 @@
 struct ObjectOptions {
   public:
     ObjectOptions() = default;
-    ObjectOptions(const std::string& type, const sf::Vector2f& pos)
-        : type(type), pos_x(pos.x), pos_y(pos.y) {}
+    ObjectOptions(const std::string& type, const sf::Vector2f& pos) : type(type), pos_x(pos.x), pos_y(pos.y) {}
 
     ObjectOptions(ObjectOptions&&) = default;
     ObjectOptions& operator=(ObjectOptions&& other) = default;
@@ -38,6 +37,7 @@ struct ObjectOptions {
 
     float rotation = 0;
 
+    bool stop_at_bounds = false;
     size_t json_id = 0;
 
     float activity_start = GameObject::kDefaultActivityStart;

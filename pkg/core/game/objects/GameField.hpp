@@ -16,8 +16,7 @@ class GameField : public ImageContainer {
   public:
     static inline const sf::FloatRect kDefaultRatio = {0.05, 0.05, 0.5, 0.9};
 
-    GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos,
-              int speed = 50);
+    GameField(std::unique_ptr<SpriteObject>&& image, Window& window, const sf::FloatRect& screen_pos, int speed = 50);
 
     sf::Vector2f center() const {
         return view_.getCenter();
@@ -75,6 +74,8 @@ class GameField : public ImageContainer {
     void set_image(std::shared_ptr<sf::Texture>&&);
 
     bool is_in_bounds(const Transformable& obj, float margin = 0) const;
+
+    void keep_in_bounds(Transformable& obj) const;
 
     sf::FloatRect get_bounds(float margin) const;
     sf::FloatRect get_bounds() const override;
