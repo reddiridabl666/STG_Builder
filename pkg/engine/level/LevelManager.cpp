@@ -10,13 +10,13 @@ ErrorOr<std::shared_ptr<Level>> LevelManager::start_next(Window& window) {
 }
 
 ErrorOr<std::shared_ptr<Level>> LevelManager::get(size_t num, Window& window) {
-    auto level = loader_.load_level(window, num);
-    if (!level) {
-        return tl::unexpected(level.error());
+    try {
+        auto level = loader_.load_level(window, num);
+        cur_num_ = num;
+        return std::make_shared<Level>(std::move(level));
+    } catch (Error& e) {
+        return tl::unexpected(e);
     }
-
-    cur_num_ = num;
-    return std::make_shared<Level>(std::move(level.value()));
 }
 
 ErrorOr<std::shared_ptr<Level>> LevelManager::reload(Window& window) {

@@ -12,7 +12,7 @@
 #endif
 
 namespace engine {
-ErrorOr<Level> LevelLoader::load_level(Window& window, size_t number) const {
+Level LevelLoader::load_level(Window& window, size_t number) const {
     auto level_name = fmt::format("{}_{}.json", prefix_, number);
 
 #ifdef DEBUG
@@ -21,41 +21,31 @@ ErrorOr<Level> LevelLoader::load_level(Window& window, size_t number) const {
 
     auto j = json::read(level_name);
     if (!j) {
-        return tl::unexpected(j.error());
+        throw j.error();
     }
 
-    try {
 #ifdef DEBUG
-        LOG("Creating level struct");
+    LOG("Creating level struct");
 #endif
-        auto field = load_field(window, j->at("bg"));
-        if (!field) {
-            return tl::unexpected(field.error());
-        }
+    auto field = load_field(window, j->at("bg"));
 
-        ObjectOptionsFactory factory(*field);
-        auto opts = factory.generate(j->at("entities").get<std::vector<nl::json>>());
-        if (!opts) {
-            return tl::unexpected(opts.error());
-        }
+    ObjectOptionsFactory factory(field);
+    auto opts = factory.generate(j->at("entities").get<std::vector<nl::json>>());
 
-        return Level{
-            j->at("name").get<std::string>(),
-            std::move(*field),
-            std::move(*opts),
-        };
-    } catch (std::exception& e) {
-        return Error::New(e.what());
-    }
+    return Level{
+        j->at("name").get<std::string>(),
+        std::move(field),
+        std::move(opts),
+    };
 }
 
-ErrorOr<GameField> LevelLoader::load_field(Window& window, const nl::json& field_json) const {
+GameField LevelLoader::load_field(Window& window, const nl::json& field_json) const {
 #ifdef DEBUG
     LOG("Loading game field");
 #endif
     auto texture = assets_.load<sf::Texture>(field_json.at("image").template get<std::string>());
     if (!texture) {
-        return tl::unexpected(texture.error());
+        throw std::runtime_error("failure loading game field background");
     }
 
 #ifdef DEBUG
@@ -68,7 +58,7 @@ ErrorOr<GameField> LevelLoader::load_field(Window& window, const nl::json& field
         std::move(sprite),
         window,
         field_size_,
-        field_json.at("speed").template get<int>(),
+        field_json.value("speed", 100),
     };
 }
 }  // namespace engine

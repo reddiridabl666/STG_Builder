@@ -2,12 +2,13 @@
 
 #include <fmt/core.h>
 
+#include <exception>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <tl/expected.hpp>
 
-struct Error {
+struct Error : std::exception {
   public:
     static Error OK;
 
@@ -15,8 +16,8 @@ struct Error {
         return tl::unexpected(Error(msg));
     }
 
-    static inline tl::unexpected<Error> NoKey(const std::string& key) {
-        return tl::unexpected(Error(fmt::format("No such key: {}", key)));
+    static inline Error NoKey(const std::string& key) {
+        return Error(fmt::format("No such key: {}", key));
     }
 
     Error() : ok_(true) {}
@@ -25,6 +26,10 @@ struct Error {
 
     const std::string& message() const {
         return msg_;
+    }
+
+    const char* what() const noexcept {
+        return msg_.c_str();
     }
 
     operator bool() const {

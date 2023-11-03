@@ -19,7 +19,7 @@ class Game {
     Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerLoader&& player_loader, assets::Manager&& assets,
          ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
 
-    Error render(float delta_time);
+    void render(float delta_time);
 
     int fps() const {
         return fps_;
@@ -29,17 +29,17 @@ class Game {
     void draw_objects();
 
   protected:
-    Error update(float delta_time);
+    void update(float delta_time);
 
-    Error update_level();
+    void update_level();
 
-    ErrorOr<std::shared_ptr<GameObject>> generate_object(const ObjectOptions& opts);
+    std::shared_ptr<GameObject> generate_object(const ObjectOptions& opts);
 
     void add_object(std::shared_ptr<GameObject>&&);
     void add_player(std::shared_ptr<GameObject>&&);
 
-    Error generate_objects();
-    Error generate_players();
+    void generate_objects();
+    void generate_players();
 
     void clear_dead();
 

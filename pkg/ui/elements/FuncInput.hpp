@@ -5,5 +5,5 @@
 
 namespace ui {
 void AliveFuncInput(FuncInfo& func);
-std::vector<size_t>& MoveFuncInput(movement::MultiInfo& func);
+int MoveFuncInput(movement::MultiInfo& func);
 }  // namespace ui

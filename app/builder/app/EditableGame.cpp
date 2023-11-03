@@ -21,19 +21,11 @@ void EditableGame::reload_objects() {
     size_t idx = 0;
     for (auto& opts : level_->objects()) {
         auto obj = generate_object_debug(idx, opts);
-        if (!obj) {
-            throw std::runtime_error(fmt::format("error generating objects: {}", obj.error().message()));
-        }
-
         ++idx;
-
-        add_object(std::move(*obj));
+        add_object(std::move(obj));
     }
 
-    auto err = generate_players();
-    if (err) {
-        throw std::runtime_error(fmt::format("error generating players: {}", err.message()));
-    }
+    generate_players();
 }
 
 std::shared_ptr<GameObject> EditableGame::get_object(const sf::Vector2f& pos) {
@@ -83,13 +75,10 @@ void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
     rtree_.insert(obj.name(), obj.get_bounds());
 }
 
-inline ErrorOr<std::shared_ptr<GameObject>> EditableGame::generate_object_debug(size_t idx, const ObjectOptions& opts) {
+inline std::shared_ptr<GameObject> EditableGame::generate_object_debug(size_t idx, const ObjectOptions& opts) {
     auto obj = generate_object(opts);
-    if (!obj) {
-        return obj;
-    }
-    (*obj)->props().set(kOptsID, idx);
-    (*obj)->props().set(kJsonID, opts.json_id);
+    obj->props().set(kOptsID, idx);
+    obj->props().set(kJsonID, opts.json_id);
     return obj;
 }
 
@@ -132,14 +121,10 @@ GameObject& EditableGame::new_object(const std::string& type) {
     ObjectOptions opts(type, window_.get_view().getCenter());
 
     auto obj = it->second.create_object(opts, assets_);
-    if (!obj) {
-        throw std::runtime_error(fmt::format("Error creating object: {}", obj.error().message()));
-    }
+    auto obj_name = obj->name();
+    obj->props().set(kOptsID, level_->objects().size());
 
-    auto obj_name = (*obj)->name();
-    (*obj)->props().set(kOptsID, level_->objects().size());
-
-    add_object(std::move(*obj));
+    add_object(std::move(obj));
 
     level_->objects().push_back(std::move(opts));
     level_->prepare_objects();
@@ -155,11 +140,8 @@ void EditableGame::new_player(const std::string& type) {
     ObjectOptions opts(type, window_.get_view().getCenter());
 
     auto player = it->second.create_player(opts, assets_, PlayerOptions{.num = GameState::get().player_count()});
-    if (!player) {
-        throw std::runtime_error(fmt::format("Error creating object: {}", player.error().message()));
-    }
 
-    add_player(std::move(*player));
+    add_player(std::move(player));
 }
 
 void EditableGame::new_object_type(const std::string& type) {
@@ -187,20 +169,34 @@ GameObject& EditableGame::reload_object(const std::string& name, ObjectOptions&&
     objects_.erase(name);
 
     auto new_obj = generate_object_debug(id, opts);
-    std::string new_name = (*new_obj)->name();
+    std::string new_name = new_obj->name();
 
-    add_object(std::move(*new_obj));
+    add_object(std::move(new_obj));
     level_->objects()[id] = std::move(opts);
 
     return *objects_.at(new_name);
 }
 
-Error EditableGame::prepare_preview(size_t level) {
+void EditableGame::update_object_type(const std::string& name, ObjectType&& obj_type) {
+    types_[name] = obj_type;
+
+    for (auto& [name, obj] : objects_) {
+        if (obj->type_name() != name) {
+            continue;
+        }
+
+        // if (obj->tag() == GameObject::Tag::Player) {
+        //     obj =
+        // }
+    }
+}
+
+void EditableGame::prepare_preview(size_t level) {
     auto err = choose_level(level);
     if (err) {
-        return err;
+        throw err;
     }
-    return generate_players();
+    generate_players();
 }
 
 Error EditableGame::choose_level(size_t num) {

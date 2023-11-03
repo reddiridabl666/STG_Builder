@@ -13,8 +13,9 @@ class CircleHitbox;
 class Hitbox : virtual public Displayable, public Hideable {
   public:
     enum class Type {
+        Rect,
         Circle,
-        Rect
+        No,
     };
 
     Hitbox(Type type) : type_(type) {}

@@ -31,6 +31,10 @@ void GameObject::update(const GameField& field, float delta_time) {
     update_position(field, delta_time);
 }
 
+std::string_view GameObject::type_name() const {
+    return std::string_view(name_.begin(), name_.begin() + name_.rfind('-'));
+}
+
 void GameObject::draw(Window& window) const {
     ImageContainer::draw(window);
     if (hitbox_ && !hitbox_->is_hidden()) {
@@ -56,14 +60,6 @@ void GameObject::set_pos(const sf::Vector2f& new_pos) {
     ImageContainer::set_pos(new_pos);
     if (hitbox_) {
         hitbox_->set_pos(new_pos);
-
-        std::cout << "Object: " << name() << '\n';
-        std::cout << "Origin: " << transformable().getOrigin().x << ", " << transformable().getOrigin().y << '\n';
-        std::cout << "Hitbox origin: " << hitbox_->transformable().getOrigin().x << ", "
-                  << hitbox_->transformable().getOrigin().y << '\n';
-
-        std::cout << "Pos: " << pos().x << ", " << pos().y << '\n';
-        std::cout << "Hitbox pos: " << hitbox_->pos().x << ", " << hitbox_->pos().y << "\n\n";
     }
 }
 

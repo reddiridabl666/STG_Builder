@@ -8,22 +8,19 @@
 
 ObjectOptionsFactory::ObjectOptionsFactory(const GameField& field) : handler_chain_(init_handler_chain(field)) {}
 
-ErrorOr<ObjectOptions> ObjectOptionsFactory::generate(const nl::json& json) const {
+ObjectOptions ObjectOptionsFactory::generate(const nl::json& json) const {
     ObjectOptions res;
 
-    auto error = handler_chain_.handle(res, json);
-    if (error) {
-        return tl::unexpected(error);
-    }
+    handler_chain_.handle(res, json);
 
     if (res.type == "") {
-        return Error::NoKey("type");
+        throw Error::NoKey("type");
     }
 
     return res;
 }
 
-ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(const std::vector<nl::json>& json) const {
+ObjectOptionsFactory::res_type ObjectOptionsFactory::generate(const std::vector<nl::json>& json) const {
 #ifdef DEBUG
     LOG("Generating object instance options");
 #endif
@@ -32,13 +29,8 @@ ErrorOr<ObjectOptionsFactory::res_type> ObjectOptionsFactory::generate(const std
 
     for (auto& obj : json) {
         auto opts = generate(obj);
-
-        if (!opts) {
-            return tl::unexpected(opts.error());
-        }
-
-        opts->json_id = idx;
-        res.push_back(std::move(*opts));
+        opts.json_id = idx;
+        res.push_back(std::move(opts));
         ++idx;
     }
 

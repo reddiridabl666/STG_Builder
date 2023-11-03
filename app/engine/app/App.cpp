@@ -24,10 +24,7 @@ void App::run() {
 
         window_.update_ui();
         if (!paused_) {
-            auto err = game_.render(timer.restart().asSeconds());
-            if (err) {
-                throw std::runtime_error(err.message());
-            }
+            game_.render(timer.restart().asSeconds());
         } else {
             timer.restart();
             game_.draw_objects();

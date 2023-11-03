@@ -22,12 +22,10 @@ template <typename GameType = Game<>>
 GameType GameFactory::generate(Window& window, const nl::json& game, const nl::json& entities,
                                const std::string& base_dir) {
     auto types = ObjectTypeFactory::generate(entities);
-    if (!types) {
-        throw std::runtime_error(types.error().message());
-    }
 
     // TODO: do something about the side menu
     // TODO: should directories be hardcoded?
+
     const auto img_path = base_dir + "/assets/images";
 
     assets::Manager manager(img_path, base_dir + "/assets/sounds", base_dir + "/assets/fonts");
@@ -42,7 +40,7 @@ GameType GameFactory::generate(Window& window, const nl::json& game, const nl::j
         create_side_menu(window, game.at("side_menu"), manager),
         PlayerLoader(game.at("players")),
         std::move(manager),
-        std::move(types.value()),
+        std::move(types),
         std::move(levels),
         game.value("fps", 60),
     };
@@ -52,9 +50,6 @@ template <typename GameType>
 std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl::json& game, const nl::json& entities,
                                                        const std::string& base_dir) {
     auto types = ObjectTypeFactory::generate(entities);
-    if (!types) {
-        throw std::runtime_error(types.error().message());
-    }
 
     const auto img_path = base_dir + "/assets/images";
     assets::Manager manager(img_path, base_dir + "/assets/sounds", base_dir + "/assets/fonts");
@@ -72,7 +67,7 @@ std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, const nl:
         create_side_menu(window, game.at("side_menu"), manager),
         PlayerLoader(game.at("players")),
         std::move(manager),
-        std::move(types.value()),
+        std::move(types),
         std::move(levels),
         fps
     );

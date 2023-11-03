@@ -27,11 +27,13 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     void remove_object(const std::string& name);
     GameObject& reload_object(const std::string& name, ObjectOptions&& opts);
 
+    void update_object_type(const std::string& name, ObjectType&& obj_type);
+
     Error choose_level(size_t);
 
     void render_debug();
     void reload_objects();
-    Error prepare_preview(size_t level);
+    void prepare_preview(size_t level);
 
     void set_object_pos(GameObject& obj, const sf::Vector2f& pos);
     std::shared_ptr<GameObject> get_object(const sf::Vector2f& pos);
@@ -52,7 +54,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     ~EditableGame();
 
   private:
-    ErrorOr<std::shared_ptr<GameObject>> generate_object_debug(size_t idx, const ObjectOptions& opts);
+    std::shared_ptr<GameObject> generate_object_debug(size_t idx, const ObjectOptions& opts);
     void scroll_back();
 
     float scrolled_ = 0;

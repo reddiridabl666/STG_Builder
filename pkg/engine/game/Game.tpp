@@ -22,17 +22,13 @@ Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, Player
       player_loader_(std::move(player_loader)) {}
 
 template <typename RTreeType>
-Error Game<RTreeType>::render(float delta_time) {
-    auto err = update(delta_time);
-    if (err) {
-        return err;
-    }
+void Game<RTreeType>::render(float delta_time) {
+    update(delta_time);
 
     draw_with_default_view(bg_);
     draw_objects();
-    draw_ui();
 
-    return Error::OK;
+    draw_ui();
 }
 
 template <typename RTreeType>
@@ -62,16 +58,10 @@ void Game<RTreeType>::draw_objects() {
 }
 
 template <typename RTreeType>
-Error Game<RTreeType>::update(float delta_time) {
-    auto err = update_level();
-    if (err) {
-        return err;
-    }
+void Game<RTreeType>::update(float delta_time) {
+    update_level();
 
-    err = generate_objects();
-    if (err) {
-        return err;
-    }
+    generate_objects();
 
     level_->field().update(delta_time);
 
@@ -84,19 +74,17 @@ Error Game<RTreeType>::update(float delta_time) {
     clear_dead();
 
     assets_.clear_unused();
-
-    return Error::OK;
 }
 
 template <typename RTreeType>
-Error Game<RTreeType>::update_level() {
+void Game<RTreeType>::update_level() {
     if (level_ && !level_->has_ended()) {
-        return Error::OK;
+        return;
     }
 
     auto res = levels_.start_next(window_);
     if (!res) {
-        return res.error();
+        throw res.error();
     }
 
     level_ = res.value();
@@ -107,18 +95,15 @@ Error Game<RTreeType>::update_level() {
 }
 
 template <typename RTreeType>
-Error Game<RTreeType>::generate_players() {
+void Game<RTreeType>::generate_players() {
     menu_.clear();
+    GameState::get().clear_players();
 
     auto players = player_loader_.load_players(assets_, level_->field(), types_);
-    if (!players) {
-        return players.error();
-    }
 
-    for (auto&& player : *players) {
+    for (auto&& player : players) {
         add_player(std::move(player));
     }
-    return Error::OK;
 }
 
 template <typename RTreeType>
@@ -129,23 +114,18 @@ void Game<RTreeType>::add_player(std::shared_ptr<GameObject>&& player) {
 }
 
 template <typename RTreeType>
-ErrorOr<std::shared_ptr<GameObject>> Game<RTreeType>::generate_object(const ObjectOptions& opts) {
+std::shared_ptr<GameObject> Game<RTreeType>::generate_object(const ObjectOptions& opts) {
     if (!types_.contains(opts.type)) {
-        return Error::New(fmt::format("Object type '{}' not found", opts.type));
+        throw std::runtime_error(fmt::format("Object type '{}' not found", opts.type));
     }
 
-    auto obj = types_.at(opts.type).create_object(opts, assets_);
-    if (!obj) {
-        return tl::unexpected(obj.error());
-    }
-
-    return obj;
+    return types_.at(opts.type).create_object(opts, assets_);
 }
 
 template <typename RTreeType>
-Error Game<RTreeType>::generate_objects() {
+void Game<RTreeType>::generate_objects() {
     if (!level_) {
-        return Error("No level loaded");
+        throw Error("No level loaded");
     }
 
     while (!level_->objects().empty()) {
@@ -156,15 +136,9 @@ Error Game<RTreeType>::generate_objects() {
         }
 
         auto res = generate_object(opts);
-        if (!res) {
-            return res.error();
-        }
-
-        objects_.emplace((*res)->name(), std::move(*res));
+        objects_.emplace(res->name(), std::move(res));
         level_->objects().pop_front();
     }
-
-    return Error::OK;
 }
 
 template <typename RTreeType>

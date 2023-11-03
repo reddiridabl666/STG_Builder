@@ -76,6 +76,8 @@ class GameObject : public ImageContainer, public Hideable {
         return name_;
     }
 
+    std::string_view type_name() const;
+
     const sf::Vector2f& velocity() const {
         return velocity_;
     }

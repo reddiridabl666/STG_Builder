@@ -24,7 +24,7 @@ class Storage {
 
     ErrorOr<std::shared_ptr<T>> get(const std::string& filename) const noexcept {
         if (!exists(filename)) {
-            return Error::NoKey(filename);
+            return Error::New(fmt::format("No such key: {}", filename));
         }
         return assets_.at(filename).lock();
     }

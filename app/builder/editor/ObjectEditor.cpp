@@ -141,9 +141,10 @@ void ObjectEditor::draw(const Window&) {
         if (changes.type) {
             json_by_obj(*obj) = obj_data->to_json();
 
-            game_.reload_object(obj->name(), *ObjectOptionsFactory(game_.field()).generate(obj_data->to_json()));
+            game_.reload_object(obj->name(), ObjectOptionsFactory(game_.field()).generate(obj_data->to_json()));
             shown_.erase(it);
             it = next;
+
             ImGui::End();
             continue;
         } else if (changes.rotation) {

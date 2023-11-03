@@ -93,6 +93,13 @@ App::App(const std::string& games_dir, const std::string& name, uint width, uint
         }
     });
 
+    ui::Bus<nl::json>::get().on(ui::Event::ObjectTypeChanged, "app_obj_type_changed", [this](const nl::json& json) {
+        if (game_) {
+            auto name = json.at("name").get<std::string>();
+            game_->update_object_type(name, ObjectTypeFactory::generate(name, json));
+        }
+    });
+
     ui::Bus<std::string>::get().on(ui::Event::LevelBgChanged, "app_level_bg_changed", [this](const std::string& bg) {
         if (game_) {
             game_->set_level_bg(bg);

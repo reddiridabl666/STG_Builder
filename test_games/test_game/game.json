@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1698951504,
+    "last_updated": 1699011215,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -101,8 +101,8 @@
                 }
             },
             "pos": {
-                "x": 414.0,
-                "y": 900.77783203125
+                "x": 410.625,
+                "y": 1012.84033203125
             },
             "rotation": 0,
             "type": "player"

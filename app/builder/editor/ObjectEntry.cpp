@@ -47,12 +47,9 @@ ObjectEntry::Changes CommonEntry::draw(const std::string& obj_types) {
         changes.pos = true;
     }
 
-    auto& to_delete = MoveFuncInput(move);
-    if (!to_delete.empty()) {
-        for (auto id : to_delete) {
-            move.rules.erase(move.rules.begin() + id);
-        }
-        to_delete.clear();
+    int to_delete = MoveFuncInput(move);
+    if (to_delete != -1) {
+        move.rules.erase(move.rules.begin() + to_delete);
     }
 
     AliveFuncInput(lives);

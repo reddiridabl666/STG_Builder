@@ -14,11 +14,9 @@ class ObjectOptionsFactory {
 
     using res_type = std::deque<ObjectOptions>;
 
-    ErrorOr<ObjectOptions> generate(const nl::json& value) const;
+    ObjectOptions generate(const nl::json& value) const;
 
-    ErrorOr<res_type> generate(const std::vector<nl::json>& json) const;
-
-    // void add_handler(std::unique_ptr<Handler<ObjectOptions>>&&)
+    res_type generate(const std::vector<nl::json>& json) const;
 
   private:
     HandlerChain<ObjectOptions> init_handler_chain(const GameField& field);

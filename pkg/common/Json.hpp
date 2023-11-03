@@ -55,7 +55,6 @@ inline ErrorOr<nl::json> read(const std::string& path) {
         return res;
     } catch (nl::json::exception& e) {
         return Error::New(e.what());
-        // TODO: return different errors?
     }
 }
 

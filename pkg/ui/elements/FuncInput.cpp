@@ -67,9 +67,9 @@ void AliveFuncInput(FuncInfo& func) {
 
 static constexpr size_t movement_types_num = sizeof(movement::types) / sizeof(movement::types[0]);
 
-static std::vector<size_t> to_delete_ids;
+int MoveFuncInput(movement::MultiInfo& info) {
+    int to_delete = -1;
 
-std::vector<size_t>& MoveFuncInput(movement::MultiInfo& info) {
     ImGui::SeparatorText(message(Message::Movement));
 
     int cur_id = static_cast<int>(info.repeat);
@@ -87,7 +87,7 @@ std::vector<size_t>& MoveFuncInput(movement::MultiInfo& info) {
 
         auto delete_label = fmt::format("{}##{}", message(Message::Delete), idx);
         if (ImGui::Button(delete_label.c_str())) {
-            to_delete_ids.push_back(idx);
+            to_delete = idx;
         }
         ++idx;
         ImGui::NewLine();
@@ -97,6 +97,6 @@ std::vector<size_t>& MoveFuncInput(movement::MultiInfo& info) {
         info.rules.push_back(TimedFuncInfo{"none", nl::json::object(), 0});
     }
 
-    return to_delete_ids;
+    return to_delete;
 }
 }  // namespace ui

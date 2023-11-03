@@ -43,8 +43,8 @@
                 ]
             },
             "pos": {
-                "x": 766.0,
-                "y": 851.77783203125
+                "x": 585.625,
+                "y": 615.96533203125
             },
             "rotation": 0,
             "type": "New object 2"
@@ -91,8 +91,8 @@
                 "type": "circular"
             },
             "pos": {
-                "x": 420.0,
-                "y": 812.77783203125
+                "x": 405.9375,
+                "y": 709.71533203125
             },
             "rotation": 180,
             "type": "enemy"
@@ -160,6 +160,6 @@
             "type": "enemy"
         }
     ],
-    "last_updated": 1698951504,
+    "last_updated": 1699011215,
     "name": "The first level"
 }

@@ -93,25 +93,30 @@ void EntityEntry::draw(const Window&) {
         ImGui::NewLine();
 
         if (ImGui::CollapsingHeader(message(Message::Hitbox))) {
-            static const std::vector<std::string> hitbox_types = {"rect", "circle"};
+            static const std::vector<std::string> hitbox_types = {"rect", "circle", "none"};
             ImGui::Combo("##hitbox_type", (int*)&hitbox.type, hitbox_types);
 
-            if (hitbox.type == Hitbox::Type::Rect) {
-                ImGui::SizeInput(message(Message::Size), &hitbox.size.x, &hitbox.size.y);
-            } else {
-                ImGui::InputFloat(message(Message::Radius), &hitbox.radius);
+            switch (hitbox.type) {
+                case Hitbox::Type::Rect:
+                    ImGui::SizeInput(message(Message::Size), &hitbox.size.x, &hitbox.size.y);
+                    break;
+                case Hitbox::Type::Circle:
+                    ImGui::InputFloat(message(Message::Radius), &hitbox.radius);
+                    break;
+                default:
+                    break;
             }
 
             ImGui::Checkbox(message(Message::Shown), &hitbox.shown);
             if (hitbox.shown) {
                 ImGui::InputInt(message(Message::Outline), &hitbox.outline);
 
-                ImGui::ColorEdit4(message(Message::OutlineColor), &outline_color_.x, ImGuiColorEditFlags_Uint8);
+                ImGui::ColorEdit4(message(Message::OutlineColor), &outline_color_.x);
                 if (ImGui::IsItemDeactivatedAfterEdit()) {
                     hitbox.outline_color = outline_color_;
                 }
 
-                ImGui::ColorEdit4(message(Message::FillColor), &fill_color_.x, ImGuiColorEditFlags_Uint8);
+                ImGui::ColorEdit4(message(Message::FillColor), &fill_color_.x);
                 if (ImGui::IsItemDeactivatedAfterEdit()) {
                     hitbox.outline_color = fill_color_;
                 }

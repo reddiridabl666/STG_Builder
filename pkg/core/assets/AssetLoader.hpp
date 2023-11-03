@@ -25,8 +25,6 @@ struct Loader {
         LOG(fmt::format("Loading asset: {} from {}", filename, base_path));
 #endif
         auto asset = std::make_shared<T>();
-        // fmt::println("{}", std::filesystem::current_path().string());
-        // fmt::println("{}", base_path + "/" + filename);
         bool res = asset->loadFromFile(base_path + "/" + filename);
 
         if (!res) {

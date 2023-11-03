@@ -45,6 +45,10 @@ class GameState : public Observable<int, size_t> {
         return players_;
     }
 
+    void clear_players() {
+        players_.clear();
+    }
+
     void erase_player(size_t id) {
         players_.erase(players_.begin() + id);
     }

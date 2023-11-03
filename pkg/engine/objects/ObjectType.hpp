@@ -24,10 +24,10 @@ class ObjectType {
 
     ObjectType(const std::string& name = "", const sf::Vector2f& size = {}) : name(name), size(size) {}
 
-    ErrorOr<std::shared_ptr<GameObject>> create_object(const ObjectOptions& opts, assets::Manager& assets);
+    std::shared_ptr<GameObject> create_object(const ObjectOptions& opts, assets::Manager& assets);
 
-    ErrorOr<std::shared_ptr<GameObject>> create_player(const ObjectOptions& obj_opts, assets::Manager& assets,
-                                                       const PlayerOptions& opts);
+    std::shared_ptr<GameObject> create_player(const ObjectOptions& obj_opts, assets::Manager& assets,
+                                              const PlayerOptions& opts);
 
     void reset_count() {
         obj_count_ = 0;
@@ -49,5 +49,5 @@ class ObjectType {
   private:
     size_t obj_count_ = 0;
 
-    ErrorOr<std::shared_ptr<sf::Texture>> get_texture(assets::Textures& textures);
+    std::shared_ptr<sf::Texture> get_texture(assets::Textures& textures);
 };

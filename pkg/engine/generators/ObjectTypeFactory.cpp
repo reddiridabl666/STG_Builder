@@ -1,6 +1,6 @@
 #include "ObjectTypeFactory.hpp"
 
-ErrorOr<ObjectTypeFactory::res_type> ObjectTypeFactory::generate(const nl::json& json) {
+ObjectTypeFactory::res_type ObjectTypeFactory::generate(const nl::json& json) {
 #ifdef DEBUG
     LOG("Generating object types");
 #endif
@@ -9,27 +9,19 @@ ErrorOr<ObjectTypeFactory::res_type> ObjectTypeFactory::generate(const nl::json&
 
     for (auto& [key, value] : json.items()) {
         auto obj = generate(key, value);
-        if (!obj) {
-            return tl::unexpected(obj.error());
-        }
-        res[key] = std::move(obj.value());
+        res[key] = std::move(obj);
     }
 
     return res;
 }
 
-ErrorOr<ObjectType> ObjectTypeFactory::generate(const std::string& name, const nl::json& json) {
+ObjectType ObjectTypeFactory::generate(const std::string& name, const nl::json& json) {
 #ifdef DEBUG
     LOG(fmt::format("Generating object type: {}", name));
 #endif
 
     ObjectType res(name);
-
-    auto error = handler_chain_.handle(res, json);
-    if (error) {
-        return tl::unexpected(error);
-    }
-
+    handler_chain_.handle(res, json);
     return res;
 }
 
