@@ -4,9 +4,10 @@
 
 #include "GameField.hpp"
 #include "GameObject.hpp"
+#include "GameObjectTag.hpp"
 #include "Observable.hpp"
 
-class GameState : public Observable<int, size_t> {
+class GameState : public Observable<int, GameObjectTag> {
   public:
     enum Event {
         ObjectCreated,

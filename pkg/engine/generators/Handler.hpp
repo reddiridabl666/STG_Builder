@@ -10,6 +10,7 @@
 
 #include "Json.hpp"
 #include "Utils.hpp"
+#include "Value.hpp"
 
 template <typename T>
 struct Handler {
@@ -26,7 +27,7 @@ struct PropsHandler : public Handler<T> {
 
     void handle(T& obj, const std::string& key, const nl::json& value) override {
         try {
-            obj.props.set(key, value.template get<int>());
+            obj.props.set(key, value.template get<Value>());
         } catch (nl::json::type_error& e) {
 #ifdef DEBUG
             LOG("In key '" + key + "': " + e.what());
@@ -84,8 +85,7 @@ class HandlerChain {
                     handler->handle(res, key, value);
                     return Error::OK;
                 } catch (std::exception& e) {
-                    auto msg = fmt::format("While handling '{}': '{}', got error: {}", key, to_string(value),
-                                           e.what());
+                    auto msg = fmt::format("While handling '{}': '{}', got error: {}", key, to_string(value), e.what());
                     return Error(msg);
                 }
             }

@@ -80,18 +80,17 @@ struct TagHandler : public Handler<ObjectType> {
     }
 
     void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
-        if (!value.is_string()) {
-            return;
-        }
+        obj.tag = value.get<GameObjectTag>();
+    }
+};
 
-        static const std::unordered_map<std::string, GameObject::Tag> map = {{"enemy", GameObject::Tag::Enemy},
-                                                                             {"player", GameObject::Tag::Player},
-                                                                             {"bullet", GameObject::Tag::Bullet}};
+struct CollisionHandler : public Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "collision";
+    }
 
-        auto it = map.find(value.template get<std::string>());
-        if (it != map.end()) {
-            obj.tag = it->second;
-        }
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        obj.collision = value;
     }
 };
 
@@ -108,7 +107,7 @@ struct HitboxHandler : public Handler<ObjectType> {
 
 HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     std::vector<std::unique_ptr<Handler<ObjectType>>> res;
-    res.reserve(7);
+    res.reserve(8);
 
     res.push_back(std::make_unique<SizeHandler>());
     res.push_back(std::make_unique<SpeedHandler>());
@@ -116,6 +115,7 @@ HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     res.push_back(std::make_unique<ImageHandler>());
     res.push_back(std::make_unique<SoundHandler>());
     res.push_back(std::make_unique<HitboxHandler>());
+    res.push_back(std::make_unique<CollisionHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectType>>());
 
     return res;

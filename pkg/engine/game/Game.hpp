@@ -38,8 +38,13 @@ class Game {
     void add_object(std::shared_ptr<GameObject>&&);
     void add_player(std::shared_ptr<GameObject>&&);
 
+    void add_object_to_rtree(const std::shared_ptr<GameObject>&);
+    void remove_object_from_rtree(const std::shared_ptr<GameObject>&);
+
     void generate_objects();
     void generate_players();
+
+    void check_collisions();
 
     void clear_dead();
 
@@ -61,6 +66,7 @@ class Game {
 
     int fps_;
     RTreeType rtree_;
+    RTreeType hitboxes_;
 
     PlayerLoader player_loader_;
 };

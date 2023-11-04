@@ -1,5 +1,6 @@
 {
     "New object 2": {
+        "damage": 25,
         "description": "Description goes here",
         "hitbox": {
             "fill_color": {
@@ -26,6 +27,7 @@
         "tag": "enemy"
     },
     "enemy": {
+        "damage": 25,
         "description": "Simple enemy type",
         "health": 50,
         "hitbox": {
@@ -60,8 +62,14 @@
         "tag": "enemy"
     },
     "player": {
+        "collision": {
+            "enemy": {
+                "property": "health",
+                "type": "sub",
+                "value": "damage"
+            }
+        },
         "description": "Description goes here",
-        "health": 100,
         "hitbox": {
             "fill_color": {
                 "a": 72,

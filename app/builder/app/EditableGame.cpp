@@ -69,10 +69,10 @@ void EditableGame::add_menu_item(const nl::json& json) {
     menu_.add_item(GameState::get().players(), assets_, json);
 }
 
-void EditableGame::set_object_pos(GameObject& obj, const sf::Vector2f& pos) {
-    rtree_.remove(obj.name(), obj.get_bounds());
-    obj.set_pos(pos);
-    rtree_.insert(obj.name(), obj.get_bounds());
+void EditableGame::set_object_pos(const std::shared_ptr<GameObject>& obj, const sf::Vector2f& pos) {
+    remove_object_from_rtree(obj);
+    obj->set_pos(pos);
+    add_object_to_rtree(obj);
 }
 
 inline std::shared_ptr<GameObject> EditableGame::generate_object_debug(size_t idx, const ObjectOptions& opts) {
@@ -150,20 +150,22 @@ void EditableGame::new_object_type(const std::string& type) {
 
 void EditableGame::remove_object(const std::string& name) {
     const auto& obj = objects_.at(name);
-    rtree_.remove(name, obj->get_bounds());
-    if (obj->tag() != GameObject::Tag::Player) {
+    remove_object_from_rtree(obj);
+
+    if (obj->tag() != GameObjectTag::Player) {
         level_->objects().erase(level_->objects().begin() + obj->props().at(kOptsID));
     } else {
         size_t id = obj->props().at(kPlayerNum);
         GameState::get().erase_player(id);
         menu_.erase_player(id);
     }
+
     objects_.erase(name);
 }
 
 GameObject& EditableGame::reload_object(const std::string& name, ObjectOptions&& opts) {
     const auto& obj = objects_.at(name);
-    rtree_.remove(name, obj->get_bounds());
+    remove_object_from_rtree(obj);
 
     size_t id = obj->props().at(kOptsID);
     objects_.erase(name);
@@ -187,7 +189,7 @@ void EditableGame::update_object_type(const std::string& name, ObjectType&& obj_
     //         continue;
     //     }
 
-    //     if (obj->tag() == GameObject::Tag::Player) {
+    //     if (obj->tag() == GameObjectTag::Player) {
     //         auto player_num = obj->props().at(kPlayerNum);
     //         obj = player_loader_.load_player(player_num, assets_, obj_type, ObjectOptionsFactory(level_->field()));
     //         continue;

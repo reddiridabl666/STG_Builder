@@ -5,9 +5,9 @@
 
 class Bar : public GameUi {
   public:
-    Bar(float max, float width, std::shared_ptr<sf::Texture>&& empty, std::shared_ptr<sf::Texture>&& full)
+    Bar(float cur, float max, float width, std::shared_ptr<sf::Texture>&& empty, std::shared_ptr<sf::Texture>&& full)
         : empty_(std::move(empty)), full_(std::move(full)), max_(max) {
-        update(max_);
+        update(cur);
         set_width(width);
 
         if (max_ <= 1e-6) {
@@ -54,6 +54,14 @@ class Bar : public GameUi {
     void update(float val) override {
         if (max_ <= 1e-6) {
             return;
+        }
+
+        if (val < 0) {
+            val = 0;
+        }
+
+        if (val > max_) {
+            val = max_;
         }
 
         auto size = full_.texture_size();

@@ -39,8 +39,24 @@ void Game<RTreeType>::draw_with_default_view(Drawable& obj) {
 }
 
 template <typename RTreeType>
-void Game<RTreeType>::add_object(std::shared_ptr<GameObject>&& obj) {
+void Game<RTreeType>::add_object_to_rtree(const std::shared_ptr<GameObject>& obj) {
     rtree_.insert(obj->name(), obj->get_bounds());
+    if (obj->hitbox()) {
+        hitboxes_.insert(obj->name(), obj->hitbox()->get_bounds());
+    }
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::remove_object_from_rtree(const std::shared_ptr<GameObject>& obj) {
+    rtree_.remove(obj->name(), obj->get_bounds());
+    if (obj->hitbox()) {
+        hitboxes_.remove(obj->name(), obj->hitbox()->get_bounds());
+    }
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::add_object(std::shared_ptr<GameObject>&& obj) {
+    add_object_to_rtree(obj);
     objects_.emplace(obj->name(), std::move(obj));
 }
 
@@ -58,6 +74,18 @@ void Game<RTreeType>::draw_objects() {
 }
 
 template <typename RTreeType>
+void Game<RTreeType>::check_collisions() {
+    for (auto obj = hitboxes_.begin(); obj != hitboxes_.end(); ++obj) {
+        for (auto subj = hitboxes_.intersects(obj->first); subj != hitboxes_.qend(); ++subj) {
+            if (obj->second == subj->second) {
+                continue;
+            }
+            objects_[obj->second]->resolve_collision(*objects_[subj->second]);
+        }
+    }
+}
+
+template <typename RTreeType>
 void Game<RTreeType>::update(float delta_time) {
     update_level();
 
@@ -66,10 +94,12 @@ void Game<RTreeType>::update(float delta_time) {
     level_->field().update(delta_time);
 
     for (auto& [_, obj] : objects_) {
-        rtree_.remove(obj->name(), obj->get_bounds());
+        remove_object_from_rtree(obj);
         obj->update(level_->field(), delta_time);
-        rtree_.insert(obj->name(), obj->get_bounds());
+        add_object_to_rtree(obj);
     }
+
+    check_collisions();
 
     clear_dead();
 
@@ -143,9 +173,10 @@ void Game<RTreeType>::generate_objects() {
 
 template <typename RTreeType>
 void Game<RTreeType>::clear_dead() {
-    std::erase_if(objects_, [](auto& el) {
+    std::erase_if(objects_, [this](auto& el) {
         if (!el.second->is_alive()) {
             GameState::get().emit(GameState::Event::ObjectDestroyed, el.second->tag());
+            remove_object_from_rtree(el.second);
             return true;
         }
         return false;
@@ -156,6 +187,7 @@ template <typename RTreeType>
 void Game<RTreeType>::clear() {
     objects_.clear();
     rtree_.clear();
+    hitboxes_.clear();
     GameState::get().reset();
     for (auto& [_, type] : types_) {
         type.reset_count();

@@ -9,6 +9,9 @@ set(SOURCES
     game/collisions/hitbox/HitboxFactory.cpp
     game/mechanics/Movement.cpp
     game/mechanics/Life.cpp
+    game/mechanics/ActionFactory.cpp
+    game/mechanics/Value.cpp
+    game/mechanics/CollisionReaction.cpp
     game/objects/GameField.cpp
     game/objects/GameObject.cpp
 )

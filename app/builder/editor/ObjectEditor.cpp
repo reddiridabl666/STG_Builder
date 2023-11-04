@@ -70,7 +70,7 @@ ObjectEditor::ObjectEditor(Window& window, builder::EditableGame& game, nl::json
         }
 
         if (event.key.code == sf::Keyboard::Z && event.key.control) {
-            game_.set_object_pos(*drag_target_, drag_pos_);
+            game_.set_object_pos(drag_target_, drag_pos_);
             update_dragged_obj_pos();
             drag_target_.reset();
             drag_n_drop_ = false;
@@ -122,7 +122,7 @@ void ObjectEditor::draw(const Window&) {
 
     if (drag_n_drop_) {
         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
-        game_.set_object_pos(*drag_target_, mouse_pos);
+        game_.set_object_pos(drag_target_, mouse_pos);
     } else if (game_.get_object(mouse_pos)) {
         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     }
@@ -149,9 +149,9 @@ void ObjectEditor::draw(const Window&) {
             continue;
         } else if (changes.rotation) {
             obj->set_rotation(obj_data->get_rotation());
-            game_.set_object_pos(*obj, obj_data->get_pos().to_vec(game_.field()));
+            game_.set_object_pos(obj, obj_data->get_pos().to_vec(game_.field()));
         } else if (changes.pos) {
-            game_.set_object_pos(*obj, obj_data->get_pos().to_vec(game_.field()));
+            game_.set_object_pos(obj, obj_data->get_pos().to_vec(game_.field()));
         }
 
         ImGui::PopItemWidth();
@@ -176,14 +176,14 @@ void ObjectEditor::draw(const Window&) {
 }
 
 nl::json& ObjectEditor::json_by_obj(const GameObject& obj) {
-    if (obj.tag() == GameObject::Tag::Player) {
+    if (obj.tag() == GameObjectTag::Player) {
         return game_data_.at("players").at(obj.props().at(kPlayerNum));
     }
     return level_data_.at("entities").at(obj.props().at(builder::kJsonID));
 }
 
 void ObjectEditor::erase_obj(const GameObject& obj) {
-    if (obj.tag() == GameObject::Tag::Player) {
+    if (obj.tag() == GameObjectTag::Player) {
         game_data_.at("players").erase(obj.props().at(kPlayerNum));
     } else {
         level_data_.at("entities").erase(obj.props().at(builder::kJsonID));

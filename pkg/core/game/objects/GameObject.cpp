@@ -1,12 +1,13 @@
 #include "GameObject.hpp"
 
+#include "CollisionReaction.hpp"
 #include "GameField.hpp"
 
 GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
-                       int speed, Tag tag, const Properties& props, float activity_start,
+                       int speed, GameObjectTag tag, const Properties& props, float activity_start,
                        const alive::update& life_func, std::unique_ptr<movement::Rule>&& move_func,
-                       std::unique_ptr<Hitbox>&& hitbox, bool stop_at_bounds, sf::Vector2f velocity, bool alive,
-                       bool active)
+                       std::unique_ptr<Hitbox>&& hitbox, CollisionReaction&& collision, bool stop_at_bounds,
+                       sf::Vector2f velocity, bool alive, bool active)
     : ImageContainer(std::move(image), speed),
       name_(name),
       tag_(tag),
@@ -15,6 +16,7 @@ GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::u
       move_update_(std::move(move_func)),
       life_update_(life_func),
       //   hitbox_(std::move(hitbox)),
+      collision_action_(std::move(collision)),
       active_(active),
       alive_(alive),
       stop_at_bounds_(stop_at_bounds),
@@ -22,6 +24,11 @@ GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::u
     set_origin(get_size() / 2);
     set_size(size);
     hitbox_ = std::move(hitbox);
+}
+
+std::string GameObject::tag_to_str(GameObjectTag tag) {
+    static const std::unordered_map<GameObjectTag, std::string> map = {OBJECT_TAG_TO_STRING};
+    return map.at(tag);
 }
 
 void GameObject::update(const GameField& field, float delta_time) {
@@ -35,6 +42,10 @@ void GameObject::update(const GameField& field, float delta_time) {
 
 std::string_view GameObject::type_name() const {
     return std::string_view(name_.begin(), name_.begin() + name_.rfind('-'));
+}
+
+void GameObject::resolve_collision(GameObject& other) {
+    collision_action_(other, *this);
 }
 
 void GameObject::draw(Window& window) const {

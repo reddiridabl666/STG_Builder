@@ -63,6 +63,7 @@ bool GameField::is_in_bounds(const Transformable& obj, float margin) const {
 void GameField::keep_in_bounds(Transformable& obj) const {
     auto bounds = get_bounds();
     auto obj_bounds = obj.get_bounds();
+
     sf::Vector2f new_pos = obj.pos();
 
     if (obj_bounds.top < bounds.top) {

@@ -39,12 +39,14 @@ class ObjectType {
 
     Properties props;
 
-    GameObject::Tag tag = GameObject::Tag::Object;
+    GameObjectTag tag = GameObjectTag::Object;
 
     AssetPaths images;
     AssetPaths sounds;
 
     HitboxProps hitbox_props;
+
+    nl::json collision;
 
   private:
     size_t obj_count_ = 0;

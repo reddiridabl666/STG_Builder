@@ -35,7 +35,7 @@ class EditableGame : public engine::Game<DrawableRTree<>> {
     void reload_objects();
     void prepare_preview(size_t level);
 
-    void set_object_pos(GameObject& obj, const sf::Vector2f& pos);
+    void set_object_pos(const std::shared_ptr<GameObject>& obj, const sf::Vector2f& pos);
     std::shared_ptr<GameObject> get_object(const sf::Vector2f& pos);
     std::shared_ptr<GameObject> get_object(const std::string& name);
 

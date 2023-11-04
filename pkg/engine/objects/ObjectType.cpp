@@ -1,6 +1,7 @@
 #include "ObjectType.hpp"
 
 #include "AssetManager.hpp"
+#include "CollisionReaction.hpp"
 #include "GameInfo.hpp"
 #include "HitboxFactory.hpp"
 #include "Player.hpp"
@@ -14,14 +15,13 @@ std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
 
     auto hitbox = HitboxFactory::create(hitbox_props);
 
-    auto res =
-        std::make_shared<GameObject>(obj_name, size, std::move(displayable), speed, tag, props, opts.activity_start,
-                                     opts.life_func, opts.move->clone(), std::move(hitbox), opts.stop_at_bounds);
+    auto res = std::make_shared<GameObject>(obj_name, size, std::move(displayable), speed, tag, props,
+                                            opts.activity_start, opts.life_func, opts.move->clone(), std::move(hitbox),
+                                            collision.get<CollisionReaction>(), opts.stop_at_bounds);
     opts.set_props(*res);
 
     GameState::get().emit(GameState::Event::ObjectCreated, res->tag());
 
-    // set collision rules
     // set bullet rules
 
     ++obj_count_;

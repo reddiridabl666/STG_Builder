@@ -3,7 +3,9 @@
 #include <functional>
 #include <memory>
 
+#include "CollisionReaction.hpp"
 #include "Errors.hpp"
+#include "GameObjectTag.hpp"
 #include "Hideable.hpp"
 #include "Hitbox.hpp"
 #include "ImageContainer.hpp"
@@ -17,22 +19,27 @@ class GameObject : public ImageContainer, public Hideable {
     static constexpr float kLoadDelta = 100;
     static const alive::update kDefaultLifeFunc;
 
-    enum Tag {
-        Object,
-        Background,
-        Item,
-        Enemy,
-        Bullet,
-        Player,
-        PlayerBuller
-    };
+    // clang-format off
+    GameObject(
+        const std::string& name,
+        const sf::Vector2f& size,
+        std::unique_ptr<Displayable>&& image,
+        int speed = 50,
+        GameObjectTag tag = GameObjectTag::Object,
+        const Properties& props = {},
+        float activity_start = kDefaultActivityStart,
+        const alive::update& life_func = kDefaultLifeFunc,
+        std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
+        std::unique_ptr<Hitbox>&& hitbox = nullptr,
+        CollisionReaction&& collision = {},
+        bool stop_at_bounds = false,
+        sf::Vector2f velocity = {},
+        bool alive = true,
+        bool active = false
+    );
+    // clang-format on
 
-    GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image, int speed = 50,
-               Tag tag = Tag::Object, const Properties& props = {}, float activity_start = kDefaultActivityStart,
-               const alive::update& life_func = kDefaultLifeFunc,
-               std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
-               std::unique_ptr<Hitbox>&& hitbox = nullptr, bool stop_at_bounds = false, sf::Vector2f velocity = {},
-               bool alive = true, bool active = false);
+    static std::string tag_to_str(GameObjectTag tag);
 
     float left() const;
 
@@ -64,7 +71,7 @@ class GameObject : public ImageContainer, public Hideable {
 
     void update(const GameField& field, float delta_time);
 
-    Tag tag() const {
+    GameObjectTag tag() const {
         return tag_;
     }
 
@@ -131,6 +138,8 @@ class GameObject : public ImageContainer, public Hideable {
         life_update_ = func;
     }
 
+    void resolve_collision(GameObject& other);
+
     void draw(Window&) const override;
     void set_pos(const sf::Vector2f&) override;
     using ImageContainer::set_pos;
@@ -139,7 +148,7 @@ class GameObject : public ImageContainer, public Hideable {
 
   private:
     std::string name_;
-    Tag tag_;
+    GameObjectTag tag_;
     Properties props_;
 
     sf::Vector2f velocity_;
@@ -147,6 +156,7 @@ class GameObject : public ImageContainer, public Hideable {
     alive::update life_update_ = kDefaultLifeFunc;
 
     std::unique_ptr<Hitbox> hitbox_;
+    CollisionReaction collision_action_;
 
     bool active_ = false;
     bool alive_ = true;

@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <string>
-#include <tl/expected.hpp>
 #include <unordered_map>
 
 #include "Errors.hpp"
@@ -19,7 +18,11 @@ struct Properties {
     }
 
     Value& at(const std::string& key) {
-        return values_.at(key);
+        auto it = values_.find(key);
+        if (it == values_.end()) {
+            return dummy_;
+        }
+        return it->second;
     }
 
     Value get(const std::string& key) const {
@@ -34,7 +37,7 @@ struct Properties {
         return const_cast<Properties*>(this)->at(key);
     }
 
-    void set(const std::string& key, int value) {
+    void set(const std::string& key, Value value) {
         values_[key] = value;
     }
 
@@ -50,4 +53,5 @@ struct Properties {
 
   private:
     std::unordered_map<std::string, Value> values_;
+    Value dummy_;
 };
