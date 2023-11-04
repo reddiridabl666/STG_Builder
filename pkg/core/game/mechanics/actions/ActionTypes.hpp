@@ -2,6 +2,7 @@
 
 #include "Action.hpp"
 #include "GameObject.hpp"
+#include "Getter.hpp"
 
 namespace action {
 
@@ -157,7 +158,6 @@ struct PropertySubber : public PropertyUpdater {
 
     void operator()(GameObject& subject, GameObject& object) const override {
         object.props().at(property_).sub(get_->operator()(subject));
-        std::cout << property_ << ": " << object.props().at(property_) << std::endl;
     }
 
     std::string type() const override {

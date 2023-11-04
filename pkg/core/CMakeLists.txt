@@ -9,7 +9,8 @@ set(SOURCES
     game/collisions/hitbox/HitboxFactory.cpp
     game/mechanics/Movement.cpp
     game/mechanics/Life.cpp
-    game/mechanics/ActionFactory.cpp
+    game/mechanics/actions/ActionFactory.cpp
+    game/mechanics/actions/Decorators.cpp
     game/mechanics/Value.cpp
     game/mechanics/CollisionReaction.cpp
     game/objects/GameField.cpp
@@ -24,6 +25,7 @@ set(INCLUDE_DIRS
     game/objects
     game/ui
     game/mechanics
+    game/mechanics/actions
     game/collisions
     game/collisions/hitbox
     game/collisions/rtree

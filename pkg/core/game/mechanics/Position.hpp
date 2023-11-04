@@ -22,7 +22,6 @@ inline Func percent_width(int percent = 50) {
 
 inline Func percent_height(int percent = 50) {
     return [percent](const GameField& field) {
-        std::cout << "Percent is: " << percent << "\n";
         return field.bottom() - percent / 100.f * field.height();
     };
 }
