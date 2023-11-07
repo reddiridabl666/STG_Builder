@@ -6,7 +6,19 @@
 namespace action {
 
 namespace {
-std::unique_ptr<PropertyGetter> create_undecorated_getter(const nl::json& json) {
+std::unique_ptr<MutableGetter> create_mutable_getter(const nl::json& json) {
+    if (json.is_string()) {
+        auto property = json.get<std::string>();
+        if (property == "speed") {
+            return std::make_unique<SpeedGetter>();
+        }
+        return std::make_unique<ObjectPropertyGetter>(std::move(property));
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<Getter> create_undecorated_getter(const nl::json& json) {
     if (json.is_object()) {
         return create_undecorated_getter(json.at("property"));
     }
@@ -15,15 +27,11 @@ std::unique_ptr<PropertyGetter> create_undecorated_getter(const nl::json& json) 
         return std::make_unique<ConstGetter>(json.get<float>());
     }
 
-    if (json.is_string()) {
-        return std::make_unique<ObjectPropertyGetter>(json.get<std::string>());
-    }
-
-    return nullptr;
+    return create_mutable_getter(json);
 }
 
-std::unique_ptr<PropertyGetter> create_getter_decorator(std::unique_ptr<PropertyGetter>& original,
-                                                        const std::string& key, const nl::json& value) {
+std::unique_ptr<Getter> create_getter_decorator(std::unique_ptr<Getter>& original, const std::string& key,
+                                                const nl::json& value) {
     if (key == "mul") {
         return std::make_unique<MultiplyGetterDecorator>(std::move(original), value.get<float>());
     }
@@ -31,8 +39,8 @@ std::unique_ptr<PropertyGetter> create_getter_decorator(std::unique_ptr<Property
     return nullptr;
 }
 
-std::unique_ptr<PropertyGetter> create_getter(const nl::json& json) {
-    std::unique_ptr<PropertyGetter> res = create_undecorated_getter(json);
+std::unique_ptr<Getter> create_getter(const nl::json& json) {
+    std::unique_ptr<Getter> res = create_undecorated_getter(json);
     if (!res) {
         return res;
     }
@@ -55,15 +63,17 @@ std::unique_ptr<PropertyGetter> create_getter(const nl::json& json) {
 
 std::unique_ptr<Action> create_undecorated_action(const nl::json& json) {
     std::string type = json.value("type", "");
-    std::string property = json.value("property", "");
+    std::string property_value = json.value("property", "");
 
-    if (property == "") {
+    if (property_value == "") {
         return nullptr;
     }
 
     if (type == "") {
         return nullptr;
     }
+
+    auto property = create_mutable_getter(property_value);
 
     if (type == "inc") {
         return std::make_unique<Incrementor>(std::move(property));
@@ -115,6 +125,16 @@ std::unique_ptr<Action> create_action_decorator(std::unique_ptr<Action>& origina
     return nullptr;
 }
 
+void decorate_action(std::unique_ptr<Action>& original, const nl::json& decorators) {
+    for (auto& [key, value] : decorators.items()) {
+        auto decorator = create_action_decorator(original, key, value);
+        if (!decorator) {
+            continue;
+        }
+        original = std::move(decorator);
+    }
+}
+
 std::unique_ptr<Action> create_single_action(const nl::json& json) {
     std::unique_ptr<Action> res = create_undecorated_action(json);
     if (!res) {
@@ -126,27 +146,12 @@ std::unique_ptr<Action> create_single_action(const nl::json& json) {
         return res;
     }
 
-    for (auto& [key, value] : decorators->items()) {
-        auto decorator = create_action_decorator(res, key, value);
-        if (!decorator) {
-            continue;
-        }
-        res = std::move(decorator);
-    }
+    decorate_action(res, *decorators);
 
     return res;
 }
-}  // namespace
 
-std::unique_ptr<Action> Factory::create(const nl::json& json) {
-    if (json.is_object()) {
-        return create_single_action(json);
-    }
-
-    if (!json.is_array()) {
-        return nullptr;
-    }
-
+std::unique_ptr<Action> create_multi_action(const nl::json& json) {
     std::vector<std::unique_ptr<Action>> actions;
     actions.reserve(json.size());
 
@@ -158,6 +163,32 @@ std::unique_ptr<Action> Factory::create(const nl::json& json) {
     }
 
     return std::make_unique<MultiAction>(std::move(actions));
+}
+
+}  // namespace
+
+std::unique_ptr<Action> Factory::create(const nl::json& json) {
+    if (json.is_array()) {
+        return create_multi_action(json);
+    }
+
+    if (!json.is_object()) {
+        return nullptr;
+    }
+
+    auto actions = json.find("actions");
+    if (actions != json.end()) {
+        auto res = create_multi_action(*actions);
+        auto decorators = json.find("with");
+        if (decorators == json.end()) {
+            return res;
+        }
+
+        decorate_action(res, *decorators);
+        return res;
+    }
+
+    return create_single_action(json);
 }
 
 }  // namespace action

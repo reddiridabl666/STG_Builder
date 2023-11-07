@@ -16,12 +16,12 @@ struct Decorator : public T {
     std::unique_ptr<T> original_;
 };
 
-struct MultiplyGetterDecorator : public Decorator<PropertyGetter> {
+struct MultiplyGetterDecorator : public Decorator<Getter> {
   public:
-    MultiplyGetterDecorator(std::unique_ptr<PropertyGetter>&& getter, float multiplier)
-        : Decorator<PropertyGetter>(std::move(getter)), multiplier_(multiplier) {}
+    MultiplyGetterDecorator(std::unique_ptr<Getter>&& getter, float multiplier)
+        : Decorator<Getter>(std::move(getter)), multiplier_(multiplier) {}
 
-    Value operator()(GameObject& obj) const override;
+    Value get(GameObject& obj) const override;
 
     nl::json to_json() const override;
 

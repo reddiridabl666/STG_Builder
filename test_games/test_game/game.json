@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1699103017,
+    "last_updated": 1699369813,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -131,6 +131,12 @@
                 "type": "bar",
                 "value": "health",
                 "width": 200
+            },
+            {
+                "prefix": "Shots taken:",
+                "size": 32,
+                "type": "counter",
+                "value": "shots"
             }
         ]
     },

@@ -11,5 +11,4 @@ struct Action {
     virtual nl::json to_json() const = 0;
     virtual ~Action() = default;
 };
-
 }  // namespace action

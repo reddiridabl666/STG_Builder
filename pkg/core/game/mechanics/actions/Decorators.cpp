@@ -18,8 +18,8 @@ nl::json TimeoutDecorator::to_json() const {
     return json;
 }
 
-Value MultiplyGetterDecorator::operator()(GameObject& obj) const {
-    auto val = original_->operator()(obj);
+Value MultiplyGetterDecorator::get(GameObject& obj) const {
+    auto val = original_->get(obj);
     val.mul(multiplier_);
     return val;
 }

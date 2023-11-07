@@ -3,34 +3,34 @@
 #include <functional>
 #include <unordered_map>
 
-template <typename T, typename P>
+template <typename EventType, typename... Payload>
 class Observable {
   public:
-    using Callback = std::function<void(const P&)>;
+    using Callback = std::function<void(const Payload&...)>;
 
-    void on(const T& event, const Callback& cb);
-    void off(const T& event);
-    void emit(const T& event, const P& payload);
+    void on(const EventType& event, const Callback& cb);
+    void off(const EventType& event);
+    void emit(const EventType& event, const Payload&... payload);
 
   private:
-    std::unordered_multimap<T, Callback> cbs_;
+    std::unordered_multimap<EventType, Callback> cbs_;
 };
 
-template <typename T, typename P>
-void Observable<T, P>::on(const T& event, const Callback& cb) {
+template <typename EventType, typename... Payload>
+void Observable<EventType, Payload...>::on(const EventType& event, const Callback& cb) {
     cbs_.emplace(event, cb);
 }
 
-template <typename T, typename P>
-void Observable<T, P>::off(const T& event) {
+template <typename EventType, typename... Payload>
+void Observable<EventType, Payload...>::off(const EventType& event) {
     cbs_.erase(event);
 }
 
-template <typename T, typename P>
-void Observable<T, P>::emit(const T& event, const P& payload) {
+template <typename EventType, typename... Payload>
+void Observable<EventType, Payload...>::emit(const EventType& event, const Payload&... payload) {
     auto [begin, end] = cbs_.equal_range(event);
 
     for (auto it = begin; it != end; ++it) {
-        it->second(payload);
+        it->second(payload...);
     }
 }

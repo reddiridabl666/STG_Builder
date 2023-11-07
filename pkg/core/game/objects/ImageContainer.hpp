@@ -3,11 +3,11 @@
 #include <memory>
 
 #include "Displayable.hpp"
+#include "Value.hpp"
 
 class ImageContainer : public Displayable {
   public:
-    ImageContainer(std::unique_ptr<Displayable>&& image, int speed = 50)
-        : speed_(speed), image_(std::move(image)) {}
+    ImageContainer(std::unique_ptr<Displayable>&& image, int speed = 50) : speed_(speed), image_(std::move(image)) {}
 
     const std::unique_ptr<Displayable>& image() {
         return image_;
@@ -33,11 +33,15 @@ class ImageContainer : public Displayable {
         speed_ = speed;
     }
 
-    int speed() const {
+    const Value& speed() const {
+        return speed_;
+    }
+
+    Value& speed() {
         return speed_;
     }
 
   protected:
-    int speed_ = 1;
+    Value speed_ = 1;
     std::unique_ptr<Displayable> image_;
 };

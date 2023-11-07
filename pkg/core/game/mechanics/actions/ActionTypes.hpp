@@ -6,11 +6,11 @@
 
 namespace action {
 
-struct ConstGetter : public PropertyGetter {
+struct ConstGetter : public Getter {
   public:
     ConstGetter(float value) : value_(value) {}
 
-    Value operator()(GameObject&) const override {
+    Value get(GameObject&) const override {
         return value_;
     }
 
@@ -22,12 +22,12 @@ struct ConstGetter : public PropertyGetter {
     const float value_;
 };
 
-struct ObjectPropertyGetter : public PropertyGetter {
+struct ObjectPropertyGetter : public MutableGetter {
   public:
     ObjectPropertyGetter(std::string&& property) : property_(std::move(property)) {}
 
-    virtual Value operator()(GameObject& subject) const {
-        return subject.props().get(property_);
+    Value& get(GameObject& subject) override {
+        return subject.props().at(property_);
     }
 
     nl::json to_json() const override {
@@ -38,88 +38,91 @@ struct ObjectPropertyGetter : public PropertyGetter {
     const std::string property_;
 };
 
+struct SpeedGetter : public MutableGetter {
+    Value& get(GameObject& subject) override {
+        return subject.speed();
+    }
+
+    nl::json to_json() const override {
+        return "speed";
+    }
+};
+
 struct PropertyUpdater : public Action {
   public:
-    PropertyUpdater(std::string&& property, std::unique_ptr<PropertyGetter>&& getter)
-        : property_(std::move(property)), get_(std::move(getter)) {}
+    PropertyUpdater(std::unique_ptr<MutableGetter>&& property) : property_(std::move(property)) {}
 
     virtual std::string type() const = 0;
 
     nl::json to_json() const override {
         return {
             {"type", type()},
-            {"property", property_},
-            {"value", get_->to_json()},
+            {"property", property_->to_json()},
         };
     }
 
   protected:
-    const std::string property_;
-    const std::unique_ptr<PropertyGetter> get_;
+    const std::unique_ptr<MutableGetter> property_;
 };
 
-struct Resetter : public Action {
-  public:
-    Resetter(std::string&& property) : property_(std::move(property)) {}
-
-    void operator()(GameObject&, GameObject& object) const override {
-        object.props().at(property_).reset();
-    }
-
-    nl::json to_json() const override {
-        return {
-            {"type", "reset"},
-            {"property", property_},
-        };
-    }
-
-  private:
-    const std::string property_;
-};
-
-struct Incrementor : public Action {
-  public:
-    Incrementor(std::string&& property) : property_(std::move(property)) {}
-
-    void operator()(GameObject&, GameObject& object) const override {
-        object.props().at(property_).inc();
-    }
-
-    nl::json to_json() const override {
-        return {
-            {"type", "inc"},
-            {"property", property_},
-        };
-    }
-
-  private:
-    const std::string property_;
-};
-
-struct Decrementor : public Action {
-  public:
-    Decrementor(std::string&& property) : property_(std::move(property)) {}
-
-    void operator()(GameObject&, GameObject& object) const override {
-        object.props().at(property_).dec();
-    }
-
-    nl::json to_json() const override {
-        return {
-            {"type", "dec"},
-            {"property", property_},
-        };
-    }
-
-  private:
-    const std::string property_;
-};
-
-struct PropertySetter : public PropertyUpdater {
+struct Resetter : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
+    void operator()(GameObject&, GameObject& object) const override {
+        property_->get(object).reset();
+    }
+
+    std::string type() const override {
+        return "reset";
+    }
+};
+
+struct Incrementor : public PropertyUpdater {
+    using PropertyUpdater::PropertyUpdater;
+
+    void operator()(GameObject&, GameObject& object) const override {
+        property_->get(object).inc();
+    }
+
+    std::string type() const override {
+        return "inc";
+    }
+};
+
+struct Decrementor : public PropertyUpdater {
+    using PropertyUpdater::PropertyUpdater;
+
+    void operator()(GameObject&, GameObject& object) const override {
+        property_->get(object).dec();
+    }
+
+    std::string type() const override {
+        return "dec";
+    }
+};
+
+struct PropertyValueUpdater : public PropertyUpdater {
+  public:
+    PropertyValueUpdater(std::unique_ptr<MutableGetter>&& property, std::unique_ptr<Getter>&& value)
+        : PropertyUpdater(std::move(property)), value_(std::move(value)) {}
+
+    nl::json to_json() const override {
+        return {
+            {"type", type()},
+            {"property", property_->to_json()},
+            {"value", value_->to_json()},
+        };
+    }
+
+  protected:
+    const std::unique_ptr<Getter> value_;
+};
+
+struct PropertySetter : public PropertyValueUpdater {
+    using PropertyValueUpdater::PropertyValueUpdater;
+
     void operator()(GameObject& subject, GameObject& object) const override {
-        object.props().at(property_).set(get_->operator()(subject));
+        property_->get(object).set(value_->get(subject));
     }
 
     std::string type() const override {
@@ -127,11 +130,11 @@ struct PropertySetter : public PropertyUpdater {
     }
 };
 
-struct PropertyAdder : public PropertyUpdater {
-    using PropertyUpdater::PropertyUpdater;
+struct PropertyAdder : public PropertyValueUpdater {
+    using PropertyValueUpdater::PropertyValueUpdater;
 
     void operator()(GameObject& subject, GameObject& object) const override {
-        object.props().at(property_).add(get_->operator()(subject));
+        property_->get(object).add(value_->get(subject));
     }
 
     std::string type() const override {
@@ -139,11 +142,11 @@ struct PropertyAdder : public PropertyUpdater {
     }
 };
 
-struct PropertyMultiplier : public PropertyUpdater {
-    using PropertyUpdater::PropertyUpdater;
+struct PropertyMultiplier : public PropertyValueUpdater {
+    using PropertyValueUpdater::PropertyValueUpdater;
 
     void operator()(GameObject& subject, GameObject& object) const override {
-        object.props().at(property_).mul(get_->operator()(subject));
+        property_->get(object).mul(value_->get(subject));
     }
 
     std::string type() const override {
@@ -151,13 +154,11 @@ struct PropertyMultiplier : public PropertyUpdater {
     }
 };
 
-#include <iostream>
-
-struct PropertySubber : public PropertyUpdater {
-    using PropertyUpdater::PropertyUpdater;
+struct PropertySubber : public PropertyValueUpdater {
+    using PropertyValueUpdater::PropertyValueUpdater;
 
     void operator()(GameObject& subject, GameObject& object) const override {
-        object.props().at(property_).sub(get_->operator()(subject));
+        property_->get(object).sub(value_->get(subject));
     }
 
     std::string type() const override {
@@ -165,11 +166,11 @@ struct PropertySubber : public PropertyUpdater {
     }
 };
 
-struct PropertyDivisor : public PropertyUpdater {
-    using PropertyUpdater::PropertyUpdater;
+struct PropertyDivisor : public PropertyValueUpdater {
+    using PropertyValueUpdater::PropertyValueUpdater;
 
     void operator()(GameObject& subject, GameObject& object) const override {
-        object.props().at(property_).div(get_->operator()(subject));
+        property_->get(object).div(value_->get(subject));
     }
 
     std::string type() const override {
