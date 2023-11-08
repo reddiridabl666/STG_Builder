@@ -10,7 +10,7 @@ struct ConstGetter : public Getter {
   public:
     ConstGetter(float value) : value_(value) {}
 
-    Value get(GameObject&) const override {
+    Value get(const GameObject&) const override {
         return value_;
     }
 
@@ -68,7 +68,7 @@ struct PropertyUpdater : public Action {
 struct Resetter : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(GameObject&, GameObject& object) const override {
+    void operator()(const GameObject&, GameObject& object) const override {
         property_->get(object).reset();
     }
 
@@ -80,7 +80,7 @@ struct Resetter : public PropertyUpdater {
 struct Incrementor : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(GameObject&, GameObject& object) const override {
+    void operator()(const GameObject&, GameObject& object) const override {
         property_->get(object).inc();
     }
 
@@ -92,7 +92,7 @@ struct Incrementor : public PropertyUpdater {
 struct Decrementor : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(GameObject&, GameObject& object) const override {
+    void operator()(const GameObject&, GameObject& object) const override {
         property_->get(object).dec();
     }
 
@@ -121,7 +121,7 @@ struct PropertyValueUpdater : public PropertyUpdater {
 struct PropertySetter : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(GameObject& subject, GameObject& object) const override {
+    void operator()(const GameObject& subject, GameObject& object) const override {
         property_->get(object).set(value_->get(subject));
     }
 
@@ -133,7 +133,7 @@ struct PropertySetter : public PropertyValueUpdater {
 struct PropertyAdder : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(GameObject& subject, GameObject& object) const override {
+    void operator()(const GameObject& subject, GameObject& object) const override {
         property_->get(object).add(value_->get(subject));
     }
 
@@ -145,7 +145,7 @@ struct PropertyAdder : public PropertyValueUpdater {
 struct PropertyMultiplier : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(GameObject& subject, GameObject& object) const override {
+    void operator()(const GameObject& subject, GameObject& object) const override {
         property_->get(object).mul(value_->get(subject));
     }
 
@@ -157,7 +157,7 @@ struct PropertyMultiplier : public PropertyValueUpdater {
 struct PropertySubber : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(GameObject& subject, GameObject& object) const override {
+    void operator()(const GameObject& subject, GameObject& object) const override {
         property_->get(object).sub(value_->get(subject));
     }
 
@@ -169,7 +169,7 @@ struct PropertySubber : public PropertyValueUpdater {
 struct PropertyDivisor : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(GameObject& subject, GameObject& object) const override {
+    void operator()(const GameObject& subject, GameObject& object) const override {
         property_->get(object).div(value_->get(subject));
     }
 
@@ -182,7 +182,7 @@ struct MultiAction : public Action {
   public:
     MultiAction(std::vector<std::unique_ptr<Action>>&& actions) : actions_(std::move(actions)) {}
 
-    void operator()(GameObject& subject, GameObject& object) const override {
+    void operator()(const GameObject& subject, GameObject& object) const override {
         for (auto& action : actions_) {
             action->operator()(subject, object);
         }

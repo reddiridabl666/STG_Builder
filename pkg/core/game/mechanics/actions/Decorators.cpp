@@ -1,7 +1,7 @@
 #include "Decorators.hpp"
 
 namespace action {
-void TimeoutDecorator::operator()(GameObject& subj, GameObject& obj) const {
+void TimeoutDecorator::operator()(const GameObject& subj, GameObject& obj) const {
     if (current_ >= timeout_) {
         original_->operator()(subj, obj);
         current_ = 0;
@@ -18,7 +18,7 @@ nl::json TimeoutDecorator::to_json() const {
     return json;
 }
 
-Value MultiplyGetterDecorator::get(GameObject& obj) const {
+Value MultiplyGetterDecorator::get(const GameObject& obj) const {
     auto val = original_->get(obj);
     val.mul(multiplier_);
     return val;

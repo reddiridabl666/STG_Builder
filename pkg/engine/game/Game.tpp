@@ -158,8 +158,8 @@ void Game<RTreeType>::generate_objects() {
         throw Error("No level loaded");
     }
 
-    while (!level_->objects().empty()) {
-        const auto& opts = level_->objects().front();
+    while (!level_->object_props().empty()) {
+        const auto& opts = level_->object_props().front();
 
         if (level_->field().view_top() - opts.pos_y > GameObject::kLoadDelta) {
             break;
@@ -167,7 +167,7 @@ void Game<RTreeType>::generate_objects() {
 
         auto res = generate_object(opts);
         objects_.emplace(res->name(), std::move(res));
-        level_->objects().pop_front();
+        level_->object_props().pop_front();
     }
 }
 
@@ -176,6 +176,11 @@ void Game<RTreeType>::clear_dead() {
     std::erase_if(objects_, [this](auto& el) {
         if (!el.second->is_alive()) {
             GameState::get().emit(GameState::Event::ObjectDestroyed, el.second->tag());
+
+            for (auto& [_, obj] : objects_) {
+                obj->emit(GameEvent::ObjectDestroyed, *el.second);
+            }
+
             remove_object_from_rtree(el.second);
             return true;
         }
@@ -200,7 +205,7 @@ void Game<RTreeType>::draw_ui() {
     // clang-format off
     ui::StatBox::draw("Debug",
         ui::StatLine{"Objects active", &objects_},
-        ui::StatLine{"Objects not loaded", &(level_->objects())},
+        ui::StatLine{"Objects not loaded", &(level_->object_props())},
         ui::StatLine{"View pos", level_->field().view().getCenter().y},
         ui::StatLine{"Textures loaded", &assets_.textures().storage()},
         ui::StatLine{"Enemies left", GameState::get().enemy_count()}

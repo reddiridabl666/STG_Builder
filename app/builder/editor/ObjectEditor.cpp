@@ -156,6 +156,8 @@ void ObjectEditor::draw(const Window&) {
 
         ImGui::PopItemWidth();
 
+        ImGui::NewLine();
+
         auto btn_label = std::string(message(Message::Delete)) + "##" + obj->name();
         if (ImGui::Button(btn_label.c_str())) {
             Bus<std::string>::get().emit(Event::ObjectDeleted, obj->name().substr(0, obj->name().rfind('-')));

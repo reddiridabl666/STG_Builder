@@ -21,7 +21,7 @@ struct MultiplyGetterDecorator : public Decorator<Getter> {
     MultiplyGetterDecorator(std::unique_ptr<Getter>&& getter, float multiplier)
         : Decorator<Getter>(std::move(getter)), multiplier_(multiplier) {}
 
-    Value get(GameObject& obj) const override;
+    Value get(const GameObject& obj) const override;
 
     nl::json to_json() const override;
 
@@ -34,7 +34,7 @@ struct TimeoutDecorator : public Decorator<Action> {
     TimeoutDecorator(std::unique_ptr<Action>&& action, float timeout = 1)
         : Decorator<Action>(std::move(action)), timeout_(timeout), current_(timeout) {}
 
-    void operator()(GameObject&, GameObject&) const override;
+    void operator()(const GameObject&, GameObject&) const override;
 
     nl::json to_json() const override;
 

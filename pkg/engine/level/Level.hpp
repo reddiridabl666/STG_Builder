@@ -23,15 +23,15 @@ class Level {
         return field_;
     }
 
-    auto& objects() {
-        return objects_;
+    auto& object_props() {
+        return not_loaded_objects_;
     }
 
-    void prepare_objects();
+    void prepare_for_load();
 
   private:
     std::string name_;
     GameField field_;
-    ObjectOptionsFactory::res_type objects_;
+    ObjectOptionsFactory::res_type not_loaded_objects_;
 };
 }  // namespace engine

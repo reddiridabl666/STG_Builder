@@ -103,11 +103,21 @@ struct HitboxHandler : public Handler<ObjectType> {
         obj.hitbox_props = value.get<HitboxProps>();
     }
 };
+
+struct OnDeathHandler : public Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "on_character_death";
+    }
+
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        obj.on_death = value;
+    }
+};
 }  // namespace
 
 HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     std::vector<std::unique_ptr<Handler<ObjectType>>> res;
-    res.reserve(8);
+    res.reserve(9);
 
     res.push_back(std::make_unique<SizeHandler>());
     res.push_back(std::make_unique<SpeedHandler>());
@@ -116,6 +126,7 @@ HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     res.push_back(std::make_unique<SoundHandler>());
     res.push_back(std::make_unique<HitboxHandler>());
     res.push_back(std::make_unique<CollisionHandler>());
+    res.push_back(std::make_unique<OnDeathHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectType>>());
 
     return res;

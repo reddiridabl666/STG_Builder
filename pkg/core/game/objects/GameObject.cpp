@@ -6,8 +6,9 @@
 GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
                        int speed, GameObjectTag tag, const Properties& props, float activity_start,
                        const alive::update& life_func, std::unique_ptr<movement::Rule>&& move_func,
-                       std::unique_ptr<Hitbox>&& hitbox, CollisionReaction&& collision, bool stop_at_bounds,
-                       sf::Vector2f velocity, bool alive, bool active)
+                       std::unique_ptr<Hitbox>&& hitbox, CollisionReaction&& collision,
+                       std::unique_ptr<action::Action>&& on_character_death, bool stop_at_bounds, sf::Vector2f velocity,
+                       bool alive, bool active)
     : ImageContainer(std::move(image), speed),
       name_(name),
       tag_(tag),
@@ -17,6 +18,7 @@ GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::u
       life_update_(life_func),
       //   hitbox_(std::move(hitbox)),
       collision_action_(std::move(collision)),
+      on_character_death_(std::move(on_character_death)),
       active_(active),
       alive_(alive),
       stop_at_bounds_(stop_at_bounds),
@@ -138,6 +140,12 @@ float GameObject::height() const {
 
 float GameObject::width() const {
     return get_size().x;
+}
+
+void GameObject::emit(GameEvent event, const GameObject& other) {
+    if (on_character_death_ && event == GameEvent::ObjectDestroyed) {
+        on_character_death_->operator()(other, *this);
+    }
 }
 
 const alive::update GameObject::kDefaultLifeFunc = alive::in_bounds(GameObject::kLoadDelta);

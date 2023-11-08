@@ -9,7 +9,7 @@
     },
     "fps": 60,
     "fullscreen": false,
-    "last_updated": 1699369813,
+    "last_updated": 1699423815,
     "levels": 2,
     "menu": {
         "ratio": 0.3,
@@ -29,29 +29,13 @@
                     "special": 0
                 },
                 "keys": {
-                    "down": [
-                        "S"
-                    ],
-                    "left": [
-                        "A"
-                    ],
-                    "right": [
-                        "D"
-                    ],
-                    "shoot": [
-                        "Space",
-                        "Z"
-                    ],
-                    "slow": [
-                        "LShift"
-                    ],
-                    "special": [
-                        "X",
-                        "Enter"
-                    ],
-                    "up": [
-                        "W"
-                    ]
+                    "move": {
+                        "down": [],
+                        "left": [],
+                        "right": [],
+                        "up": []
+                    },
+                    "other": {}
                 }
             },
             "pos": {
@@ -60,7 +44,6 @@
             },
             "rotation": 0,
             "score": 0,
-            "stop_at_bounds": true,
             "type": "player"
         },
         {
@@ -71,27 +54,31 @@
                     "special": 0
                 },
                 "keys": {
-                    "down": [
-                        "Down"
-                    ],
-                    "left": [
-                        "Left"
-                    ],
-                    "right": [
-                        "Right"
-                    ],
-                    "shoot": [
-                        "Space"
-                    ],
-                    "slow": [
-                        "RShift"
-                    ],
-                    "special": [
-                        "Enter"
-                    ],
-                    "up": [
-                        "Up"
-                    ]
+                    "move": {
+                        "down": [
+                            "Down"
+                        ],
+                        "left": [
+                            "Left"
+                        ],
+                        "right": [
+                            "Right"
+                        ],
+                        "up": [
+                            "Up"
+                        ]
+                    },
+                    "other": {
+                        "shoot": [
+                            "Space"
+                        ],
+                        "slow": [
+                            "RShift"
+                        ],
+                        "special": [
+                            "Enter"
+                        ]
+                    }
                 }
             },
             "pos": {
@@ -99,7 +86,6 @@
                 "y": 1012.84033203125
             },
             "rotation": 0,
-            "stop_at_bounds": true,
             "type": "player"
         }
     ],

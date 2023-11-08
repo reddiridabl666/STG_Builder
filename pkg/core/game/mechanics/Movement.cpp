@@ -17,7 +17,7 @@ bool keys_are_pressed(const KeyList& keys) {
     return false;
 }
 
-int horizontal(const KeyControls& keys, const JoyControls&) {
+int horizontal(const MovementKeys& keys, const JoyControls&) {
     if (keys_are_pressed(keys.left)) {
         return -1;
     }
@@ -29,7 +29,7 @@ int horizontal(const KeyControls& keys, const JoyControls&) {
     return 0;
 }
 
-int vertical(const KeyControls& keys, const JoyControls&) {
+int vertical(const MovementKeys& keys, const JoyControls&) {
     if (keys_are_pressed(keys.up)) {
         return -1;
     }
@@ -102,7 +102,7 @@ std::unique_ptr<Rule> user_control(int user_num, const KeyControls& keys, const 
         [user_num, keys, joy](const GameObject&, float) {
             return Rule::Result{
                 .type = Rule::Type::Velocity,
-                .velocity = sf::Vector2f{1.f * horizontal(keys, joy), 1.f * vertical(keys, joy)},
+                .velocity = sf::Vector2f{1.f * horizontal(keys.move, joy), 1.f * vertical(keys.move, joy)},
             };
         },
         true);

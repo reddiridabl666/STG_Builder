@@ -21,10 +21,6 @@ class Game {
 
     void render(float delta_time);
 
-    int fps() const {
-        return fps_;
-    }
-
     void clear();
     void draw_objects();
 

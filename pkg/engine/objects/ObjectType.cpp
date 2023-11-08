@@ -1,5 +1,6 @@
 #include "ObjectType.hpp"
 
+#include "ActionFactory.hpp"
 #include "AssetManager.hpp"
 #include "CollisionReaction.hpp"
 #include "GameInfo.hpp"
@@ -17,7 +18,8 @@ std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
 
     auto res = std::make_shared<GameObject>(obj_name, size, std::move(displayable), speed, tag, props,
                                             opts.activity_start, opts.life_func, opts.move->clone(), std::move(hitbox),
-                                            collision.get<CollisionReaction>(), opts.stop_at_bounds);
+                                            collision.get<CollisionReaction>(), action::Factory::create(on_death),
+                                            opts.stop_at_bounds);
     opts.set_props(*res);
 
     GameState::get().emit(GameState::Event::ObjectCreated, res->tag());

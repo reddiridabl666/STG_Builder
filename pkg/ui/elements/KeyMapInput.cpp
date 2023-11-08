@@ -1,7 +1,6 @@
 #include "KeyMapInput.hpp"
 
-#include <imgui.h>
-
+#include "ImguiUtils.hpp"
 #include "Messages.hpp"
 #include "Window.hpp"
 
@@ -13,8 +12,6 @@ void action_input(KeyList& keys, Window& window) {
 
         auto key = sf::keys_to_str(*it);
 
-        // ImGui::BeginGroup();
-
         ImGui::Text(key.c_str());
         ImGui::SameLine();
 
@@ -22,7 +19,6 @@ void action_input(KeyList& keys, Window& window) {
         if (ImGui::Button(id.c_str())) {
             keys.erase(it);
         }
-        // ImGui::EndGroup();
 
         it = next;
     }
@@ -33,44 +29,60 @@ void action_input(KeyList& keys, Window& window) {
 }
 }  // namespace
 
+static std::string new_action = "";
+static std::string to_delete = "";
+
 void KeyMapInput::draw(KeyControls& keys, Window& window) {
     ImGui::SeparatorText(message(Message::Keyboard));
 
     if (ImGui::CollapsingHeader(message(Message::Movement))) {
         if (ImGui::TreeNode(message(Message::Left))) {
-            action_input(keys.left, window);
+            action_input(keys.move.left, window);
             ImGui::TreePop();
         }
 
         if (ImGui::TreeNode(message(Message::Right))) {
-            action_input(keys.right, window);
+            action_input(keys.move.right, window);
             ImGui::TreePop();
         }
 
         if (ImGui::TreeNode(message(Message::Up))) {
-            action_input(keys.up, window);
+            action_input(keys.move.up, window);
             ImGui::TreePop();
         }
 
         if (ImGui::TreeNode(message(Message::Down))) {
-            action_input(keys.down, window);
+            action_input(keys.move.down, window);
             ImGui::TreePop();
         }
     }
 
-    if (ImGui::TreeNode(message(Message::Shoot))) {
-        action_input(keys.shoot, window);
-        ImGui::TreePop();
+    if (ImGui::CollapsingHeader(message(Message::Other))) {
+        for (auto& [action_name, key] : keys.other) {
+            ImGui::PushID(&action_name);
+            if (ImGui::TreeNode(action_name.c_str())) {
+                action_input(key, window);
+                if (ImGui::Button(message(Message::Delete))) {
+                    to_delete = action_name;
+                }
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+        }
+
+        ImGui::InputText(message(Message::Name), &new_action);
+        ImGui::SameLine();
+
+        auto id = std::string(message(Message::Add)) + "##key_map";
+        if (ImGui::Button(id.c_str())) {
+            keys.other.emplace(new_action, KeyList(1, sf::Keyboard::Unknown));
+            new_action = "";
+        }
     }
 
-    if (ImGui::TreeNode(message(Message::Slow))) {
-        action_input(keys.slow, window);
-        ImGui::TreePop();
-    }
-
-    if (ImGui::TreeNode(message(Message::Bomb))) {
-        action_input(keys.special, window);
-        ImGui::TreePop();
+    if (to_delete != "") {
+        keys.other.erase(to_delete);
+        to_delete = "";
     }
 }
 }  // namespace ui

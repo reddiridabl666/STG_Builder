@@ -2,7 +2,6 @@
 
 #include <nlohmann/json.hpp>
 
-namespace engine {
 enum class GameEvent {
     ObjectDestroyed,
 };
@@ -12,5 +11,3 @@ NLOHMANN_JSON_SERIALIZE_ENUM(GameEvent, {
     {GameEvent::ObjectDestroyed, "object_destroyed"},
 })
 // clang-format on
-
-}  // namespace engine

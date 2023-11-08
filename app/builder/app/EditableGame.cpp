@@ -19,7 +19,7 @@ void EditableGame::reload_objects() {
     clear();
 
     size_t idx = 0;
-    for (auto& opts : level_->objects()) {
+    for (auto& opts : level_->object_props()) {
         auto obj = generate_object_debug(idx, opts);
         ++idx;
         add_object(std::move(obj));
@@ -122,12 +122,12 @@ GameObject& EditableGame::new_object(const std::string& type) {
 
     auto obj = it->second.create_object(opts, assets_);
     auto obj_name = obj->name();
-    obj->props().set(kOptsID, level_->objects().size());
+    obj->props().set(kOptsID, level_->object_props().size());
 
     add_object(std::move(obj));
 
-    level_->objects().push_back(std::move(opts));
-    level_->prepare_objects();
+    level_->object_props().push_back(std::move(opts));
+    level_->prepare_for_load();
     return *objects_.at(obj_name);
 }
 
@@ -153,7 +153,7 @@ void EditableGame::remove_object(const std::string& name) {
     remove_object_from_rtree(obj);
 
     if (obj->tag() != GameObjectTag::Player) {
-        level_->objects().erase(level_->objects().begin() + obj->props().at(kOptsID));
+        level_->object_props().erase(level_->object_props().begin() + obj->props().at(kOptsID));
     } else {
         size_t id = obj->props().at(kPlayerNum);
         GameState::get().erase_player(id);
@@ -174,7 +174,7 @@ GameObject& EditableGame::reload_object(const std::string& name, ObjectOptions&&
     std::string new_name = new_obj->name();
 
     add_object(std::move(new_obj));
-    level_->objects()[id] = std::move(opts);
+    level_->object_props()[id] = std::move(opts);
 
     return *objects_.at(new_name);
 }

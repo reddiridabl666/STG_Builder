@@ -8,6 +8,7 @@
 
 // clang-format off
 #define KEYS_TO_STR \
+    {Keyboard::Unknown, "none"}, \
     {Keyboard::A, "A"}, \
     {Keyboard::B, "B"}, \
     {Keyboard::C, "C"}, \
@@ -126,35 +127,36 @@ inline const std::string& keys_to_str(sf::Keyboard::Key key) {
 
 using KeyList = std::list<sf::Keyboard::Key>;
 
-struct KeyControls {
+struct MovementKeys {
     KeyList left;
     KeyList right;
     KeyList up;
     KeyList down;
 
-    KeyList shoot;
-    KeyList special;
-    KeyList slow;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(KeyControls, left, right, up, down, shoot, special, slow)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MovementKeys, left, right, up, down)
 };
 
-struct JoyControls {
-    uint shoot;
-    uint special;
-    uint slow;
+struct KeyControls {
+    MovementKeys move;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(JoyControls, shoot, special, slow)
+    std::unordered_map<std::string, KeyList> other;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(KeyControls, move, other)
 };
+
+using JoyControls = std::unordered_map<std::string, uint>;
 
 inline const KeyControls kDefaultKeyControls = {
-    .left = {sf::Keyboard::Left, sf::Keyboard::A},
-    .right = {sf::Keyboard::Right, sf::Keyboard::D},
-    .up = {sf::Keyboard::Up, sf::Keyboard::W},
-    .down = {sf::Keyboard::Down, sf::Keyboard::S},
-    .shoot = {sf::Keyboard::Space, sf::Keyboard::Z},
-    .special = {sf::Keyboard::X, sf::Keyboard::Enter},
-    .slow = {sf::Keyboard::LShift, sf::Keyboard::RShift},
+    MovementKeys{
+        .left = {sf::Keyboard::Left, sf::Keyboard::A},
+        .right = {sf::Keyboard::Right, sf::Keyboard::D},
+        .up = {sf::Keyboard::Up, sf::Keyboard::W},
+        .down = {sf::Keyboard::Down, sf::Keyboard::S},
+    },
+
+    {{"shoot", {sf::Keyboard::Space, sf::Keyboard::Z}},
+     {"special", {sf::Keyboard::X, sf::Keyboard::Enter}},
+     {"slow", {sf::Keyboard::LShift, sf::Keyboard::RShift}}},
 };
 
 inline const JoyControls kDefaultJoyControls = {};

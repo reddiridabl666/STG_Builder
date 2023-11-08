@@ -90,7 +90,6 @@ ObjectEntry::Changes PlayerEntry::draw(const std::string& obj_types) {
 
     ImGui::SeparatorText(message(Message::Controls));
     KeyMapInput::draw(opts.keys, builder::EditorWindow::get());
-
     return changes;
 }
 }  // namespace ui

@@ -47,6 +47,7 @@ class ObjectType {
     HitboxProps hitbox_props;
 
     nl::json collision;
+    nl::json on_death;
 
   private:
     size_t obj_count_ = 0;

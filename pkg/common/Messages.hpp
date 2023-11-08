@@ -27,6 +27,7 @@ class Lang {
 
 enum class Message {
     Add,
+    Other,
     BarEmpty,
     BarFull,
     Repeat,

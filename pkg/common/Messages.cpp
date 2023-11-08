@@ -8,6 +8,7 @@
 const char* message(Message type) {
     static const std::unordered_map<Message, std::array<const char*, Lang::Count>> messages = {
         {Message::Exit, {U8("Выход"), "Quit"}},
+        {Message::Other, {U8("Другое"), "Other"}},
         {Message::Background, {U8("Фон"), "Background"}},
         {Message::Games, {U8("Ваши игры"), "Your games"}},
         {Message::Run, {U8("Запустить"), "Run"}},

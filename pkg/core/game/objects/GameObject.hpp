@@ -5,6 +5,7 @@
 
 #include "CollisionReaction.hpp"
 #include "Errors.hpp"
+#include "GameEvents.hpp"
 #include "GameObjectTag.hpp"
 #include "Hideable.hpp"
 #include "Hitbox.hpp"
@@ -32,6 +33,7 @@ class GameObject : public ImageContainer, public Hideable {
         std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
         std::unique_ptr<Hitbox>&& hitbox = nullptr,
         CollisionReaction&& collision = {},
+        std::unique_ptr<action::Action>&& on_character_death = nullptr,
         bool stop_at_bounds = false,
         sf::Vector2f velocity = {},
         bool alive = true,
@@ -52,6 +54,8 @@ class GameObject : public ImageContainer, public Hideable {
     float height() const;
 
     float width() const;
+
+    void emit(GameEvent event, const GameObject& other);
 
     void set_movement(std::unique_ptr<movement::Rule>&& move) {
         move_update_ = std::move(move);
@@ -157,6 +161,7 @@ class GameObject : public ImageContainer, public Hideable {
 
     std::unique_ptr<Hitbox> hitbox_;
     CollisionReaction collision_action_;
+    std::unique_ptr<action::Action> on_character_death_;
 
     bool active_ = false;
     bool alive_ = true;

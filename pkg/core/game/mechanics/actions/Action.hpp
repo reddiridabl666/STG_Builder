@@ -7,7 +7,7 @@ class GameObject;
 
 namespace action {
 struct Action {
-    virtual void operator()(GameObject&, GameObject&) const = 0;
+    virtual void operator()(const GameObject&, GameObject&) const = 0;
     virtual nl::json to_json() const = 0;
     virtual ~Action() = default;
 };
