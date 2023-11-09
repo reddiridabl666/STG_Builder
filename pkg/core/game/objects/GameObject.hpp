@@ -3,7 +3,7 @@
 #include <functional>
 #include <memory>
 
-#include "CollisionReaction.hpp"
+#include "ActionMap.hpp"
 #include "Errors.hpp"
 #include "GameEvents.hpp"
 #include "GameObjectTag.hpp"
@@ -12,6 +12,7 @@
 #include "ImageContainer.hpp"
 #include "Life.hpp"
 #include "Movement.hpp"
+#include "Observable.hpp"
 #include "Properties.hpp"
 
 class GameObject : public ImageContainer, public Hideable {
@@ -20,20 +21,26 @@ class GameObject : public ImageContainer, public Hideable {
     static constexpr float kLoadDelta = 100;
     static const alive::update kDefaultLifeFunc;
 
+    using CollisionAction = action::Map<GameObjectTag, action::BinaryAction>;
+    using PlayerAction = action::Map<std::string, action::BinaryAction>;
+    using OwnAction = action::Map<std::string, action::Action>;
+
     // clang-format off
     GameObject(
         const std::string& name,
         const sf::Vector2f& size,
         std::unique_ptr<Displayable>&& image,
-        int speed = 50,
+        Value speed = 50,
         GameObjectTag tag = GameObjectTag::Object,
         const Properties& props = {},
         float activity_start = kDefaultActivityStart,
         const alive::update& life_func = kDefaultLifeFunc,
         std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
         std::unique_ptr<Hitbox>&& hitbox = nullptr,
-        CollisionReaction&& collision = {},
-        std::unique_ptr<action::Action>&& on_character_death = nullptr,
+        CollisionAction&& collision = {},
+        PlayerAction&& on_player = {},
+        OwnAction&& on_own = {},
+        std::unique_ptr<action::BinaryAction>&& on_character_death = nullptr,
         bool stop_at_bounds = false,
         sf::Vector2f velocity = {},
         bool alive = true,
@@ -143,6 +150,8 @@ class GameObject : public ImageContainer, public Hideable {
     }
 
     void resolve_collision(GameObject& other);
+    void on_player_action(const std::string& action, const GameObject& player);
+    void on_own_action(const std::string& action);
 
     void draw(Window&) const override;
     void set_pos(const sf::Vector2f&) override;
@@ -160,8 +169,11 @@ class GameObject : public ImageContainer, public Hideable {
     alive::update life_update_ = kDefaultLifeFunc;
 
     std::unique_ptr<Hitbox> hitbox_;
-    CollisionReaction collision_action_;
-    std::unique_ptr<action::Action> on_character_death_;
+    CollisionAction collision_action_;
+    std::unique_ptr<action::BinaryAction> on_character_death_;
+
+    PlayerAction on_player_action_;
+    OwnAction on_own_action_;
 
     bool active_ = false;
     bool alive_ = true;

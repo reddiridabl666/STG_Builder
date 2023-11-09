@@ -70,7 +70,7 @@ struct SpeedHandler : public Handler<ObjectType> {
     }
 
     void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
-        obj.speed = value.template get<int>();
+        obj.speed = value.template get<Value>();
     }
 };
 
@@ -113,11 +113,31 @@ struct OnDeathHandler : public Handler<ObjectType> {
         obj.on_death = value;
     }
 };
+
+struct OnOwnHandler : public Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "on_own_action";
+    }
+
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        obj.on_own = value;
+    }
+};
+
+struct OnPlayerHandler : public Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "on_player_action";
+    }
+
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        obj.on_player = value;
+    }
+};
 }  // namespace
 
 HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     std::vector<std::unique_ptr<Handler<ObjectType>>> res;
-    res.reserve(9);
+    res.reserve(11);
 
     res.push_back(std::make_unique<SizeHandler>());
     res.push_back(std::make_unique<SpeedHandler>());
@@ -127,6 +147,8 @@ HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     res.push_back(std::make_unique<HitboxHandler>());
     res.push_back(std::make_unique<CollisionHandler>());
     res.push_back(std::make_unique<OnDeathHandler>());
+    res.push_back(std::make_unique<OnOwnHandler>());
+    res.push_back(std::make_unique<OnPlayerHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectType>>());
 
     return res;

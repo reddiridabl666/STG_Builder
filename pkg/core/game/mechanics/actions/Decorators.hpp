@@ -29,10 +29,10 @@ struct MultiplyGetterDecorator : public Decorator<Getter> {
     float multiplier_;
 };
 
-struct TimeoutDecorator : public Decorator<Action> {
+struct TimeoutDecorator : public Decorator<BinaryAction> {
   public:
-    TimeoutDecorator(std::unique_ptr<Action>&& action, float timeout = 1)
-        : Decorator<Action>(std::move(action)), timeout_(timeout), current_(timeout) {}
+    TimeoutDecorator(std::unique_ptr<BinaryAction>&& action, float timeout = 1)
+        : Decorator<BinaryAction>(std::move(action)), timeout_(timeout), current_(timeout) {}
 
     void operator()(const GameObject&, GameObject&) const override;
 

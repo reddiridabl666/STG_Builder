@@ -7,7 +7,8 @@
 
 class ImageContainer : public Displayable {
   public:
-    ImageContainer(std::unique_ptr<Displayable>&& image, int speed = 50) : speed_(speed), image_(std::move(image)) {}
+    ImageContainer(std::unique_ptr<Displayable>&& image, const Value& speed = 50)
+        : speed_(speed), image_(std::move(image)) {}
 
     const std::unique_ptr<Displayable>& image() {
         return image_;
@@ -42,6 +43,6 @@ class ImageContainer : public Displayable {
     }
 
   protected:
-    Value speed_ = 1;
+    Value speed_ = 50;
     std::unique_ptr<Displayable> image_;
 };

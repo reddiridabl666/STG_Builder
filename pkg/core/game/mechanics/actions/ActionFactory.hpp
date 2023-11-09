@@ -7,6 +7,7 @@
 
 namespace action {
 struct Factory {
-    static std::unique_ptr<Action> create(const nl::json&);
+    template <typename ActionType>
+    static std::unique_ptr<ActionType> create(const nl::json&);
 };
 }  // namespace action

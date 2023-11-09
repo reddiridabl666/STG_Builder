@@ -6,22 +6,27 @@
 #include "Player.hpp"
 
 class PlayerLoader {
+  private:
+    using PlayerWithOptions = std::pair<PlayerList::value_type, PlayerOptions>;
+
   public:
     PlayerLoader(const nl::json& players) : players_(players) {}
 
-    PlayerList load_players(assets::Manager& assets, const GameField& field, ObjectTypeFactory::res_type& types);
+    std::vector<PlayerWithOptions> load_players(assets::Manager& assets, const GameField& field,
+                                                ObjectTypeFactory::res_type& types);
 
-    PlayerList::value_type load_player(size_t idx, assets::Manager& assets, ObjectType& obj_type,
-                                       const ObjectOptionsFactory& opts_factory);
+    PlayerWithOptions load_player(size_t idx, assets::Manager& assets, ObjectType& obj_type,
+                                  const ObjectOptionsFactory& opts_factory);
 
   private:
     nl::json players_;
 };
 
-inline PlayerList PlayerLoader::load_players(assets::Manager& assets, const GameField& field,
-                                             ObjectTypeFactory::res_type& types) {
+inline std::vector<PlayerLoader::PlayerWithOptions> PlayerLoader::load_players(assets::Manager& assets,
+                                                                               const GameField& field,
+                                                                               ObjectTypeFactory::res_type& types) {
     ObjectOptionsFactory opts_factory(field);
-    PlayerList res;
+    std::vector<PlayerWithOptions> res;
 
     res.reserve(players_.size());
 
@@ -36,12 +41,13 @@ inline PlayerList PlayerLoader::load_players(assets::Manager& assets, const Game
     return res;
 }
 
-inline PlayerList::value_type PlayerLoader::load_player(size_t idx, assets::Manager& assets, ObjectType& obj_type,
-                                                        const ObjectOptionsFactory& opts_factory) {
+inline PlayerLoader::PlayerWithOptions PlayerLoader::load_player(size_t idx, assets::Manager& assets,
+                                                                 ObjectType& obj_type,
+                                                                 const ObjectOptionsFactory& opts_factory) {
     auto opts = opts_factory.generate(players_[idx]);
 
     auto player_opts = players_[idx].at("opts").get<PlayerOptions>();
     player_opts.num = idx;
 
-    return obj_type.create_player(opts, assets, player_opts);
+    return std::pair(obj_type.create_player(opts, assets, player_opts), player_opts);
 }

@@ -6,7 +6,9 @@
 #include "AssetManager.hpp"
 #include "GameObject.hpp"
 #include "GameUi.hpp"
+#include "Player.hpp"
 #include "SpriteObject.hpp"
+#include "Window.hpp"
 
 namespace engine {
 
@@ -27,9 +29,6 @@ struct PlayerStat {
 };
 
 class SideMenu {
-  private:
-    using Players = const std::vector<std::weak_ptr<const GameObject>>&;
-
   public:
     SideMenu(const Window& window, const sf::Vector2f& offset, float gap, float player_gap,
              const sf::FloatRect& screen_pos, std::shared_ptr<sf::Texture>&& bg, const nl::json& settings);
@@ -38,11 +37,11 @@ class SideMenu {
 
     void draw(Window& window);
 
-    void update(Players players);
+    void update(const PlayerList& players);
 
     void update_layout(const Window& window, const SideMenuProps& props);
-    void update_item(size_t id, Players players, assets::Manager& assets, const nl::json& updated);
-    void add_item(Players players, assets::Manager& assets, const nl::json& item);
+    void update_item(size_t id, const PlayerList& players, assets::Manager& assets, const nl::json& updated);
+    void add_item(const PlayerList& players, assets::Manager& assets, const nl::json& item);
 
     void clear();
     void erase_player(size_t id);

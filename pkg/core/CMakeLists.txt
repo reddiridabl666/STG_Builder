@@ -12,8 +12,8 @@ set(SOURCES
     game/mechanics/actions/ActionFactory.cpp
     game/mechanics/actions/Decorators.cpp
     game/mechanics/Value.cpp
-    game/mechanics/CollisionReaction.cpp
     game/objects/GameField.cpp
+    game/objects/Player.cpp
     game/objects/GameObject.cpp
 )
 

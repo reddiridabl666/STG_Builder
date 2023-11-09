@@ -9,6 +9,7 @@ set(SOURCES
     objects/ObjectOptions.cpp
     objects/ObjectType.cpp
     game/GameInfo.cpp
+    game/PlayerManager.cpp
     level/Level.cpp
     level/LevelLoader.cpp
     level/LevelManager.cpp

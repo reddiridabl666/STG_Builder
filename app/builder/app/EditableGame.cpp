@@ -5,7 +5,7 @@ void EditableGame::render_debug() {
     draw_with_default_view(bg_);
     draw_objects();
 
-    menu_.update(GameState::get().players());
+    menu_.update(player_manager_.players());
     menu_.draw(window_);
 
     rtree_.draw(window_);
@@ -58,7 +58,7 @@ void EditableGame::update_side_menu(const engine::SideMenuProps& props) {
 }
 
 void EditableGame::update_menu_item(size_t id, const nl::json& item) {
-    menu_.update_item(id, GameState::get().players(), assets_, item);
+    menu_.update_item(id, player_manager_.players(), assets_, item);
 }
 
 void EditableGame::erase_menu_item(size_t id) {
@@ -66,7 +66,7 @@ void EditableGame::erase_menu_item(size_t id) {
 }
 
 void EditableGame::add_menu_item(const nl::json& json) {
-    menu_.add_item(GameState::get().players(), assets_, json);
+    menu_.add_item(player_manager_.players(), assets_, json);
 }
 
 void EditableGame::set_object_pos(const std::shared_ptr<GameObject>& obj, const sf::Vector2f& pos) {
@@ -139,7 +139,7 @@ void EditableGame::new_player(const std::string& type) {
 
     ObjectOptions opts(type, window_.get_view().getCenter());
 
-    auto player = it->second.create_player(opts, assets_, PlayerOptions{.num = GameState::get().player_count()});
+    auto player = it->second.create_player(opts, assets_, PlayerOptions{.num = player_manager_.count()});
 
     add_player(std::move(player));
 }
@@ -156,7 +156,7 @@ void EditableGame::remove_object(const std::string& name) {
         level_->object_props().erase(level_->object_props().begin() + obj->props().at(kOptsID));
     } else {
         size_t id = obj->props().at(kPlayerNum);
-        GameState::get().erase_player(id);
+        player_manager_.erase_player(id);
         menu_.erase_player(id);
     }
 
@@ -183,23 +183,6 @@ void EditableGame::update_object_type(const std::string& name, ObjectType&& obj_
     types_[name] = obj_type;
 
     reload_objects();
-
-    // for (auto& [name, obj] : objects_) {
-    //     if (obj->type_name() != name) {
-    //         continue;
-    //     }
-
-    //     if (obj->tag() == GameObjectTag::Player) {
-    //         auto player_num = obj->props().at(kPlayerNum);
-    //         obj = player_loader_.load_player(player_num, assets_, obj_type, ObjectOptionsFactory(level_->field()));
-    //         continue;
-    //     }
-
-    //     auto opts_num = obj->props().at(kOptsID);
-    //     obj = obj_type.create_object(level_->objects()[opts_num], assets_);
-    // }
-
-    // types_[name] = obj_type;
 }
 
 void EditableGame::prepare_preview(size_t level) {

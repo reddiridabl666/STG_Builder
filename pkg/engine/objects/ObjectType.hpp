@@ -34,7 +34,7 @@ class ObjectType {
     }
 
     std::string name;
-    int speed;
+    Value speed;
     sf::Vector2f size;
 
     Properties props;
@@ -48,6 +48,8 @@ class ObjectType {
 
     nl::json collision;
     nl::json on_death;
+    nl::json on_player;
+    nl::json on_own;
 
   private:
     size_t obj_count_ = 0;

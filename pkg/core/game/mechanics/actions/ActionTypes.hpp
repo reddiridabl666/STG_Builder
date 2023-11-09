@@ -48,7 +48,7 @@ struct SpeedGetter : public MutableGetter {
     }
 };
 
-struct PropertyUpdater : public Action {
+struct PropertyUpdater : public BinaryAction {
   public:
     PropertyUpdater(std::unique_ptr<MutableGetter>&& property) : property_(std::move(property)) {}
 
@@ -178,9 +178,9 @@ struct PropertyDivisor : public PropertyValueUpdater {
     }
 };
 
-struct MultiAction : public Action {
+struct MultiAction : public BinaryAction {
   public:
-    MultiAction(std::vector<std::unique_ptr<Action>>&& actions) : actions_(std::move(actions)) {}
+    MultiAction(std::vector<std::unique_ptr<BinaryAction>>&& actions) : actions_(std::move(actions)) {}
 
     void operator()(const GameObject& subject, GameObject& object) const override {
         for (auto& action : actions_) {
@@ -197,6 +197,6 @@ struct MultiAction : public Action {
     }
 
   private:
-    std::vector<std::unique_ptr<Action>> actions_;
+    std::vector<std::unique_ptr<BinaryAction>> actions_;
 };
 }  // namespace action

@@ -45,8 +45,8 @@ struct Circular : public Rule {
   public:
     Circular(const sf::Vector2f& radius, float speed) : radius_(radius), speed_(speed), radius_len_(abs(radius)) {}
 
-    Result operator()(const GameObject&, float delta_time) override {
-        angle_ += speed_ * delta_time;
+    Result operator()(const GameObject& obj, float delta_time) override {
+        angle_ += obj.speed() * speed_ * delta_time;
 
         float x = center_.x + radius_len_ * cos(angle_);
         float y = center_.y + radius_len_ * sin(angle_);

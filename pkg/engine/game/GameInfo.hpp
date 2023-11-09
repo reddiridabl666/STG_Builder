@@ -7,7 +7,7 @@
 #include "GameObjectTag.hpp"
 #include "Observable.hpp"
 
-class GameState : public Observable<int, GameObjectTag> {
+class GameState : public Observable<int, GameObject> {
   public:
     enum Event {
         ObjectCreated,
@@ -29,35 +29,34 @@ class GameState : public Observable<int, GameObjectTag> {
         return enemy_count_;
     }
 
-    size_t player_count() {
-        return players_.size();
-    }
+    // size_t player_count() {
+    //     return players_.size();
+    // }
 
-    void add_player(std::weak_ptr<const GameObject> player) {
-        players_.push_back(player);
-    }
+    // void add_player(std::weak_ptr<const GameObject> player) {
+    //     players_.push_back(player);
+    // }
 
     void reset() {
         enemy_count_ = 0;
-        players_.clear();
     }
 
-    const auto& players() const {
-        return players_;
-    }
+    // const auto& players() const {
+    //     return players_;
+    // }
 
-    void clear_players() {
-        players_.clear();
-    }
+    // void clear_players() {
+    //     players_.clear();
+    // }
 
-    void erase_player(size_t id) {
-        players_.erase(players_.begin() + id);
-    }
+    // void erase_player(size_t id) {
+    //     players_.erase(players_.begin() + id);
+    // }
 
   private:
     GameState();
 
     size_t enemy_count_ = 0;
 
-    std::vector<std::weak_ptr<const GameObject>> players_;
+    // std::vector<std::weak_ptr<const GameObject>> players_;
 };

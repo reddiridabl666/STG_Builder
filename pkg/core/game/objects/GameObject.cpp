@@ -1,14 +1,29 @@
 #include "GameObject.hpp"
 
-#include "CollisionReaction.hpp"
+#include "ActionMap.hpp"
 #include "GameField.hpp"
 
-GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::unique_ptr<Displayable>&& image,
-                       int speed, GameObjectTag tag, const Properties& props, float activity_start,
-                       const alive::update& life_func, std::unique_ptr<movement::Rule>&& move_func,
-                       std::unique_ptr<Hitbox>&& hitbox, CollisionReaction&& collision,
-                       std::unique_ptr<action::Action>&& on_character_death, bool stop_at_bounds, sf::Vector2f velocity,
-                       bool alive, bool active)
+// clang-format off
+GameObject::GameObject(
+    const std::string& name,
+    const sf::Vector2f& size,
+    std::unique_ptr<Displayable>&& image,
+    Value speed,
+    GameObjectTag tag,
+    const Properties& props,
+    float activity_start,
+    const alive::update& life_func,
+    std::unique_ptr<movement::Rule>&& move_func,
+    std::unique_ptr<Hitbox>&& hitbox,
+    GameObject::CollisionAction&& collision,
+    GameObject::PlayerAction&& on_player,
+    GameObject::OwnAction&& on_own,
+    std::unique_ptr<action::BinaryAction>&& on_character_death,
+    bool stop_at_bounds,
+    sf::Vector2f velocity,
+    bool alive,
+    bool active
+)
     : ImageContainer(std::move(image), speed),
       name_(name),
       tag_(tag),
@@ -19,6 +34,8 @@ GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::u
       //   hitbox_(std::move(hitbox)),
       collision_action_(std::move(collision)),
       on_character_death_(std::move(on_character_death)),
+      on_player_action_(std::move(on_player)),
+      on_own_action_(std::move(on_own)),
       active_(active),
       alive_(alive),
       stop_at_bounds_(stop_at_bounds),
@@ -27,6 +44,7 @@ GameObject::GameObject(const std::string& name, const sf::Vector2f& size, std::u
     set_size(size);
     hitbox_ = std::move(hitbox);
 }
+// clang-format on
 
 std::string GameObject::tag_to_str(GameObjectTag tag) {
     static const std::unordered_map<GameObjectTag, std::string> map = {OBJECT_TAG_TO_STRING};
@@ -47,7 +65,15 @@ std::string_view GameObject::type_name() const {
 }
 
 void GameObject::resolve_collision(GameObject& other) {
-    collision_action_(other, *this);
+    collision_action_(other.tag(), other, *this);
+}
+
+void GameObject::on_player_action(const std::string& action, const GameObject& player) {
+    on_player_action_(action, player, *this);
+}
+
+void GameObject::on_own_action(const std::string& action) {
+    on_own_action_(action, *this);
 }
 
 void GameObject::draw(Window& window) const {

@@ -7,7 +7,7 @@
 #include "LevelManager.hpp"
 #include "ObjectTypeFactory.hpp"
 #include "Player.hpp"
-#include "PlayerLoader.hpp"
+#include "PlayerManager.hpp"
 #include "RTree.hpp"
 #include "SideMenu.hpp"
 #include "Window.hpp"
@@ -16,13 +16,22 @@ namespace engine {
 template <typename RTreeType = RTree<>>
 class Game {
   public:
-    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerLoader&& player_loader, assets::Manager&& assets,
+    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerManager&& player_manager, assets::Manager&& assets,
          ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
+
+    Game() = delete;
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
+    Game& operator=(Game&&) = default;
+
+    Game(Game&&);
 
     void render(float delta_time);
 
     void clear();
     void draw_objects();
+
+    ~Game();
 
   protected:
     void update(float delta_time);
@@ -48,6 +57,8 @@ class Game {
 
     void draw_with_default_view(Drawable&);
 
+    void fire_key_event(sf::Keyboard::Key, const std::string& suffix = "");
+
     Window& window_;
     SpriteObject bg_;
     SideMenu menu_;
@@ -64,7 +75,11 @@ class Game {
     RTreeType rtree_;
     RTreeType hitboxes_;
 
-    PlayerLoader player_loader_;
+    PlayerManager player_manager_;
+
+  private:
+    static inline size_t game_id_ = 0;
+    std::string event_key_;
 };
 }  // namespace engine
 

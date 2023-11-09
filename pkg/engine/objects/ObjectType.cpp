@@ -1,8 +1,8 @@
 #include "ObjectType.hpp"
 
 #include "ActionFactory.hpp"
+#include "ActionMap.hpp"
 #include "AssetManager.hpp"
-#include "CollisionReaction.hpp"
 #include "GameInfo.hpp"
 #include "HitboxFactory.hpp"
 #include "Player.hpp"
@@ -16,13 +16,15 @@ std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
 
     auto hitbox = HitboxFactory::create(hitbox_props);
 
-    auto res = std::make_shared<GameObject>(obj_name, size, std::move(displayable), speed, tag, props,
-                                            opts.activity_start, opts.life_func, opts.move->clone(), std::move(hitbox),
-                                            collision.get<CollisionReaction>(), action::Factory::create(on_death),
-                                            opts.stop_at_bounds);
+    auto res = std::make_shared<GameObject>(
+        obj_name, size, std::move(displayable), speed, tag, props, opts.activity_start, opts.life_func,
+        opts.move->clone(), std::move(hitbox), collision.get<GameObject::CollisionAction>(),
+        on_player.get<GameObject::PlayerAction>(), on_own.get<GameObject::OwnAction>(),
+        action::Factory::create<action::BinaryAction>(on_death), opts.stop_at_bounds);
+
     opts.set_props(*res);
 
-    GameState::get().emit(GameState::Event::ObjectCreated, res->tag());
+    GameState::get().emit(GameState::Event::ObjectCreated, *res);
 
     // set bullet rules
 

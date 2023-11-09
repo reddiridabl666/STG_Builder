@@ -10,7 +10,7 @@
 namespace engine {
 
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerLoader&& player_loader,
+Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerManager&& player_manager,
                       assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
     : window_(window),
       bg_(std::move(bg)),
@@ -19,7 +19,42 @@ Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, Player
       types_(std::move(types)),
       levels_(std::move(levels)),
       fps_(fps),
-      player_loader_(std::move(player_loader)) {}
+      player_manager_(std::move(player_manager)),
+      event_key_(fmt::format("game_{}_key", game_id_)) {
+    window_.add_handler(event_key_ + "_pressed", sf::Event::KeyPressed, [this](const sf::Event& event) {
+        fire_key_event(event.key.code, "_pressed");
+    });
+
+    window_.add_handler(event_key_ + "_released", sf::Event::KeyReleased, [this](const sf::Event& event) {
+        fire_key_event(event.key.code, "_released");
+    });
+    ++game_id_;
+}
+
+template <typename RTreeType>
+Game<RTreeType>::Game(Game&& other)
+    : Game(other.window_, std::move(other.bg_), std::move(other.menu_), std::move(other.player_manager_),
+           std::move(other.assets_), std::move(other.types_), std::move(other.levels_), other.fps_) {}
+
+template <typename RTreeType>
+Game<RTreeType>::~Game() {
+    window_.remove_handler(event_key_ + "_pressed");
+    window_.remove_handler(event_key_ + "_released");
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::fire_key_event(sf::Keyboard::Key key, const std::string& suffix) {
+    auto events = player_manager_.get_events(key);
+    for (auto& [event, player] : events) {
+        for (auto& [name, obj] : objects_) {
+            if (name != player->name()) {
+                obj->on_player_action(event + suffix, *player);
+            } else {
+                obj->on_own_action(event + suffix);
+            }
+        }
+    }
+}
 
 template <typename RTreeType>
 void Game<RTreeType>::render(float delta_time) {
@@ -127,9 +162,9 @@ void Game<RTreeType>::update_level() {
 template <typename RTreeType>
 void Game<RTreeType>::generate_players() {
     menu_.clear();
-    GameState::get().clear_players();
+    player_manager_.clear();
 
-    auto players = player_loader_.load_players(assets_, level_->field(), types_);
+    auto players = player_manager_.load_players(assets_, level_->field(), types_);
 
     for (auto&& player : players) {
         add_player(std::move(player));
@@ -138,7 +173,6 @@ void Game<RTreeType>::generate_players() {
 
 template <typename RTreeType>
 void Game<RTreeType>::add_player(std::shared_ptr<GameObject>&& player) {
-    GameState::get().add_player(player);
     menu_.add_player(*player, assets_);
     add_object(std::move(player));
 }
@@ -175,7 +209,7 @@ template <typename RTreeType>
 void Game<RTreeType>::clear_dead() {
     std::erase_if(objects_, [this](auto& el) {
         if (!el.second->is_alive()) {
-            GameState::get().emit(GameState::Event::ObjectDestroyed, el.second->tag());
+            GameState::get().emit(GameState::Event::ObjectDestroyed, *el.second);
 
             for (auto& [_, obj] : objects_) {
                 obj->emit(GameEvent::ObjectDestroyed, *el.second);
@@ -213,7 +247,7 @@ void Game<RTreeType>::draw_ui() {
     // clang-format on
 #endif
 
-    menu_.update(GameState::get().players());
+    menu_.update(player_manager_.players());
     menu_.draw(window_);
 }
 }  // namespace engine

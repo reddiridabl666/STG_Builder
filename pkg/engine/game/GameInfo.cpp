@@ -3,8 +3,8 @@
 #include "GameObject.hpp"
 
 GameState::GameState() {
-    on(Event::ObjectCreated, [this](auto& obj_type) {
-        switch (obj_type) {
+    on(Event::ObjectCreated, [this](const auto& obj) {
+        switch (obj.tag()) {
             case GameObjectTag::Enemy:
                 enemy_count_ += 1;
                 break;
@@ -13,8 +13,8 @@ GameState::GameState() {
         }
     });
 
-    on(Event::ObjectDestroyed, [this](auto& obj_type) {
-        switch (obj_type) {
+    on(Event::ObjectDestroyed, [this](const auto& obj) {
+        switch (obj.tag()) {
             case GameObjectTag::Enemy:
                 enemy_count_ -= 1;
                 break;
