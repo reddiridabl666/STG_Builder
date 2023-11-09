@@ -1,23 +1,6 @@
 #include "Decorators.hpp"
 
 namespace action {
-void TimeoutDecorator::operator()(const GameObject& subj, GameObject& obj) const {
-    if (current_ >= timeout_) {
-        original_->operator()(subj, obj);
-        current_ = 0;
-        clock_.restart();
-        return;
-    }
-
-    current_ += clock_.restart().asSeconds();
-}
-
-nl::json TimeoutDecorator::to_json() const {
-    auto json = original_->to_json();
-    json["/with/timeout"_json_pointer] = timeout_;
-    return json;
-}
-
 Value MultiplyGetterDecorator::get(const GameObject& obj) const {
     auto val = original_->get(obj);
     val.mul(multiplier_);

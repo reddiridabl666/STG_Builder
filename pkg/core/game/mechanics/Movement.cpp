@@ -141,7 +141,7 @@ Rule::Result Multi::operator()(const GameObject& obj, float delta) {
         }
     }
 
-    if (abs(current_time_) < 1e-7) {
+    if (std::abs(current_time_) < 1e-7) {
         funcs_[current_]->init(obj);
     }
 

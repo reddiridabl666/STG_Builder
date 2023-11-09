@@ -40,7 +40,7 @@ class Value {
     }
 
     void div(float val) {
-        if (abs(val) < 1e-6) {
+        if (std::abs(val) < 1e-6) {
             return;
         }
         val_ /= val;

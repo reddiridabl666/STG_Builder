@@ -142,7 +142,7 @@ class GameObject : public ImageContainer, public Hideable {
 
     bool is_default_activatable() const {
         static constexpr float eps = 1e-2;
-        return abs(activity_start_ - kDefaultActivityStart) < eps;
+        return std::abs(activity_start_ - kDefaultActivityStart) < eps;
     }
 
     void set_life_update(const alive::update& func) {

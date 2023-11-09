@@ -112,14 +112,31 @@
     },
     "collision": {
       "enemy": {
-        "property": "health",
-        "action": "sub",
-        "value": {
-          "property": "damage",
-          "with": {
-            "mul": 0.5
+        "actions": [
+          {
+            "property": "health",
+            "action": "sub",
+            "value": {
+              "property": "damage",
+              "with": {
+                "mul": 0.5
+              }
+            }
+          },
+          {
+            "property": "speed",
+            "action": "mul",
+            "value": 0.2
+          },
+          {
+            "property": "speed",
+            "action": "div",
+            "value": 0.2,
+            "with": {
+              "delay": 1.5
+            }
           }
-        },
+        ],
         "with": {
           "timeout": 1.5
         }

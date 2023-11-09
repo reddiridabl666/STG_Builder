@@ -12,7 +12,7 @@ void from_json(const nl::json& json, Value& value) {
 }
 
 void to_json(nl::json& json, const Value& value) {
-    if (abs(value.default_value()) < 1e-7) {
+    if (std::abs(value.default_value()) < 1e-7) {
         json = value.get();
         return;
     }

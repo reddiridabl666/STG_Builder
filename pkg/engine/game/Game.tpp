@@ -1,3 +1,4 @@
+#include "ActionQueue.hpp"
 #include "AssetManager.hpp"
 #include "GameInfo.hpp"
 #include "ObjectTypeFactory.hpp"
@@ -135,6 +136,7 @@ void Game<RTreeType>::update(float delta_time) {
     }
 
     check_collisions();
+    action::Queue::get().resolve(delta_time);
 
     clear_dead();
 

@@ -120,18 +120,24 @@ std::unique_ptr<BinaryAction> create_undecorated_action(const nl::json& json) {
     return nullptr;
 }
 
-std::unique_ptr<BinaryAction> create_action_decorator(std::unique_ptr<BinaryAction>& original, const std::string& key,
-                                                      const nl::json& value) {
+template <typename ActionType>
+std::unique_ptr<ActionType> create_action_decorator(std::unique_ptr<ActionType>& original, const std::string& key,
+                                                    const nl::json& value) {
     if (key == "timeout") {
-        return std::make_unique<TimeoutDecorator>(std::move(original), value.get<float>());
+        return std::make_unique<TimeoutDecorator<ActionType>>(std::move(original), value.get<float>());
+    }
+
+    if (key == "delay") {
+        return std::make_unique<DelayDecorator<ActionType>>(std::move(original), value.get<float>());
     }
 
     return nullptr;
 }
 
-void decorate_action(std::unique_ptr<BinaryAction>& original, const nl::json& decorators) {
+template <typename ActionType>
+void decorate_action(std::unique_ptr<ActionType>& original, const nl::json& decorators) {
     for (auto& [key, value] : decorators.items()) {
-        auto decorator = create_action_decorator(original, key, value);
+        auto decorator = create_action_decorator<ActionType>(original, key, value);
         if (!decorator) {
             continue;
         }
