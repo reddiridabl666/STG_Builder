@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "Json.hpp"
+#include "Map.hpp"
 #include "Messages.hpp"
 
 struct Stats {
@@ -18,30 +19,7 @@ struct Stats {
     std::unordered_map<std::string, int> values;
 
     void draw() {
-        ImGui::SeparatorText(message(Message::Stats));
-
-        for (auto it = values.begin(); it != values.end();) {
-            auto next = std::next(it);
-
-            ImGui::InputInt(it->first.c_str(), &it->second);
-            ImGui::SameLine();
-
-            // ImGui::PushID(&it);
-            auto label = std::string(message(Message::Delete)) + "##Del" + it->first;
-            if (ImGui::Button(label.c_str())) {
-                values.erase(it);
-            }
-            // ImGui::PopID();
-
-            it = next;
-        }
-
-        ImGui::InputText("##stat_name", &stat_name_);
-        ImGui::SameLine();
-        if (ImGui::Button(message(Message::AddStat)) && !excluded_.contains(stat_name_)) {
-            values.emplace(stat_name_, 0);
-            stat_name_ = "";
-        }
+        ui::draw_map(values, message(Message::Stats), stat_name_, excluded_);
     }
 
     void from_json(const nl::json& json) {

@@ -29,10 +29,10 @@ struct HitboxProps {
 
     int outline = 1;
 
-    union {
-        sf::Vector2f size;
-        float radius = 0;
-    };
+    // union {
+    sf::Vector2f size;
+    float radius = 0;
+    // };
 
 #ifdef DEBUG
     bool shown = true;

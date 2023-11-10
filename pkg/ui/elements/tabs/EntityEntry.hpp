@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ActionMapInput.hpp"
 #include "HitboxProps.hpp"
 #include "ImguiUtils.hpp"
 #include "Json.hpp"
@@ -34,7 +35,8 @@ struct EntityEntry : public Element {
         return obj_count_;
     }
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(EntityEntry, image, speed, description, tag, size, hitbox)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(EntityEntry, image, speed, description, tag, size, hitbox,
+                                                on_player_action, on_own_action, collisions)
 
   private:
     std::shared_ptr<sf::Texture> texture_;
@@ -54,6 +56,9 @@ struct EntityEntry : public Element {
     HitboxProps hitbox;
 
     Stats stats_;
+    ActionMapInput on_player_action;
+    ActionMapInput on_own_action;
+    ActionMapInput collisions;
 
     // Utilities
     bool shown_ = false;

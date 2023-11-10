@@ -7,6 +7,7 @@ set(SOURCES
     elements/Button.cpp
     elements/Menu.cpp
     elements/FuncInput.cpp
+    elements/ActionInput.cpp
     elements/StringPoint.cpp
     elements/LevelInfo.cpp
     elements/KeyMapInput.cpp

@@ -1,165 +1,165 @@
 {
-  "bg": {
-    "image": "level1_bg.jpg",
-    "speed": 100.0
-  },
-  "entities": [
-    {
-      "activity_start": "30%",
-      "lives": {
-        "args": {},
-        "type": "always"
-      },
-      "move": {
-        "repeat": "last",
-        "rules": [
-          {
-            "args": {
-              "x": 3,
-              "y": -15.0
+    "bg": {
+        "image": "level1_bg.jpg",
+        "speed": 100.0
+    },
+    "entities": [
+        {
+            "activity_start": "30%",
+            "lives": {
+                "args": {},
+                "type": "always"
             },
-            "time": 2.0,
-            "type": "linear"
-          },
-          {
-            "args": {
-              "x": -3,
-              "y": 15.0
+            "move": {
+                "repeat": "last",
+                "rules": [
+                    {
+                        "args": {
+                            "x": 3,
+                            "y": -15.0
+                        },
+                        "time": 2.0,
+                        "type": "linear"
+                    },
+                    {
+                        "args": {
+                            "x": -3,
+                            "y": 15.0
+                        },
+                        "time": 2.0,
+                        "type": "linear"
+                    },
+                    {
+                        "args": {
+                            "radius": {
+                                "x": -50.0,
+                                "y": -50.0
+                            },
+                            "speed": 0.5
+                        },
+                        "time": 2.0,
+                        "type": "circular"
+                    }
+                ]
             },
-            "time": 2.0,
-            "type": "linear"
-          },
-          {
-            "args": {
-              "radius": {
-                "x": -50.0,
-                "y": -50.0
-              },
-              "speed": 0.5
+            "pos": {
+                "x": 536.0,
+                "y": 609.77783203125
             },
-            "time": 2.0,
-            "type": "circular"
-          }
-        ]
-      },
-      "pos": {
-        "x": 536.0,
-        "y": 609.77783203125
-      },
-      "rotation": 0,
-      "type": "red enemy"
-    },
-    {
-      "activity_start": "50%",
-      "lives": {
-        "args": {
-          "seconds": 10.0
+            "rotation": 0,
+            "type": "red enemy"
         },
-        "type": "timed"
-      },
-      "move": {
-        "args": {
-          "x": 0.0,
-          "y": 10.0
+        {
+            "activity_start": "50%",
+            "lives": {
+                "args": {
+                    "seconds": 10.0
+                },
+                "type": "timed"
+            },
+            "move": {
+                "args": {
+                    "x": 0.0,
+                    "y": 10.0
+                },
+                "repeat": "repeat",
+                "time": 0.0,
+                "type": "linear"
+            },
+            "pos": {
+                "x": 370.0,
+                "y": 514.77783203125
+            },
+            "rotation": 0,
+            "type": "enemy"
         },
-        "repeat": "repeat",
-        "time": 0.0,
-        "type": "linear"
-      },
-      "pos": {
-        "x": 365.0,
-        "y": 538.77783203125
-      },
-      "rotation": 0,
-      "type": "enemy"
-    },
-    {
-      "lives": {
-        "args": {},
-        "type": "always"
-      },
-      "move": {
-        "args": {
-          "radius": {
-            "x": -130.0,
-            "y": 30.0
-          },
-          "speed": 0.05
+        {
+            "lives": {
+                "args": {},
+                "type": "always"
+            },
+            "move": {
+                "args": {
+                    "radius": {
+                        "x": -130.0,
+                        "y": 30.0
+                    },
+                    "speed": 0.05
+                },
+                "repeat": "repeat",
+                "time": 0.0,
+                "type": "circular"
+            },
+            "pos": {
+                "x": 396.0,
+                "y": 759.77783203125
+            },
+            "rotation": 180,
+            "type": "enemy"
         },
-        "repeat": "repeat",
-        "time": 0.0,
-        "type": "circular"
-      },
-      "pos": {
-        "x": 396.0,
-        "y": 759.77783203125
-      },
-      "rotation": 180,
-      "type": "enemy"
-    },
-    {
-      "lives": {
-        "args": {
-          "seconds": 10.0
+        {
+            "lives": {
+                "args": {
+                    "seconds": 10.0
+                },
+                "type": "timed"
+            },
+            "move": {
+                "args": {
+                    "x": -1.0,
+                    "y": 3.0
+                },
+                "repeat": "repeat",
+                "time": 0.0,
+                "type": "linear"
+            },
+            "pos": {
+                "x": 367.0,
+                "y": 306.0
+            },
+            "rotation": 270,
+            "type": "enemy"
         },
-        "type": "timed"
-      },
-      "move": {
-        "args": {
-          "x": -1.0,
-          "y": 3.0
+        {
+            "lives": {
+                "args": {},
+                "type": "always"
+            },
+            "move": {
+                "args": {},
+                "repeat": "repeat",
+                "time": 0.0,
+                "type": "user_control"
+            },
+            "pos": {
+                "x": -10.0,
+                "y": 700.77783203125
+            },
+            "rotation": 180,
+            "type": "enemy"
         },
-        "repeat": "repeat",
-        "time": 0.0,
-        "type": "linear"
-      },
-      "pos": {
-        "x": 367.0,
-        "y": 306.0
-      },
-      "rotation": 270,
-      "type": "enemy"
-    },
-    {
-      "lives": {
-        "args": {},
-        "type": "always"
-      },
-      "move": {
-        "args": {},
-        "repeat": "repeat",
-        "time": 0.0,
-        "type": "user_control"
-      },
-      "pos": {
-        "x": -10.0,
-        "y": 700.77783203125
-      },
-      "rotation": 180,
-      "type": "enemy"
-    },
-    {
-      "lives": {
-        "args": {},
-        "type": ""
-      },
-      "move": {
-        "args": {
-          "x": 5.0,
-          "y": 0
-        },
-        "repeat": "repeat",
-        "time": 0.0,
-        "type": "linear"
-      },
-      "pos": {
-        "x": 240.0,
-        "y": 584.0
-      },
-      "rotation": 180,
-      "type": "enemy"
-    }
-  ],
-  "last_updated": 1699423815,
-  "name": "The first level"
+        {
+            "lives": {
+                "args": {},
+                "type": ""
+            },
+            "move": {
+                "args": {
+                    "x": 5.0,
+                    "y": 0
+                },
+                "repeat": "repeat",
+                "time": 0.0,
+                "type": "linear"
+            },
+            "pos": {
+                "x": 240.0,
+                "y": 584.0
+            },
+            "rotation": 180,
+            "type": "enemy"
+        }
+    ],
+    "last_updated": 1699645937,
+    "name": "The first level"
 }
