@@ -9,15 +9,18 @@ class GameObject;
 
 namespace action {
 struct Action {
-    virtual void operator()(GameObject&) const = 0;
+    virtual void operator()(std::weak_ptr<GameObject>) const = 0;
     virtual nl::json to_json() const = 0;
     virtual ~Action() = default;
 };
 
 struct BinaryAction : Action {
-    virtual void operator()(const GameObject&, GameObject&) const = 0;
+    virtual void operator()(std::weak_ptr<GameObject>, std::weak_ptr<GameObject>) const = 0;
 
-    void operator()(GameObject& obj) const override {
+    void operator()(std::weak_ptr<GameObject> obj) const override {
+        if (obj.expired()) {
+            return;
+        }
         return operator()(obj, obj);
     }
 };

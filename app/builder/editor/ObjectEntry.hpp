@@ -62,6 +62,7 @@ struct BasicData : virtual public ObjectEntry {
     int type_id = 0;
     StringPoint pos = {};
     int rotation = 0;
+    bool stop_at_bounds = false;
 
     Stats stats;
 };
@@ -84,7 +85,8 @@ struct CommonEntry : virtual public ObjectEntry, public BasicData {
     movement::MultiInfo move;
     FuncInfo lives;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CommonEntry, type, activity_start, pos, move, rotation, lives)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CommonEntry, type, activity_start, pos, move, stop_at_bounds, rotation,
+                                                lives)
 };
 
 struct PlayerEntry : virtual public ObjectEntry, public BasicData {
@@ -98,7 +100,7 @@ struct PlayerEntry : virtual public ObjectEntry, public BasicData {
 
     nl::json to_json() const override;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(PlayerEntry, type, pos, rotation, opts)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(PlayerEntry, type, pos, rotation, stop_at_bounds, opts)
 
   private:
     PlayerOptions opts;

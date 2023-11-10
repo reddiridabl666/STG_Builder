@@ -32,6 +32,7 @@ enum class Message {
     BarFull,
     Repeat,
     RepeatTypes,
+    StopAtBounds,
     Time,
     Games,
     Levels,

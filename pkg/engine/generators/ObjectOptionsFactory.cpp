@@ -187,7 +187,6 @@ struct BoundsConditionHandler : public Handler<ObjectOptions> {
         obj.stop_at_bounds = json.get<bool>();
     }
 };
-
 }  // namespace
 
 HandlerChain<ObjectOptions> ObjectOptionsFactory::init_handler_chain(const GameField& field) {

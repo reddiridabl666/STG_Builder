@@ -54,6 +54,8 @@ ObjectEntry::Changes CommonEntry::draw(const std::string& obj_types) {
 
     AliveFuncInput(lives);
 
+    ImGui::Checkbox(message(Message::StopAtBounds), &stop_at_bounds);
+
     stats.draw();
 
     return changes;
@@ -85,6 +87,8 @@ ObjectEntry::Changes PlayerEntry::draw(const std::string& obj_types) {
     if (ImGui::IsItemDeactivated()) {
         changes.pos = true;
     }
+
+    ImGui::Checkbox(message(Message::StopAtBounds), &stop_at_bounds);
 
     stats.draw();
 
