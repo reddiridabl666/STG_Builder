@@ -15,7 +15,7 @@
 #include "Observable.hpp"
 #include "Properties.hpp"
 
-class GameObject : public ImageContainer, public Hideable {
+class GameObject : public ImageContainer, public Hideable, public std::enable_shared_from_this<GameObject> {
   public:
     static constexpr float kDefaultActivityStart = 0;
     static constexpr float kLoadDelta = 100;

@@ -6,16 +6,6 @@
 
 namespace action {
 
-#define RETURN_IF_EXPIRED(obj) \
-    if (obj.expired()) {       \
-        return;                \
-    }
-
-#define RETURN_IF_ANY_EXPIRED(obj, subj)   \
-    if (obj.expired() || subj.expired()) { \
-        return;                            \
-    }
-
 struct ConstGetter : public Getter {
   public:
     ConstGetter(float value) : value_(value) {}
@@ -78,8 +68,7 @@ struct PropertyUpdater : public BinaryAction {
 struct Resetter : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(std::weak_ptr<GameObject>, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_EXPIRED(object)
+    void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).reset();
     }
 
@@ -91,8 +80,7 @@ struct Resetter : public PropertyUpdater {
 struct Incrementor : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(std::weak_ptr<GameObject>, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_EXPIRED(object)
+    void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).inc();
     }
 
@@ -104,8 +92,7 @@ struct Incrementor : public PropertyUpdater {
 struct Decrementor : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(std::weak_ptr<GameObject>, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_EXPIRED(object)
+    void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).dec();
     }
 
@@ -134,8 +121,7 @@ struct PropertyValueUpdater : public PropertyUpdater {
 struct PropertySetter : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(std::weak_ptr<GameObject> subject, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_ANY_EXPIRED(subject, object)
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).set(value_->get(*subject.lock()));
     }
 
@@ -147,8 +133,7 @@ struct PropertySetter : public PropertyValueUpdater {
 struct PropertyAdder : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(std::weak_ptr<GameObject> subject, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_ANY_EXPIRED(subject, object)
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).add(value_->get(*subject.lock()));
     }
 
@@ -160,8 +145,7 @@ struct PropertyAdder : public PropertyValueUpdater {
 struct PropertyMultiplier : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(std::weak_ptr<GameObject> subject, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_ANY_EXPIRED(subject, object)
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).mul(value_->get(*subject.lock()));
     }
 
@@ -173,8 +157,7 @@ struct PropertyMultiplier : public PropertyValueUpdater {
 struct PropertySubber : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(std::weak_ptr<GameObject> subject, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_ANY_EXPIRED(subject, object)
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).sub(value_->get(*subject.lock()));
     }
 
@@ -186,8 +169,7 @@ struct PropertySubber : public PropertyValueUpdater {
 struct PropertyDivisor : public PropertyValueUpdater {
     using PropertyValueUpdater::PropertyValueUpdater;
 
-    void operator()(std::weak_ptr<GameObject> subject, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_ANY_EXPIRED(subject, object)
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).div(value_->get(*subject.lock()));
     }
 
@@ -200,8 +182,7 @@ struct MultiAction : public BinaryAction {
   public:
     MultiAction(std::vector<std::unique_ptr<BinaryAction>>&& actions) : actions_(std::move(actions)) {}
 
-    void operator()(std::weak_ptr<GameObject> subject, std::weak_ptr<GameObject> object) const override {
-        RETURN_IF_ANY_EXPIRED(subject, object)
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         for (auto& action : actions_) {
             action->operator()(subject, object);
         }

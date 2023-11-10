@@ -15,7 +15,7 @@ struct Action {
 };
 
 struct BinaryAction : Action {
-    virtual void operator()(std::weak_ptr<GameObject>, std::weak_ptr<GameObject>) const = 0;
+    virtual void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject>) const = 0;
 
     void operator()(std::weak_ptr<GameObject> obj) const override {
         if (obj.expired()) {

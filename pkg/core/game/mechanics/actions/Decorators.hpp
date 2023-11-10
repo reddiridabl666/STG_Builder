@@ -34,16 +34,15 @@ template <typename ActionType>
 struct ActionDecorator : public Decorator<ActionType> {
     using Decorator<ActionType>::Decorator;
 
-    void operator()(const GameObject& subject, GameObject& object) const
-        requires std::is_same_v<ActionType, BinaryAction>
-    {
-        decorator([this, &subject, &object] {
+    void operator()(std::weak_ptr<const GameObject> subject,
+                    std::weak_ptr<GameObject> object) const requires std::is_same_v<ActionType, BinaryAction> override {
+        decorator([this, subject, object] {
             this->original_->operator()(subject, object);
         });
     }
 
-    void operator()(GameObject& object) const {
-        decorator([this, &object] {
+    void operator()(std::weak_ptr<GameObject> object) const override {
+        decorator([this, object] {
             this->original_->operator()(object);
         });
     }
@@ -89,24 +88,39 @@ inline void TimeoutDecorator<ActionType>::decorator(const std::function<void()>&
 }
 
 template <typename ActionType>
-struct DelayDecorator : public ActionDecorator<ActionType> {
+struct DelayDecorator : public Decorator<ActionType> {
   public:
     DelayDecorator(std::unique_ptr<ActionType>&& action, float delay = 1)
-        : ActionDecorator<ActionType>(std::move(action)), delay_(delay) {}
+        : Decorator<ActionType>(std::move(action)), delay_(delay) {}
 
     nl::json to_json() const override;
 
-  protected:
-    void decorator(const std::function<void()>& fn) const override;
+    void operator()(std::weak_ptr<const GameObject> subject,
+                    std::weak_ptr<GameObject> object) const requires std::is_same_v<ActionType, BinaryAction> override {
+        Queue::get().push(
+            [this, subject, object] {
+                if (subject.expired() || object.expired()) {
+                    return;
+                }
+                this->original_->operator()(subject, object);
+            },
+            delay_);
+    }
+
+    void operator()(std::weak_ptr<GameObject> object) const override {
+        Queue::get().push(
+            [this, object] {
+                if (object.expired()) {
+                    return;
+                }
+                this->original_->operator()(object);
+            },
+            delay_);
+    }
 
   private:
     float delay_;
 };
-
-template <typename ActionType>
-inline void DelayDecorator<ActionType>::decorator(const std::function<void()>& fn) const {
-    Queue::get().push(fn, delay_);
-}
 
 template <typename ActionType>
 inline nl::json DelayDecorator<ActionType>::to_json() const {

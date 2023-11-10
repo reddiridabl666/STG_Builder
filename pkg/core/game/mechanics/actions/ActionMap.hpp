@@ -17,10 +17,10 @@ void to_json(nl::json&, const Map<Key, ActionType>&);
 template <typename Key, typename ActionType = Action>
 struct Map {
   public:
-    void operator()(const Key& key, const GameObject& subject, GameObject& object) const
-        requires std::is_same_v<ActionType, BinaryAction>;
+    void operator()(const Key& key, std::weak_ptr<const GameObject> subject,
+                    std::weak_ptr<GameObject> object) const requires std::is_same_v<ActionType, BinaryAction>;
 
-    void operator()(const Key& key, GameObject& object) const;
+    void operator()(const Key& key, std::weak_ptr<GameObject> object) const;
 
   private:
     std::unordered_map<Key, std::unique_ptr<ActionType>> actions_;
@@ -30,9 +30,13 @@ struct Map {
 };
 
 template <typename Key, typename ActionType>
-inline void Map<Key, ActionType>::operator()(const Key& key, const GameObject& subject, GameObject& object) const
-    requires std::is_same_v<ActionType, action::BinaryAction>
-{
+inline void Map<Key, ActionType>::operator()(
+    const Key& key, std::weak_ptr<const GameObject> subject,
+    std::weak_ptr<GameObject> object) const requires std::is_same_v<ActionType, action::BinaryAction> {
+    if (subject.expired() || object.expired()) {
+        return;
+    }
+
     auto action = actions_.find(key);
     if (action == actions_.end() || !action->second) {
         return;
@@ -55,7 +59,11 @@ inline void to_json(nl::json& json, const Map<Key, ActionType>& collision) {
 }
 
 template <typename Key, typename ActionType>
-inline void Map<Key, ActionType>::operator()(const Key& key, GameObject& object) const {
+inline void Map<Key, ActionType>::operator()(const Key& key, std::weak_ptr<GameObject> object) const {
+    if (object.expired()) {
+        return;
+    }
+
     auto action = actions_.find(key);
     if (action == actions_.end() || !action->second) {
         return;

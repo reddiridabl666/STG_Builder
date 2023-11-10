@@ -103,7 +103,8 @@
       },
       "slow_released": {
         "property": "speed",
-        "action": "reset"
+        "action": "div",
+        "value": 0.5
       },
       "shoot_pressed": {
         "property": "shots",

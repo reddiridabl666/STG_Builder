@@ -65,15 +65,15 @@ std::string_view GameObject::type_name() const {
 }
 
 void GameObject::resolve_collision(GameObject& other) {
-    collision_action_(other.tag(), other, *this);
+    collision_action_(other.tag(), other.weak_from_this(), weak_from_this());
 }
 
 void GameObject::on_player_action(const std::string& action, const GameObject& player) {
-    on_player_action_(action, player, *this);
+    on_player_action_(action, player.weak_from_this(), weak_from_this());
 }
 
 void GameObject::on_own_action(const std::string& action) {
-    on_own_action_(action, *this);
+    on_own_action_(action, weak_from_this());
 }
 
 void GameObject::draw(Window& window) const {
@@ -170,7 +170,7 @@ float GameObject::width() const {
 
 void GameObject::emit(GameEvent event, const GameObject& other) {
     if (on_character_death_ && event == GameEvent::ObjectDestroyed) {
-        on_character_death_->operator()(other, *this);
+        on_character_death_->operator()(other.weak_from_this(), weak_from_this());
     }
 }
 
