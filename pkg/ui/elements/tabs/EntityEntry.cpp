@@ -127,7 +127,7 @@ void EntityEntry::draw(const Window&) {
             ImGui::PopID();
         }
 
-        collisions.draw(message(Message::Collisions));
+        collision.draw(message(Message::Collisions));
 
         on_player_action.draw(message(Message::OnPlayerActions));
 

@@ -1,121 +1,150 @@
 {
-  "bg": "bg.jpg",
-  "description": "All features are being tested in this game",
-  "field_size": {
-    "height": 0.8999999761581421,
-    "left": 0.05000000074505806,
-    "top": 0.05000000074505806,
-    "width": 0.5
-  },
-  "fps": 60,
-  "fullscreen": false,
-  "last_updated": 1699423815,
-  "levels": 2,
-  "menu": {
-    "ratio": 0.3,
-    "stats": ["health", "score"]
-  },
-  "name": "My first game",
-  "players": [
-    {
-      "health": 100,
-      "opts": {
-        "joy": {
-          "shoot": 0,
-          "slow": 0,
-          "special": 0
-        },
-        "keys": {
-          "move": {
-            "down": ["S"],
-            "left": ["A"],
-            "right": ["D"],
-            "up": ["W"]
-          },
-          "other": {
-            "slow": ["LShift"],
-            "shoot": ["Z"]
-          }
-        }
-      },
-      "pos": {
-        "x": 267.0,
-        "y": 1013.77783203125
-      },
-      "stop_at_bounds": true,
-      "rotation": 0,
-      "score": 0,
-      "type": "player"
+    "bg": "bg.jpg",
+    "description": "All features are being tested in this game",
+    "field_size": {
+        "height": 0.8999999761581421,
+        "left": 0.05000000074505806,
+        "top": 0.05000000074505806,
+        "width": 0.5
     },
-    {
-      "opts": {
-        "joy": {
-          "shoot": 0,
-          "slow": 0,
-          "special": 0
-        },
-        "keys": {
-          "move": {
-            "down": ["Down"],
-            "left": ["Left"],
-            "right": ["Right"],
-            "up": ["Up"]
-          },
-          "other": {
-            "shoot": ["Space"],
-            "slow": ["RShift"],
-            "special": ["Enter"]
-          }
-        }
-      },
-      "pos": {
-        "x": 410.625,
-        "y": 1012.84033203125
-      },
-      "rotation": 0,
-      "type": "player",
-      "stop_at_bounds": true
-    }
-  ],
-  "side_menu": {
-    "bg": "level1_bg.jpg",
-    "gap": 25.0,
-    "offset": {
-      "x": 65.0,
-      "y": 40.0
+    "fps": 60,
+    "fullscreen": false,
+    "last_updated": 1699677784,
+    "levels": 2,
+    "menu": {
+        "ratio": 0.3,
+        "stats": [
+            "health",
+            "score"
+        ]
     },
-    "player_gap": 50.0,
+    "name": "My first game",
+    "players": [
+        {
+            "health": 100,
+            "opts": {
+                "joy": {
+                    "shoot": 0,
+                    "slow": 0,
+                    "special": 0
+                },
+                "keys": {
+                    "move": {
+                        "down": [
+                            "S"
+                        ],
+                        "left": [
+                            "A"
+                        ],
+                        "right": [
+                            "D"
+                        ],
+                        "up": [
+                            "W"
+                        ]
+                    },
+                    "other": {
+                        "shoot": [
+                            "Z"
+                        ],
+                        "slow": [
+                            "LShift"
+                        ]
+                    }
+                }
+            },
+            "pos": {
+                "x": 267.0,
+                "y": 1013.77783203125
+            },
+            "rotation": 0,
+            "score": 0,
+            "stop_at_bounds": true,
+            "type": "player"
+        },
+        {
+            "opts": {
+                "joy": {
+                    "shoot": 0,
+                    "slow": 0,
+                    "special": 0
+                },
+                "keys": {
+                    "move": {
+                        "down": [
+                            "Down"
+                        ],
+                        "left": [
+                            "Left"
+                        ],
+                        "right": [
+                            "Right"
+                        ],
+                        "up": [
+                            "Up"
+                        ]
+                    },
+                    "other": {
+                        "shoot": [
+                            "Space"
+                        ],
+                        "slow": [
+                            "RShift"
+                        ],
+                        "special": [
+                            "Enter"
+                        ]
+                    }
+                }
+            },
+            "pos": {
+                "x": 496.0,
+                "y": 1017.77783203125
+            },
+            "rotation": 0,
+            "stop_at_bounds": true,
+            "type": "player"
+        }
+    ],
+    "side_menu": {
+        "bg": "level1_bg.jpg",
+        "gap": 25.0,
+        "offset": {
+            "x": 65.0,
+            "y": 40.0
+        },
+        "player_gap": 50.0,
+        "size": {
+            "height": 0.8999999761581421,
+            "left": 0.6700000166893005,
+            "top": 0.05000000074505806,
+            "width": 0.27000001072883606
+        },
+        "stats": [
+            {
+                "font": "ComicSans.ttf",
+                "prefix": "Score:",
+                "size": 48,
+                "type": "counter",
+                "value": "score"
+            },
+            {
+                "empty": "player_hp_empty.png",
+                "full": "player_hp_full.png",
+                "type": "bar",
+                "value": "health",
+                "width": 200
+            },
+            {
+                "prefix": "Shots taken:",
+                "size": 32,
+                "type": "counter",
+                "value": "shots"
+            }
+        ]
+    },
     "size": {
-      "height": 0.8999999761581421,
-      "left": 0.6700000166893005,
-      "top": 0.05000000074505806,
-      "width": 0.27000001072883606
-    },
-    "stats": [
-      {
-        "font": "ComicSans.ttf",
-        "prefix": "Score:",
-        "size": 48,
-        "type": "counter",
-        "value": "score"
-      },
-      {
-        "empty": "player_hp_empty.png",
-        "full": "player_hp_full.png",
-        "type": "bar",
-        "value": "health",
-        "width": 200
-      },
-      {
-        "prefix": "Shots taken:",
-        "size": 32,
-        "type": "counter",
-        "value": "shots"
-      }
-    ]
-  },
-  "size": {
-    "x": 1280,
-    "y": 720
-  }
+        "x": 1280,
+        "y": 720
+    }
 }

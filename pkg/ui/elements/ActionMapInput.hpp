@@ -9,6 +9,10 @@ class ActionMapInput {
     void draw(const char* msg) {
         if (ImGui::CollapsingHeader(msg)) {
             draw_map(actions, new_type_);
+
+            std::erase_if(actions, [](const auto& el) {
+                return el.second.actions.size() == 0;
+            });
         }
     }
 
@@ -24,5 +28,4 @@ class ActionMapInput {
         json = map.actions;
     }
 };
-
 }  // namespace ui

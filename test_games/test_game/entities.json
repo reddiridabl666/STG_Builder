@@ -1,147 +1,204 @@
 {
-  "red enemy": {
-    "damage": 25,
-    "description": "Description goes here",
-    "hitbox": {
-      "fill_color": {
-        "a": 72,
-        "b": 0,
-        "g": 116,
-        "r": 255
-      },
-      "outline": 2,
-      "outline_color": "red",
-      "shown": true,
-      "size": {
-        "x": 90.0,
-        "y": 95.0
-      },
-      "type": "rect"
+    "enemy": {
+        "collision": {},
+        "damage": 25,
+        "description": "Simple enemy type",
+        "health": 50,
+        "hitbox": {
+            "fill_color": {
+                "a": 72,
+                "b": 0,
+                "g": 116,
+                "r": 255
+            },
+            "outline": 3,
+            "outline_color": {
+                "a": 255,
+                "b": 0,
+                "g": 71,
+                "r": 255
+            },
+            "shown": true,
+            "size": {
+                "x": 70.0,
+                "y": 70.0
+            },
+            "type": "rect"
+        },
+        "image": "enemy.png",
+        "on_own_action": {},
+        "on_player_action": {},
+        "score": 100,
+        "shots": 10,
+        "size": {
+            "x": 80.0,
+            "y": 80.0
+        },
+        "speed": 50.0,
+        "tag": "enemy"
     },
-    "image": "red_enemy.png",
-    "size": {
-      "x": 100.0,
-      "y": 100.0
-    },
-    "speed": 10.0,
-    "tag": "enemy",
-    "on_player_action": {
-      "slow_pressed": {
-        "property": "speed",
-        "action": "mul",
-        "value": 0.7
-      }
-    }
-  },
-  "enemy": {
-    "damage": 25,
-    "description": "Simple enemy type",
-    "health": 50,
-    "hitbox": {
-      "fill_color": {
-        "a": 72,
-        "b": 0,
-        "g": 116,
-        "r": 255
-      },
-      "outline": 3,
-      "outline_color": {
-        "a": 255,
-        "b": 0,
-        "g": 71,
-        "r": 255
-      },
-      "shown": true,
-      "size": {
-        "x": 70.0,
-        "y": 70.0
-      },
-      "type": "rect"
-    },
-    "image": "enemy.png",
-    "score": 100,
-    "shots": 10,
-    "size": {
-      "x": 80.0,
-      "y": 80.0
-    },
-    "speed": 50.0,
-    "tag": "enemy"
-  },
-  "player": {
-    "description": "Description goes here",
-    "hitbox": {
-      "fill_color": {
-        "a": 72,
-        "b": 0,
-        "g": 255,
-        "r": 0
-      },
-      "outline": 2,
-      "outline_color": "green",
-      "shown": true,
-      "size": {
-        "x": 20.0,
-        "y": 25.0
-      },
-      "type": "rect"
-    },
-    "image": "player.png",
-    "score": 0,
-    "shots": 0,
-    "size": {
-      "x": 100.0,
-      "y": 60.0
-    },
-    "speed": 300.0,
-    "tag": "player",
-    "on_own_action": {
-      "slow_pressed": {
-        "property": "speed",
-        "action": "mul",
-        "value": 0.5
-      },
-      "slow_released": {
-        "property": "speed",
-        "action": "div",
-        "value": 0.5
-      },
-      "shoot_pressed": {
-        "property": "shots",
-        "action": "inc"
-      }
-    },
-    "collision": {
-      "enemy": {
-        "actions": [
-          {
-            "property": "health",
-            "action": "sub",
-            "value": {
-              "property": "damage",
-              "with": {
-                "mul": 0.5
-              }
+    "player": {
+        "collision": {
+            "enemy": {
+                "actions": [
+                    {
+                        "action": "sub",
+                        "property": "health",
+                        "value": {
+                            "property": "damage",
+                            "with": {
+                                "mul": 0.5
+                            }
+                        },
+                        "with": {}
+                    },
+                    {
+                        "action": "mul",
+                        "property": "speed",
+                        "value": 0.20000000298023224,
+                        "with": {}
+                    },
+                    {
+                        "action": "div",
+                        "property": "speed",
+                        "value": 0.20000000298023224,
+                        "with": {
+                            "delay": 1.5
+                        }
+                    }
+                ],
+                "with": {
+                    "timeout": 1.5
+                }
             }
-          },
-          {
-            "property": "speed",
-            "action": "mul",
-            "value": 0.2
-          },
-          {
-            "property": "speed",
-            "action": "div",
-            "value": 0.2,
-            "with": {
-              "delay": 1.5
+        },
+        "description": "Description goes here",
+        "hitbox": {
+            "fill_color": {
+                "a": 72,
+                "b": 0,
+                "g": 255,
+                "r": 0
+            },
+            "outline": 2,
+            "outline_color": "green",
+            "shown": true,
+            "size": {
+                "x": 20.0,
+                "y": 25.0
+            },
+            "type": "rect"
+        },
+        "image": "player.png",
+        "on_own_action": {
+            "shoot_pressed": {
+                "actions": [
+                    {
+                        "action": "add",
+                        "property": "score",
+                        "value": 0.0,
+                        "with": {}
+                    },
+                    {
+                        "action": "inc",
+                        "property": "shots",
+                        "value": 0.0,
+                        "with": {}
+                    }
+                ],
+                "with": {}
+            },
+            "slow_pressed": {
+                "actions": [
+                    {
+                        "action": "add",
+                        "property": "score",
+                        "value": 0.0,
+                        "with": {}
+                    },
+                    {
+                        "action": "mul",
+                        "property": "speed",
+                        "value": 0.5,
+                        "with": {}
+                    }
+                ],
+                "with": {}
+            },
+            "slow_released": {
+                "actions": [
+                    {
+                        "action": "add",
+                        "property": "score",
+                        "value": 0.0,
+                        "with": {}
+                    },
+                    {
+                        "action": "div",
+                        "property": "speed",
+                        "value": 0.5,
+                        "with": {}
+                    }
+                ],
+                "with": {}
             }
-          }
-        ],
-        "with": {
-          "timeout": 1.5
-        }
-      }
+        },
+        "on_player_action": {},
+        "score": 0,
+        "shots": 0,
+        "size": {
+            "x": 100.0,
+            "y": 60.0
+        },
+        "speed": 300.0,
+        "tag": "player"
+    },
+    "red enemy": {
+        "collision": {},
+        "damage": 25,
+        "description": "Description goes here",
+        "hitbox": {
+            "fill_color": {
+                "a": 72,
+                "b": 0,
+                "g": 116,
+                "r": 255
+            },
+            "outline": 2,
+            "outline_color": "red",
+            "shown": true,
+            "size": {
+                "x": 90.0,
+                "y": 95.0
+            },
+            "type": "rect"
+        },
+        "image": "red_enemy.png",
+        "on_own_action": {},
+        "on_player_action": {
+            "slow_pressed": {
+                "actions": [
+                    {
+                        "action": "add",
+                        "property": "score",
+                        "value": 0.0,
+                        "with": {}
+                    },
+                    {
+                        "action": "mul",
+                        "property": "speed",
+                        "value": 0.699999988079071,
+                        "with": {}
+                    }
+                ],
+                "with": {}
+            }
+        },
+        "size": {
+            "x": 100.0,
+            "y": 100.0
+        },
+        "speed": 10.0,
+        "tag": "enemy"
     }
-  }
 }

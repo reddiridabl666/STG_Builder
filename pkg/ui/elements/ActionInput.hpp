@@ -44,6 +44,14 @@ struct SingleActionInput {
 
 struct ActionInput {
   public:
+    ActionInput();
+
+    ActionInput(const ActionInput&) = default;
+    ActionInput& operator=(const ActionInput&) = default;
+
+    ActionInput(ActionInput&&) = default;
+    ActionInput& operator=(ActionInput&&) = default;
+
     void draw();
 
   private:
@@ -52,6 +60,9 @@ struct ActionInput {
 
     int to_delete_ = -1;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ActionInput, actions, with)
+    friend class ActionMapInput;
+
+    friend void from_json(const nl::json& json, ActionInput& map);
+    friend void to_json(nl::json& json, const ActionInput& map);
 };
 }  // namespace ui

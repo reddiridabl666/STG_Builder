@@ -36,7 +36,7 @@ struct EntityEntry : public Element {
     }
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(EntityEntry, image, speed, description, tag, size, hitbox,
-                                                on_player_action, on_own_action, collisions)
+                                                on_player_action, on_own_action, collision)
 
   private:
     std::shared_ptr<sf::Texture> texture_;
@@ -48,7 +48,6 @@ struct EntityEntry : public Element {
     std::string image;
     std::string description = "Description goes here";
     std::string tag = "";
-    int tag_id = 0;
 
     sf::Vector2f size = {100, 100};
     float speed = 0;
@@ -58,7 +57,7 @@ struct EntityEntry : public Element {
     Stats stats_;
     ActionMapInput on_player_action;
     ActionMapInput on_own_action;
-    ActionMapInput collisions;
+    ActionMapInput collision;
 
     // Utilities
     bool shown_ = false;
@@ -66,6 +65,7 @@ struct EntityEntry : public Element {
     bool to_delete_ = false;
     ImVec4 outline_color_;
     ImVec4 fill_color_;
+    int tag_id = 0;
 
     nl::json* data_;
     size_t obj_count_ = 0;
