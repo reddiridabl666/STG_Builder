@@ -43,7 +43,8 @@ int vertical(const MovementKeys& keys, const JoyControls&) {
 
 struct Circular : public Rule {
   public:
-    Circular(const sf::Vector2f& radius, float speed) : radius_(radius), speed_(speed), radius_len_(abs(radius)) {}
+    Circular(const sf::Vector2f& radius, float speed)
+        : radius_(radius), speed_(speed), radius_len_(linalg::abs(radius)) {}
 
     Result operator()(const GameObject& obj, float delta_time) override {
         angle_ += obj.speed() * speed_ * delta_time;
@@ -84,8 +85,8 @@ struct Circular : public Rule {
 };
 }  // namespace
 
-std::unique_ptr<Rule> linear(float x, float y) {
-    return std::make_unique<Func>([velocity = sf::Vector2f{x, y}](const GameObject&, float) {
+std::unique_ptr<Rule> linear(const sf::Vector2f& velocity) {
+    return std::make_unique<Func>([velocity](const GameObject&, float) {
         return Rule::Result{
             .type = Rule::Type::Velocity,
             .velocity = velocity,

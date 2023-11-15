@@ -14,10 +14,11 @@ class ArcPosition : public Pattern::PositionSetter {
     void set(const GameObject& parent, Pattern::objects& objects) const override {
         auto init_pos = parent.pos() + offset_;
         float angle = init_angle_;
-        float delta_angle = angle_ / objects.size();
+        float delta_angle = angle_ / (objects.size() - 1);
 
         for (auto& obj : objects) {
-            obj->set_pos(init_pos + radius_ * sf::Vector2f{cos(angle), sin(angle)});
+            auto pos = init_pos + radius_ * sf::Vector2f{cos(angle), sin(angle)};
+            obj->set_pos(pos);
             angle += delta_angle;
         }
     }

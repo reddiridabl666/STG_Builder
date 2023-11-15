@@ -11,8 +11,7 @@ std::unique_ptr<movement::Rule> FuncBuilder::generate(const FuncInfo& info) {
 
     if (info.type == "linear") {
         return movement::linear(
-            info.args.at("x").get<float>(),
-            info.args.at("y").get<float>()
+            info.args.get<sf::Vector2f>()
         );
     }
 

@@ -38,6 +38,7 @@ auto operator*(const sf::Vector2<T>& lhs, const sf::Vector2<U>& rhs) {
     return sf::Vector2<decltype(lhs.x * rhs.x)>{lhs.x * rhs.x, lhs.y * rhs.y};
 }
 
+namespace linalg {
 template <typename T>
 T abs(const sf::Vector2<T>& vec) {
     return sqrt(vec.x * vec.x + vec.y * vec.y);
@@ -72,6 +73,7 @@ template <typename T, typename U>
 auto cos(const sf::Vector2<T>& lhs, const sf::Vector2<U>& rhs) {
     return dot(lhs, rhs) / (abs(lhs) * abs(rhs));
 }
+}  // namespace linalg
 
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const sf::Vector2<T>& vec) {

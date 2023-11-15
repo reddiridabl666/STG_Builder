@@ -12,7 +12,7 @@
     },
     "image": "bullet.png",
     "tag": "bullet",
-    "speed": 100
+    "speed": 500
   },
   "enemy": {
     "collision": {},
@@ -55,33 +55,14 @@
   "player": {
     "collision": {
       "enemy": {
-        "actions": [
-          {
-            "action": "sub",
-            "property": "health",
-            "value": {
-              "property": "damage",
-              "with": {
-                "mul": 0.5
-              }
-            },
-            "with": {}
-          },
-          {
-            "action": "mul",
-            "property": "speed",
-            "value": 0.20000000298023224,
-            "with": {}
-          },
-          {
-            "action": "div",
-            "property": "speed",
-            "value": 0.20000000298023224,
-            "with": {
-              "delay": 1.5
-            }
+        "action": "sub",
+        "property": "health",
+        "value": {
+          "property": "damage",
+          "with": {
+            "mul": 0.5
           }
-        ],
+        },
         "with": {
           "timeout": 1.5
         }
@@ -107,17 +88,8 @@
     "image": "player.png",
     "on_own_action": {
       "shoot_pressed": {
-        "actions": [
-          {
-            "action": "inc",
-            "property": "shots"
-          },
-          {
-            "action": "shoot",
-            "property": "circle_pattern"
-          }
-        ],
-        "with": {}
+        "action": "shoot",
+        "property": "spread_pattern"
       },
       "slow_pressed": {
         "actions": [
@@ -167,10 +139,23 @@
           "radius": 70,
           "offset": { "x": 0, "y": 0 },
           "start_angle": 0,
-          "angle": 180
+          "angle": -180
         },
         "bullet": "test_bullet",
         "count": 6
+      },
+      "spread_pattern": {
+        "move": {
+          "type": "from_center",
+          "velocity": { "x": 0, "y": -1 }
+        },
+        "pos": {
+          "type": "spread",
+          "offset": { "x": 0, "y": -70 },
+          "space": { "x": 200, "y": 100 }
+        },
+        "bullet": "test_bullet",
+        "count": "random(5, 7)"
       }
     },
     "score": 0,

@@ -3,13 +3,33 @@
 #include "Math.hpp"
 #include "patterns/ArcPosition.hpp"
 #include "patterns/DelegatedPattern.hpp"
+#include "patterns/FromCenterMovement.hpp"
 #include "patterns/LinePosition.hpp"
+#include "patterns/LinearMovement.hpp"
 #include "patterns/ObjectCount.hpp"
 #include "patterns/RectanglePosition.hpp"
 #include "patterns/SpreadPosition.hpp"
 
 struct PatternMovementFactory {
-    static std::unique_ptr<Pattern::MovementSetter> create(const nl::json&) {
+    static std::unique_ptr<Pattern::MovementSetter> create(const nl::json& json) {
+        if (!json.is_object()) {
+            return nullptr;
+        }
+
+        std::string type = json.value("type", "");
+
+        if (type == "linear") {
+            return std::make_unique<LinearMovement>(json.value("velocity", sf::Vector2f{0, -1}));
+        }
+
+        if (type == "from_center") {
+            return std::make_unique<FromCenterMovement>();
+        }
+
+        if (type == "random") {
+            return nullptr;
+        }
+
         return nullptr;
     }
 };

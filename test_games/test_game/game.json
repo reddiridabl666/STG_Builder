@@ -105,12 +105,6 @@
         "type": "bar",
         "value": "health",
         "width": 200
-      },
-      {
-        "prefix": "Shots taken:",
-        "size": 32,
-        "type": "counter",
-        "value": "shots"
       }
     ]
   },

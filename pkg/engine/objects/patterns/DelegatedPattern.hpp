@@ -23,7 +23,9 @@ class DelegatedPattern : public Pattern {
         }
 
         pos_->set(*parent, res);
-        // movement_->set(res);
+        if (movement_) {
+            movement_->set(*parent, res);
+        }
         return res;
     }
 

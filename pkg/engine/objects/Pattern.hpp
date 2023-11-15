@@ -15,7 +15,7 @@ class Pattern {
     };
 
     struct MovementSetter {
-        virtual void set(objects&) const = 0;
+        virtual void set(const GameObject& parent, objects&) const = 0;
         virtual ~MovementSetter() = default;
     };
 

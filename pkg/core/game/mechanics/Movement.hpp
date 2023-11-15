@@ -66,7 +66,7 @@ struct Func : public Rule {
     bool moves_with_field_ = false;
 };
 
-std::unique_ptr<Rule> linear(float x = 0, float y = -1);
+std::unique_ptr<Rule> linear(const sf::Vector2f& velocity = {0, -1});
 
 std::unique_ptr<Rule> circular(const sf::Vector2f& radius, float speed);
 
