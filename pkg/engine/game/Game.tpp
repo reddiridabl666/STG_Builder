@@ -1,6 +1,7 @@
 #include "ActionQueue.hpp"
 #include "AssetManager.hpp"
-#include "GameInfo.hpp"
+#include "GameBus.hpp"
+#include "GameState.hpp"
 #include "ObjectTypeFactory.hpp"
 #include "Utils.hpp"
 
@@ -20,16 +21,29 @@ Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, Player
       types_(std::move(types)),
       levels_(std::move(levels)),
       fps_(fps),
-      player_manager_(std::move(player_manager)),
-      event_key_(fmt::format("game_{}_key", game_id_)) {
-    window_.add_handler(event_key_ + "_pressed", sf::Event::KeyPressed, [this](const sf::Event& event) {
+      player_manager_(std::move(player_manager)) {}
+
+template <typename RTreeType>
+void Game<RTreeType>::register_events() {
+    window_.add_handler("game_key_pressed", sf::Event::KeyPressed, [this](const sf::Event& event) {
         fire_key_event(event.key.code, "_pressed");
     });
 
-    window_.add_handler(event_key_ + "_released", sf::Event::KeyReleased, [this](const sf::Event& event) {
+    window_.add_handler("game_key_released", sf::Event::KeyReleased, [this](const sf::Event& event) {
         fire_key_event(event.key.code, "_released");
     });
-    ++game_id_;
+
+    GameBus::get().on(GameEvent::BulletCreated, [this](const nl::json& payload) {
+        std::string type_name = payload.value("type", "");
+
+        auto obj = objects_.at(payload.value("object", ""));
+        auto pattern = types_.at(type_name).pattern(payload.value("pattern", ""));
+        if (pattern) {
+            add_objects(pattern->create(obj, types_, assets_));
+        }
+    });
+
+    events_registered_ = true;
 }
 
 template <typename RTreeType>
@@ -39,8 +53,11 @@ Game<RTreeType>::Game(Game&& other)
 
 template <typename RTreeType>
 Game<RTreeType>::~Game() {
-    window_.remove_handler(event_key_ + "_pressed");
-    window_.remove_handler(event_key_ + "_released");
+    if (events_registered_) {
+        window_.remove_handler("game_key_pressed");
+        window_.remove_handler("game_key_released");
+        GameBus::get().off(GameEvent::BulletCreated);
+    }
 }
 
 template <typename RTreeType>
@@ -94,6 +111,13 @@ template <typename RTreeType>
 void Game<RTreeType>::add_object(std::shared_ptr<GameObject>&& obj) {
     add_object_to_rtree(obj);
     objects_.emplace(obj->name(), std::move(obj));
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::add_objects(std::vector<std::shared_ptr<GameObject>>&& objs) {
+    for (auto& obj : objs) {
+        add_object(std::move(obj));
+    }
 }
 
 template <typename RTreeType>

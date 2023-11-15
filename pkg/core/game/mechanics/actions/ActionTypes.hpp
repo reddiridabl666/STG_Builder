@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Action.hpp"
+#include "GameBus.hpp"
 #include "GameObject.hpp"
 #include "Getter.hpp"
+#include "Random.hpp"
 
 namespace action {
 
@@ -14,12 +16,21 @@ struct ConstGetter : public Getter {
         return value_;
     }
 
-    nl::json to_json() const override {
-        return value_;
+  private:
+    const float value_;
+};
+
+struct RandomGetter : public Getter {
+  public:
+    RandomGetter(size_t left, size_t right) : left_(left), right_(right) {}
+
+    Value get(const GameObject&) const override {
+        return rng::get_uint(left_, right_);
     }
 
   private:
-    const float value_;
+    const size_t left_;
+    const size_t right_;
 };
 
 struct ObjectPropertyGetter : public MutableGetter {
@@ -30,10 +41,6 @@ struct ObjectPropertyGetter : public MutableGetter {
         return subject.props().at(property_);
     }
 
-    nl::json to_json() const override {
-        return property_;
-    }
-
   private:
     const std::string property_;
 };
@@ -42,24 +49,63 @@ struct SpeedGetter : public MutableGetter {
     Value& get(GameObject& subject) override {
         return subject.speed();
     }
+};
 
-    nl::json to_json() const override {
-        return "speed";
+struct BinaryAdapter : public BinaryAction {
+  public:
+    static std::unique_ptr<BinaryAction> wrap(std::unique_ptr<Action>&& action) {
+        if (!action) {
+            return nullptr;
+        }
+        return std::make_unique<BinaryAdapter>(std::move(action));
+    }
+
+    BinaryAdapter(std::unique_ptr<Action>&& action) : action_(std::move(action)) {}
+
+    void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject> object) const override {
+        action_->operator()(object);
+    }
+
+    void operator()(std::weak_ptr<GameObject> object) const override {
+        action_->operator()(object);
+    }
+
+  private:
+    std::unique_ptr<Action> action_;
+};
+
+struct Shooter : public Action {
+  public:
+    Shooter(const std::string& pattern) : pattern_(pattern) {}
+
+    void operator()(std::weak_ptr<GameObject> object) const override {
+        nl::json payload{
+            {"object", object.lock()->name()},
+            {"type", object.lock()->type_name()},
+            {"pattern", pattern_},
+        };
+        GameBus::get().emit(GameEvent::BulletCreated, payload);
+    }
+
+  private:
+    const std::string pattern_;
+};
+
+struct Killer : public Action {
+    void operator()(std::weak_ptr<GameObject> object) const override {
+        object.lock()->die();
     }
 };
 
-struct PropertyUpdater : public BinaryAction {
+struct VisibilityToggler : public Action {
+    void operator()(std::weak_ptr<GameObject> object) const override {
+        object.lock()->toggle_visibility();
+    }
+};
+
+struct PropertyUpdater : virtual public Action {
   public:
     PropertyUpdater(std::unique_ptr<MutableGetter>&& property) : property_(std::move(property)) {}
-
-    virtual std::string type() const = 0;
-
-    nl::json to_json() const override {
-        return {
-            {"type", type()},
-            {"property", property_->to_json()},
-        };
-    }
 
   protected:
     const std::unique_ptr<MutableGetter> property_;
@@ -68,51 +114,31 @@ struct PropertyUpdater : public BinaryAction {
 struct Resetter : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject> object) const override {
+    void operator()(std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).reset();
-    }
-
-    std::string type() const override {
-        return "reset";
     }
 };
 
 struct Incrementor : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject> object) const override {
+    void operator()(std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).inc();
-    }
-
-    std::string type() const override {
-        return "inc";
     }
 };
 
 struct Decrementor : public PropertyUpdater {
     using PropertyUpdater::PropertyUpdater;
 
-    void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject> object) const override {
+    void operator()(std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).dec();
-    }
-
-    std::string type() const override {
-        return "dec";
     }
 };
 
-struct PropertyValueUpdater : public PropertyUpdater {
+struct PropertyValueUpdater : public PropertyUpdater, public BinaryAction {
   public:
     PropertyValueUpdater(std::unique_ptr<MutableGetter>&& property, std::unique_ptr<Getter>&& value)
         : PropertyUpdater(std::move(property)), value_(std::move(value)) {}
-
-    nl::json to_json() const override {
-        return {
-            {"type", type()},
-            {"property", property_->to_json()},
-            {"value", value_->to_json()},
-        };
-    }
 
   protected:
     const std::unique_ptr<Getter> value_;
@@ -124,10 +150,6 @@ struct PropertySetter : public PropertyValueUpdater {
     void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).set(value_->get(*subject.lock()));
     }
-
-    std::string type() const override {
-        return "set";
-    }
 };
 
 struct PropertyAdder : public PropertyValueUpdater {
@@ -135,10 +157,6 @@ struct PropertyAdder : public PropertyValueUpdater {
 
     void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).add(value_->get(*subject.lock()));
-    }
-
-    std::string type() const override {
-        return "add";
     }
 };
 
@@ -148,10 +166,6 @@ struct PropertyMultiplier : public PropertyValueUpdater {
     void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).mul(value_->get(*subject.lock()));
     }
-
-    std::string type() const override {
-        return "mul";
-    }
 };
 
 struct PropertySubber : public PropertyValueUpdater {
@@ -159,10 +173,6 @@ struct PropertySubber : public PropertyValueUpdater {
 
     void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).sub(value_->get(*subject.lock()));
-    }
-
-    std::string type() const override {
-        return "sub";
     }
 };
 
@@ -172,31 +182,28 @@ struct PropertyDivisor : public PropertyValueUpdater {
     void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
         property_->get(*object.lock()).div(value_->get(*subject.lock()));
     }
-
-    std::string type() const override {
-        return "div";
-    }
 };
 
-struct MultiAction : public BinaryAction {
+template <typename ActionType>
+struct MultiAction : public ActionType {
   public:
-    MultiAction(std::vector<std::unique_ptr<BinaryAction>>&& actions) : actions_(std::move(actions)) {}
+    MultiAction(std::vector<std::unique_ptr<ActionType>>&& actions) : actions_(std::move(actions)) {}
 
-    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const override {
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const
+        requires std::is_same_v<ActionType, BinaryAction>
+    {
         for (auto& action : actions_) {
             action->operator()(subject, object);
         }
     }
 
-    nl::json to_json() const override {
-        nl::json res;
+    void operator()(std::weak_ptr<GameObject> object) const override {
         for (auto& action : actions_) {
-            res.push_back(action->to_json());
+            action->operator()(object);
         }
-        return res;
     }
 
   private:
-    std::vector<std::unique_ptr<BinaryAction>> actions_;
+    std::vector<std::unique_ptr<ActionType>> actions_;
 };
 }  // namespace action

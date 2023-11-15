@@ -7,7 +7,6 @@ class GameObject;
 namespace action {
 struct Getter {
     virtual Value get(const GameObject&) const = 0;
-    virtual nl::json to_json() const = 0;
     virtual ~Getter() = default;
 };
 

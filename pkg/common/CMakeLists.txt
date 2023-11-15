@@ -4,6 +4,7 @@ project(stg_builder_common)
 
 set(SOURCES
     Messages.cpp
+    Random.cpp
     Errors.cpp
 )
 

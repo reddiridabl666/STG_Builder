@@ -159,6 +159,14 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
     void set_rotation(float rotation) override;
     void scale(float x, float y) override;
 
+    void set_parent(std::weak_ptr<GameObject> parent) {
+        parent_ = parent;
+    }
+
+    std::weak_ptr<GameObject> parent() const {
+        return parent_;
+    }
+
   private:
     std::string name_;
     GameObjectTag tag_;
@@ -180,6 +188,8 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
     bool stop_at_bounds_ = false;
 
     float activity_start_ = kDefaultActivityStart;
+
+    std::weak_ptr<GameObject> parent_;
 
     void update_position(const GameField& field, float delta_time);
     bool update_activity(const GameField& field);

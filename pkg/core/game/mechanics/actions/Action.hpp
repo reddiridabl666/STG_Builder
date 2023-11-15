@@ -10,11 +10,10 @@ class GameObject;
 namespace action {
 struct Action {
     virtual void operator()(std::weak_ptr<GameObject>) const = 0;
-    virtual nl::json to_json() const = 0;
     virtual ~Action() = default;
 };
 
-struct BinaryAction : Action {
+struct BinaryAction : virtual Action {
     virtual void operator()(std::weak_ptr<const GameObject>, std::weak_ptr<GameObject>) const = 0;
 
     void operator()(std::weak_ptr<GameObject> obj) const override {

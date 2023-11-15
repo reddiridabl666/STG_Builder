@@ -347,6 +347,7 @@ void App::on_state_start(State state) {
             ui_.emplace("levels", std::make_unique<ui::DefaultBox>(message_func(Message::YourLevels), load_levels(),
                                                                    ImVec2{400, 400}, window_.get_center()));
             game_ = builder_.create_engine(window_);
+            game_->register_events();
             return;
         }
         case State::LevelEditor: {

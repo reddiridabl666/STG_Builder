@@ -2,7 +2,7 @@
 
 #include <SFML/System/Clock.hpp>
 
-#include "GameInfo.hpp"
+#include "GameState.hpp"
 #include "Utils.hpp"
 #include "ui/elements/StatBox.hpp"
 
@@ -17,6 +17,7 @@ App::App(Window& window, Game<>&& game) : window_(window), game_(std::move(game)
 
 void App::run() {
     sf::Clock timer;
+    game_.register_events();
 
     while (window_.is_open()) {
         window_.process_events();

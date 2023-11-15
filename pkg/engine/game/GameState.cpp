@@ -1,4 +1,4 @@
-#include "GameInfo.hpp"
+#include "GameState.hpp"
 
 #include "GameObject.hpp"
 

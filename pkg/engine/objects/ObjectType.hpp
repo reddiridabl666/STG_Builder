@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFML/System/Vector2.hpp>
+#include <memory>
 #include <string>
-#include <tl/expected.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -11,6 +11,7 @@
 #include "GameObject.hpp"
 #include "HitboxProps.hpp"
 #include "ObjectOptions.hpp"
+#include "Pattern.hpp"
 #include "Properties.hpp"
 
 class Player;
@@ -33,6 +34,8 @@ class ObjectType {
         obj_count_ = 0;
     }
 
+    Pattern* pattern(const std::string&);
+
     std::string name;
     Value speed;
     sf::Vector2f size;
@@ -50,6 +53,8 @@ class ObjectType {
     nl::json on_death;
     nl::json on_player;
     nl::json on_own;
+
+    std::unordered_map<std::string, std::unique_ptr<Pattern>> patterns;
 
   private:
     size_t obj_count_ = 0;

@@ -4,11 +4,12 @@ project(stg_builder_gen)
 
 set(SOURCES
     generators/ObjectTypeFactory.cpp
+    generators/PatternFactory.cpp
     generators/ObjectOptionsFactory.cpp
     generators/FuncBuilder.cpp
     objects/ObjectOptions.cpp
     objects/ObjectType.cpp
-    game/GameInfo.cpp
+    game/GameState.cpp
     game/PlayerManager.cpp
     level/Level.cpp
     level/LevelLoader.cpp

@@ -6,16 +6,12 @@
 namespace action {
 
 namespace {
-std::unique_ptr<MutableGetter> create_mutable_getter(const nl::json& json) {
-    if (json.is_string()) {
-        auto property = json.get<std::string>();
-        if (property == "speed") {
-            return std::make_unique<SpeedGetter>();
-        }
-        return std::make_unique<ObjectPropertyGetter>(std::move(property));
+std::unique_ptr<MutableGetter> create_mutable_getter(std::string&& property) {
+    if (property == "speed") {
+        return std::make_unique<SpeedGetter>();
     }
 
-    return nullptr;
+    return std::make_unique<ObjectPropertyGetter>(std::move(property));
 }
 
 std::unique_ptr<Getter> create_undecorated_getter(const nl::json& json) {
@@ -27,7 +23,17 @@ std::unique_ptr<Getter> create_undecorated_getter(const nl::json& json) {
         return std::make_unique<ConstGetter>(json.get<float>());
     }
 
-    return create_mutable_getter(json);
+    if (!json.is_string()) {
+        return nullptr;
+    }
+
+    auto property = json.get<std::string>();
+    if (property.starts_with("random(")) {
+        auto [left, right] = rng::parse(property);
+        return std::make_unique<RandomGetter>(left, right);
+    }
+
+    return create_mutable_getter(std::move(property));
 }
 
 std::unique_ptr<Getter> create_getter_decorator(std::unique_ptr<Getter>& original, const std::string& key,
@@ -61,38 +67,9 @@ std::unique_ptr<Getter> create_getter(const nl::json& json) {
     return res;
 }
 
-std::unique_ptr<BinaryAction> create_undecorated_action(const nl::json& json) {
-    std::string type = json.value("action", "");
-    std::string property_value = json.value("property", "");
-
-    if (property_value == "") {
-        return nullptr;
-    }
-
-    if (type == "") {
-        return nullptr;
-    }
-
-    auto property = create_mutable_getter(property_value);
-
-    if (type == "inc") {
-        return std::make_unique<Incrementor>(std::move(property));
-    }
-
-    if (type == "dec") {
-        return std::make_unique<Decrementor>(std::move(property));
-    }
-
-    if (type == "reset") {
-        return std::make_unique<Resetter>(std::move(property));
-    }
-
-    auto value = json.find("value");
-    if (value == json.end()) {
-        return nullptr;
-    }
-
-    auto getter = create_getter(*value);
+std::unique_ptr<BinaryAction> create_binary_action(const std::string& type, std::unique_ptr<MutableGetter>& property,
+                                                   const nl::json& value) {
+    auto getter = create_getter(value);
     if (!getter) {
         return nullptr;
     }
@@ -120,6 +97,94 @@ std::unique_ptr<BinaryAction> create_undecorated_action(const nl::json& json) {
     return nullptr;
 }
 
+std::unique_ptr<Action> create_unary_action(const std::string& type, const std::string& property) {
+    if (type == "die") {
+        return std::make_unique<Killer>();
+    }
+
+    if (type == "toggle_visibility") {
+        return std::make_unique<VisibilityToggler>();
+    }
+
+    if (type == "shoot") {
+        return std::make_unique<Shooter>(property);
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<Action> create_unary_property_action(const std::string& type,
+                                                     std::unique_ptr<MutableGetter>& property) {
+    if (type == "inc") {
+        return std::make_unique<Incrementor>(std::move(property));
+    }
+
+    if (type == "dec") {
+        return std::make_unique<Decrementor>(std::move(property));
+    }
+
+    if (type == "reset") {
+        return std::make_unique<Resetter>(std::move(property));
+    }
+
+    return nullptr;
+}
+
+template <typename ActionType>
+std::unique_ptr<ActionType> create_undecorated_action(const nl::json& json);
+
+template <>
+std::unique_ptr<BinaryAction> create_undecorated_action<BinaryAction>(const nl::json& json) {
+    std::string type = json.value("action", "");
+    std::string property_value = json.value("property", "");
+
+    if (type == "") {
+        return nullptr;
+    }
+
+    if (property_value == "" || type == "shoot") {
+        return BinaryAdapter::wrap(create_unary_action(type, property_value));
+    }
+
+    auto property = create_mutable_getter(std::move(property_value));
+    if (!property) {
+        return nullptr;
+    }
+
+    auto value = json.find("value");
+    if (value == json.end()) {
+        return BinaryAdapter::wrap(create_unary_property_action(type, property));
+    }
+
+    return create_binary_action(type, property, *value);
+}
+
+template <>
+std::unique_ptr<Action> create_undecorated_action<Action>(const nl::json& json) {
+    std::string type = json.value("action", "");
+    std::string property_value = json.value("property", "");
+
+    if (type == "") {
+        return nullptr;
+    }
+
+    if (property_value == "" || type == "shoot") {
+        return create_unary_action(type, property_value);
+    }
+
+    auto property = create_mutable_getter(std::move(property_value));
+    if (!property) {
+        return nullptr;
+    }
+
+    auto value = json.find("value");
+    if (value == json.end()) {
+        return create_unary_property_action(type, property);
+    }
+
+    return create_binary_action(type, property, *value);
+}
+
 template <typename ActionType>
 std::unique_ptr<ActionType> create_action_decorator(std::unique_ptr<ActionType>& original, const std::string& key,
                                                     const nl::json& value) {
@@ -145,8 +210,9 @@ void decorate_action(std::unique_ptr<ActionType>& original, const nl::json& deco
     }
 }
 
-std::unique_ptr<BinaryAction> create_single_action(const nl::json& json) {
-    std::unique_ptr<BinaryAction> res = create_undecorated_action(json);
+template <typename ActionType>
+std::unique_ptr<ActionType> create_single_action(const nl::json& json) {
+    std::unique_ptr<ActionType> res = create_undecorated_action<ActionType>(json);
     if (!res) {
         return res;
     }
@@ -161,25 +227,26 @@ std::unique_ptr<BinaryAction> create_single_action(const nl::json& json) {
     return res;
 }
 
-std::unique_ptr<BinaryAction> create_multi_action(const nl::json& json) {
-    std::vector<std::unique_ptr<BinaryAction>> actions;
+template <typename ActionType>
+std::unique_ptr<ActionType> create_multi_action(const nl::json& json) {
+    std::vector<std::unique_ptr<ActionType>> actions;
     actions.reserve(json.size());
 
     for (const auto& [_, value] : json.items()) {
-        auto action = create_single_action(value);
+        auto action = create_single_action<ActionType>(value);
         if (action) {
             actions.push_back(std::move(action));
         }
     }
 
-    return std::make_unique<MultiAction>(std::move(actions));
+    return std::make_unique<MultiAction<ActionType>>(std::move(actions));
 }
 }  // namespace
 
-template <>
-std::unique_ptr<BinaryAction> Factory::create<BinaryAction>(const nl::json& json) {
+template <typename ActionType>
+std::unique_ptr<ActionType> Factory::create(const nl::json& json) {
     if (json.is_array()) {
-        return create_multi_action(json);
+        return create_multi_action<ActionType>(json);
     }
 
     if (!json.is_object()) {
@@ -188,7 +255,7 @@ std::unique_ptr<BinaryAction> Factory::create<BinaryAction>(const nl::json& json
 
     auto actions = json.find("actions");
     if (actions != json.end()) {
-        auto res = create_multi_action(*actions);
+        auto res = create_multi_action<ActionType>(*actions);
         auto decorators = json.find("with");
         if (decorators == json.end()) {
             return res;
@@ -198,11 +265,9 @@ std::unique_ptr<BinaryAction> Factory::create<BinaryAction>(const nl::json& json
         return res;
     }
 
-    return create_single_action(json);
+    return create_single_action<ActionType>(json);
 }
 
-template <>
-std::unique_ptr<Action> Factory::create<Action>(const nl::json& json) {
-    return create<BinaryAction>(json);
-}
+template std::unique_ptr<Action> Factory::create<Action>(const nl::json& json);
+template std::unique_ptr<BinaryAction> Factory::create<BinaryAction>(const nl::json& json);
 }  // namespace action

@@ -26,6 +26,8 @@ class Game {
 
     Game(Game&&);
 
+    void register_events();
+
     void render(float delta_time);
 
     void clear();
@@ -42,6 +44,7 @@ class Game {
 
     void add_object(std::shared_ptr<GameObject>&&);
     void add_player(std::shared_ptr<GameObject>&&);
+    void add_objects(std::vector<std::shared_ptr<GameObject>>&&);
 
     void add_object_to_rtree(const std::shared_ptr<GameObject>&);
     void remove_object_from_rtree(const std::shared_ptr<GameObject>&);
@@ -78,8 +81,7 @@ class Game {
     PlayerManager player_manager_;
 
   private:
-    static inline size_t game_id_ = 0;
-    std::string event_key_;
+    bool events_registered_ = false;
 };
 }  // namespace engine
 

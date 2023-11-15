@@ -1,6 +1,6 @@
 #include "Level.hpp"
 
-#include "GameInfo.hpp"
+#include "GameState.hpp"
 
 namespace engine {
 void Level::prepare_for_load() {

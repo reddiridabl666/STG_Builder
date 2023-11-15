@@ -1,5 +1,7 @@
 #include "ObjectTypeFactory.hpp"
 
+#include "PatternFactory.hpp"
+
 ObjectTypeFactory::res_type ObjectTypeFactory::generate(const nl::json& json) {
 #ifdef DEBUG
     LOG("Generating object types");
@@ -133,22 +135,38 @@ struct OnPlayerHandler : public Handler<ObjectType> {
         obj.on_player = value;
     }
 };
+
+struct PatternHandler : public Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "patterns";
+    }
+
+    void handle(ObjectType& obj, const std::string&, const nl::json& json) override {
+        for (auto& [key, value] : json.items()) {
+            obj.patterns[key] = PatternFactory::create(value);
+        }
+    }
+};
 }  // namespace
 
 HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     std::vector<std::unique_ptr<Handler<ObjectType>>> res;
-    res.reserve(11);
+    res.reserve(12);
 
     res.push_back(std::make_unique<SizeHandler>());
     res.push_back(std::make_unique<SpeedHandler>());
     res.push_back(std::make_unique<TagHandler>());
     res.push_back(std::make_unique<ImageHandler>());
     res.push_back(std::make_unique<SoundHandler>());
+
     res.push_back(std::make_unique<HitboxHandler>());
     res.push_back(std::make_unique<CollisionHandler>());
+
     res.push_back(std::make_unique<OnDeathHandler>());
     res.push_back(std::make_unique<OnOwnHandler>());
     res.push_back(std::make_unique<OnPlayerHandler>());
+
+    res.push_back(std::make_unique<PatternHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectType>>());
 
     return res;

@@ -3,7 +3,7 @@
 #include "ActionFactory.hpp"
 #include "ActionMap.hpp"
 #include "AssetManager.hpp"
-#include "GameInfo.hpp"
+#include "GameState.hpp"
 #include "HitboxFactory.hpp"
 #include "Player.hpp"
 #include "SpriteObject.hpp"
@@ -52,4 +52,12 @@ std::shared_ptr<sf::Texture> ObjectType::get_texture(assets::Textures& textures)
     }
 
     return textures.get_or(images[0], assets::kFallbackImage);
+}
+
+Pattern* ObjectType::pattern(const std::string& name) {
+    auto pattern = patterns.find(name);
+    if (pattern == patterns.end()) {
+        return nullptr;
+    }
+    return pattern->second.get();
 }

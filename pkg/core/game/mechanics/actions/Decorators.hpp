@@ -24,8 +24,6 @@ struct MultiplyGetterDecorator : public Decorator<Getter> {
 
     Value get(const GameObject& obj) const override;
 
-    nl::json to_json() const override;
-
   private:
     float multiplier_;
 };
@@ -34,8 +32,9 @@ template <typename ActionType>
 struct ActionDecorator : public Decorator<ActionType> {
     using Decorator<ActionType>::Decorator;
 
-    void operator()(std::weak_ptr<const GameObject> subject,
-                    std::weak_ptr<GameObject> object) const requires std::is_same_v<ActionType, BinaryAction> override {
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const
+        requires std::is_same_v<ActionType, BinaryAction>
+    {
         decorator([this, subject, object] {
             this->original_->operator()(subject, object);
         });
@@ -57,8 +56,6 @@ struct TimeoutDecorator : public ActionDecorator<ActionType> {
     TimeoutDecorator(std::unique_ptr<ActionType>&& action, float timeout = 1)
         : ActionDecorator<ActionType>(std::move(action)), timeout_(timeout), current_(timeout) {}
 
-    nl::json to_json() const override;
-
     void decorator(const std::function<void()>& fn) const override;
 
   private:
@@ -67,13 +64,6 @@ struct TimeoutDecorator : public ActionDecorator<ActionType> {
     mutable float current_ = 0;
     mutable sf::Clock clock_;
 };
-
-template <typename ActionType>
-inline nl::json TimeoutDecorator<ActionType>::to_json() const {
-    auto json = this->original_->to_json();
-    json["/with/timeout"_json_pointer] = timeout_;
-    return json;
-}
 
 template <typename ActionType>
 inline void TimeoutDecorator<ActionType>::decorator(const std::function<void()>& fn) const {
@@ -93,10 +83,9 @@ struct DelayDecorator : public Decorator<ActionType> {
     DelayDecorator(std::unique_ptr<ActionType>&& action, float delay = 1)
         : Decorator<ActionType>(std::move(action)), delay_(delay) {}
 
-    nl::json to_json() const override;
-
-    void operator()(std::weak_ptr<const GameObject> subject,
-                    std::weak_ptr<GameObject> object) const requires std::is_same_v<ActionType, BinaryAction> override {
+    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const
+        requires std::is_same_v<ActionType, BinaryAction>
+    {
         Queue::get().push(
             [this, subject, object] {
                 if (subject.expired() || object.expired()) {
@@ -122,10 +111,4 @@ struct DelayDecorator : public Decorator<ActionType> {
     float delay_;
 };
 
-template <typename ActionType>
-inline nl::json DelayDecorator<ActionType>::to_json() const {
-    auto json = this->original_->to_json();
-    json["/with/delay"_json_pointer] = delay_;
-    return json;
-}
 }  // namespace action
