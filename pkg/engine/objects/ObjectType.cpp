@@ -36,7 +36,6 @@ std::shared_ptr<GameObject> ObjectType::create_player(const ObjectOptions& obj_o
                                                       const PlayerOptions& opts) const {
     auto player = create_object(obj_opts, assets);
 
-    player->set_life_update(alive::always);
     player->set_movement(movement::user_control(opts.num, opts.keys, opts.joy));
     player->props().set(kPlayerNum, opts.num);
 

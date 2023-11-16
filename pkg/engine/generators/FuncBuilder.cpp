@@ -2,6 +2,10 @@
 
 #include "Life.hpp"
 
+namespace {
+alive::update alive_condition(const nl::json& json);
+}
+
 template <>
 std::unique_ptr<movement::Rule> FuncBuilder::generate(const FuncInfo& info) {
     // clang-format off
@@ -48,6 +52,10 @@ alive::update FuncBuilder::generate(const FuncInfo& info) {
         return alive::timed(info.args.at("seconds").get<float>());
     }
 
+    if (info.type == "condition") {
+        return alive_condition(info.args);
+    }
+
     throw std::runtime_error("Unsupported alive func type");
 }
 
@@ -65,3 +73,22 @@ std::unique_ptr<movement::Rule> FuncBuilder::generate(const movement::MultiInfo&
 
     return std::make_unique<movement::Multi>(std::move(funcs), std::move(times), info.repeat);
 }
+
+namespace {
+alive::update alive_condition(const nl::json& json) {
+    static const std::unordered_map<std::string, std::function<bool(float, float)>> op_map = {
+        {"<", std::less<float>{}},           {">", std::greater<float>{}},   {"<=", std::less_equal<float>{}},
+        {">=", std::greater_equal<float>{}}, {"==", std::equal_to<float>{}}, {"!=", std::not_equal_to<float>{}},
+    };
+
+    std::string property = json.value("property", "health");
+    std::string op = json.value("op", ">");
+    float value = json.value("than", 0);
+
+    if (!op_map.contains(op)) {
+        op = ">";
+    }
+
+    return alive::property_condition(property, op_map.at(op), value);
+}
+}  // namespace

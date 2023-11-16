@@ -16,6 +16,9 @@ update timed(float seconds);
 
 update in_bounds(float margin = 0);
 
+update property_condition(const std::string& property, std::function<bool(float, float)> cond = std::less<float>{},
+                          float than = 0);
+
 const inline update default_func = in_bounds(0);
 
 inline const update always = [](auto&, auto&) {

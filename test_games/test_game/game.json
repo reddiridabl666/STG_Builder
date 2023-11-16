@@ -42,12 +42,29 @@
         "x": 267.0,
         "y": 1013.77783203125
       },
+      "lives": {
+        "args": {
+          "property": "health",
+          "op": ">",
+          "than": 0
+        },
+        "type": "condition"
+      },
       "rotation": 0,
       "score": 0,
       "stop_at_bounds": true,
       "type": "player"
     },
     {
+      "health": 100,
+      "lives": {
+        "args": {
+          "property": "health",
+          "op": ">",
+          "than": 0
+        },
+        "type": "condition"
+      },
       "opts": {
         "joy": {
           "shoot": 0,
