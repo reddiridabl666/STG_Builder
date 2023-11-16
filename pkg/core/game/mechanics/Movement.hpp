@@ -68,6 +68,8 @@ struct Func : public Rule {
 
 std::unique_ptr<Rule> linear(const sf::Vector2f& velocity = {0, -1});
 
+std::unique_ptr<Rule> following_parent();
+
 std::unique_ptr<Rule> circular(const sf::Vector2f& radius, float speed);
 
 std::unique_ptr<Rule> user_control(int user_num = 1, const KeyControls& keys = kDefaultKeyControls,

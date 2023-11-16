@@ -76,6 +76,10 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
         return props_;
     }
 
+    sf::Vector2f prev_pos() const {
+        return prev_pos_;
+    }
+
     const Properties& props() const {
         return const_cast<GameObject*>(this)->props();
     }
@@ -190,6 +194,7 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
     float activity_start_ = kDefaultActivityStart;
 
     std::weak_ptr<GameObject> parent_;
+    sf::Vector2f prev_pos_;
 
     void update_position(const GameField& field, float delta_time);
     bool update_activity(const GameField& field);

@@ -3,12 +3,14 @@
 #include "Math.hpp"
 #include "patterns/ArcPosition.hpp"
 #include "patterns/DelegatedPattern.hpp"
+#include "patterns/FollowingParentMovement.hpp"
 #include "patterns/FromCenterMovement.hpp"
 #include "patterns/LinePosition.hpp"
 #include "patterns/LinearMovement.hpp"
 #include "patterns/ObjectCount.hpp"
 #include "patterns/RectanglePosition.hpp"
 #include "patterns/SpreadPosition.hpp"
+#include "patterns/TargetedMovement.hpp"
 
 struct PatternMovementFactory {
     static std::unique_ptr<Pattern::MovementSetter> create(const nl::json& json) {
@@ -24,6 +26,14 @@ struct PatternMovementFactory {
 
         if (type == "from_center") {
             return std::make_unique<FromCenterMovement>();
+        }
+
+        if (type == "follow_parent") {
+            return std::make_unique<FollowingParentMovement>();
+        }
+
+        if (type == "targeted") {
+            return std::make_unique<TargetedMovement>(json.value("tag", GameObjectTag::Player));
         }
 
         if (type == "random") {

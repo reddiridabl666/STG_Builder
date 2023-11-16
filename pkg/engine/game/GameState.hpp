@@ -25,38 +25,14 @@ class GameState : public Observable<int, GameObject> {
         return info_;
     }
 
-    size_t enemy_count() {
-        return enemy_count_;
-    }
+    size_t enemy_count();
 
-    // size_t player_count() {
-    //     return players_.size();
-    // }
+    void reset();
 
-    // void add_player(std::weak_ptr<const GameObject> player) {
-    //     players_.push_back(player);
-    // }
-
-    void reset() {
-        enemy_count_ = 0;
-    }
-
-    // const auto& players() const {
-    //     return players_;
-    // }
-
-    // void clear_players() {
-    //     players_.clear();
-    // }
-
-    // void erase_player(size_t id) {
-    //     players_.erase(players_.begin() + id);
-    // }
+    const std::vector<std::weak_ptr<const GameObject>>& objects_by_tag(GameObjectTag);
 
   private:
     GameState();
 
-    size_t enemy_count_ = 0;
-
-    // std::vector<std::weak_ptr<const GameObject>> players_;
+    std::unordered_map<GameObjectTag, std::vector<std::weak_ptr<const GameObject>>> objects_;
 };

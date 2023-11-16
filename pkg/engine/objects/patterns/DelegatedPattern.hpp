@@ -12,7 +12,8 @@ class DelegatedPattern : public Pattern {
           movement_(std::move(movement)),
           pos_(std::move(pos)) {}
 
-    objects create(const std::shared_ptr<GameObject>& parent, object_types& types, assets::Manager& assets) override {
+    objects create(const std::shared_ptr<GameObject>& parent, const object_types& types,
+                   assets::Manager& assets) override {
         objects res;
         res.reserve(count_->get());
         auto& bullet_type = types.at(bullet_type_);
@@ -22,7 +23,10 @@ class DelegatedPattern : public Pattern {
             res.back()->set_parent(parent);
         }
 
-        pos_->set(*parent, res);
+        if (pos_) {
+            pos_->set(*parent, res);
+        }
+
         if (movement_) {
             movement_->set(*parent, res);
         }

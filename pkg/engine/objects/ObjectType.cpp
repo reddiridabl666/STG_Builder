@@ -8,7 +8,7 @@
 #include "Player.hpp"
 #include "SpriteObject.hpp"
 
-std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts, assets::Manager& assets) {
+std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts, assets::Manager& assets) const {
     auto texture = get_texture(assets.textures());
 
     auto displayable = std::make_unique<SpriteObject>(std::move(texture));
@@ -33,7 +33,7 @@ std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
 }
 
 std::shared_ptr<GameObject> ObjectType::create_player(const ObjectOptions& obj_opts, assets::Manager& assets,
-                                                      const PlayerOptions& opts) {
+                                                      const PlayerOptions& opts) const {
     auto player = create_object(obj_opts, assets);
 
     player->set_life_update(alive::always);
@@ -43,7 +43,7 @@ std::shared_ptr<GameObject> ObjectType::create_player(const ObjectOptions& obj_o
     return player;
 }
 
-std::shared_ptr<sf::Texture> ObjectType::get_texture(assets::Textures& textures) {
+std::shared_ptr<sf::Texture> ObjectType::get_texture(assets::Textures& textures) const {
     if (images.empty()) {
         auto texture = textures.get(assets::kFallbackImage);
         if (!texture) {

@@ -43,6 +43,7 @@ GameObject::GameObject(
     set_origin(get_size() / 2);
     set_size(size);
     hitbox_ = std::move(hitbox);
+    prev_pos_ = pos();
 }
 // clang-format on
 
@@ -108,6 +109,8 @@ void GameObject::update_position(const GameField& field, float delta_time) {
     if (!move_update_ || !(*move_update_)) {
         return;
     }
+
+    prev_pos_ = pos();
 
     if (move_update_->moves_with_field()) {
         move(field.speed() * sf::Vector2f{0, -1} * delta_time);

@@ -26,6 +26,7 @@ class Pattern {
 
     using object_types = std::unordered_map<std::string, ObjectType>;
 
-    virtual objects create(const std::shared_ptr<GameObject>& parent, object_types& types, assets::Manager& assets) = 0;
+    virtual objects create(const std::shared_ptr<GameObject>& parent, const object_types& types,
+                           assets::Manager& assets) = 0;
     virtual ~Pattern() = default;
 };

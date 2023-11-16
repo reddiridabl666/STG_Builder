@@ -94,6 +94,17 @@ std::unique_ptr<Rule> linear(const sf::Vector2f& velocity) {
     });
 }
 
+std::unique_ptr<Rule> following_parent() {
+    return std::make_unique<Func>([](const GameObject& obj, float) {
+        auto pos = obj.parent().expired() ? obj.pos()
+                                          : obj.pos() + obj.parent().lock()->pos() - obj.parent().lock()->prev_pos();
+        return Rule::Result{
+            .type = Rule::Type::Pos,
+            .pos = pos,
+        };
+    });
+}
+
 std::unique_ptr<Rule> circular(const sf::Vector2f& radius, float speed) {
     return std::make_unique<Circular>(radius, speed);
 }

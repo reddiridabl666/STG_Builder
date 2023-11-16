@@ -25,10 +25,10 @@ class ObjectType {
 
     ObjectType(const std::string& name = "", const sf::Vector2f& size = {}) : name(name), size(size) {}
 
-    std::shared_ptr<GameObject> create_object(const ObjectOptions& opts, assets::Manager& assets);
+    std::shared_ptr<GameObject> create_object(const ObjectOptions& opts, assets::Manager& assets) const;
 
     std::shared_ptr<GameObject> create_player(const ObjectOptions& obj_opts, assets::Manager& assets,
-                                              const PlayerOptions& opts);
+                                              const PlayerOptions& opts) const;
 
     void reset_count() {
         obj_count_ = 0;
@@ -57,7 +57,7 @@ class ObjectType {
     std::unordered_map<std::string, std::unique_ptr<Pattern>> patterns;
 
   private:
-    size_t obj_count_ = 0;
+    mutable size_t obj_count_ = 0;
 
-    std::shared_ptr<sf::Texture> get_texture(assets::Textures& textures);
+    std::shared_ptr<sf::Texture> get_texture(assets::Textures& textures) const;
 };
