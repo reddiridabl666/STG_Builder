@@ -1,27 +1,24 @@
 #pragma once
-
 #include <SFML/System/Vector2.hpp>
 
-#include "FindNearest.hpp"
 #include "GameObject.hpp"
-#include "GameState.hpp"
 #include "Movement.hpp"
 #include "Pattern.hpp"
+#include "Random.hpp"
 
-struct TargetedMovement : Pattern::MovementSetter {
+struct RandomMovement : Pattern::MovementSetter {
   public:
-    TargetedMovement(GameObjectTag tag) : tag_(tag) {}
+    RandomMovement(const sf::Vector2f& min, const sf::Vector2f& max)
+        : area_(min.x, min.y, max.x - min.x, max.y - min.y) {}
 
     void set(const GameObject&, Pattern::objects& objects) const override {
-        auto targets = GameState::get().objects_by_tag(tag_);
         for (auto& obj : objects) {
-            auto target = find_nearest(obj, targets).lock()->pos();
-            auto direction = linalg::unit(target - obj->pos());
+            auto direction = rng::vec(area_);
             obj->set_movement(movement::linear(direction));
             obj->set_rotation(math::to_degrees(std::atan(-direction.x / direction.y)));
         }
     }
 
   private:
-    const GameObjectTag tag_;
+    const sf::FloatRect area_;
 };

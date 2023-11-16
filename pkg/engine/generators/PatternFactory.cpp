@@ -1,16 +1,19 @@
 #include "PatternFactory.hpp"
 
+#include "FuncBuilder.hpp"
 #include "Math.hpp"
 #include "patterns/ArcPosition.hpp"
 #include "patterns/DelegatedPattern.hpp"
 #include "patterns/FollowingParentMovement.hpp"
 #include "patterns/FromCenterMovement.hpp"
 #include "patterns/LinePosition.hpp"
-#include "patterns/LinearMovement.hpp"
 #include "patterns/ObjectCount.hpp"
+#include "patterns/RandomMovement.hpp"
 #include "patterns/RectanglePosition.hpp"
+#include "patterns/RuleMovement.hpp"
 #include "patterns/SpreadPosition.hpp"
 #include "patterns/TargetedMovement.hpp"
+#include "patterns/TrackingMovement.hpp"
 
 struct PatternMovementFactory {
     static std::unique_ptr<Pattern::MovementSetter> create(const nl::json& json) {
@@ -20,27 +23,30 @@ struct PatternMovementFactory {
 
         std::string type = json.value("type", "");
 
-        if (type == "linear") {
-            return std::make_unique<LinearMovement>(json.value("velocity", sf::Vector2f{0, -1}));
-        }
-
         if (type == "from_center") {
             return std::make_unique<FromCenterMovement>();
-        }
-
-        if (type == "follow_parent") {
-            return std::make_unique<FollowingParentMovement>();
         }
 
         if (type == "targeted") {
             return std::make_unique<TargetedMovement>(json.value("tag", GameObjectTag::Player));
         }
 
-        if (type == "random") {
-            return nullptr;
+        if (type == "tracking") {
+            return std::make_unique<TrackingMovement>(json.value("tag", GameObjectTag::Player));
         }
 
-        return nullptr;
+        if (type == "random") {
+            return std::make_unique<RandomMovement>(json.value("min", sf::Vector2f{}),
+                                                    json.value("max", sf::Vector2f{}));
+        }
+
+        try {
+            auto rule = FuncBuilder::generate<std::unique_ptr<movement::Rule>>(
+                FuncInfo{.type = type, .args = json.value("args", nl::json::object())});
+            return std::make_unique<RuleMovement>(std::move(rule));
+        } catch (...) {
+            return nullptr;
+        }
     }
 };
 

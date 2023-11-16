@@ -20,8 +20,16 @@ Window::Window(const std::string& name, uint width, uint height, bool is_fullscr
     });
 
     add_handler("window_resize", sf::Event::Resized, [this](const auto& event) {
-        sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
-        window_.setView(sf::View(visibleArea));
+        sf::FloatRect visible_area(0.f, 0.f, event.size.width, event.size.height);
+        window_.setView(sf::View(visible_area));
+    });
+
+    add_handler("window_key_pressed", sf::Event::KeyPressed, [this](const auto& event) {
+        held_keys_.insert(event.key.code);
+    });
+
+    add_handler("window_key_released", sf::Event::KeyReleased, [this](const auto& event) {
+        held_keys_.erase(event.key.code);
     });
 }
 
@@ -29,7 +37,7 @@ bool Window::is_open() const {
     return window_.isOpen();
 }
 
-void Window::process_events() {
+void Window::process_events(float delta_time) {
     sf::Event event{};
     while (window_.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(window_, event);
@@ -40,6 +48,8 @@ void Window::process_events() {
             }
         }
     }
+
+    resolve_key_hold_events(delta_time);
 }
 
 sf::Keyboard::Key Window::await_key_press(float seconds, int sleep_delta) {
@@ -71,8 +81,10 @@ void Window::remove_handler(const std::string& key) {
 }
 
 void Window::main_loop(const std::function<void()>& cb) {
+    sf::Clock timer;
+
     while (is_open()) {
-        process_events();
+        process_events(timer.restart().asSeconds());
         clear();
 
         update_ui();
@@ -126,4 +138,17 @@ void Window::close() {
 
 Window::~Window() {
     ImGui::SFML::Shutdown();
+}
+
+void Window::resolve_key_hold_events(float delta_time) {
+    for (auto key : held_keys_) {
+        for (auto& handler : key_hold_handlers_[key]) {
+            if (handler.cur_time < handler.timeout) {
+                handler.cur_time += delta_time;
+                continue;
+            }
+            handler.handler();
+            handler.cur_time = 0;
+        }
+    }
 }

@@ -4,6 +4,7 @@
 
 #include "GameObject.hpp"
 #include "LinAlg.hpp"
+#include "Math.hpp"
 #include "Movement.hpp"
 #include "Pattern.hpp"
 
@@ -12,6 +13,7 @@ struct FromCenterMovement : Pattern::MovementSetter {
         for (auto& obj : objects) {
             auto direction = linalg::unit(obj->pos() - parent.pos());
             obj->set_movement(movement::linear(direction));
+            obj->set_rotation(math::to_degrees(std::atan(-direction.x / direction.y)));
         }
     }
 };

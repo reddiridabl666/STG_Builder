@@ -4,6 +4,7 @@
 #include <SFML/System.hpp>
 #include <functional>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "LinAlg.hpp"
 
@@ -15,7 +16,7 @@ class Window {
            bool default_font = true);
 
     bool is_open() const;
-    void process_events();
+    void process_events(float delta_time);
 
     sf::Keyboard::Key await_key_press(float seconds = -1, int sleep_delta = 100);
 
@@ -59,6 +60,8 @@ class Window {
     ~Window();
 
   private:
+    void resolve_key_hold_events(float delta_time);
+
     struct EventHandler {
         sf::Event::EventType type;
         std::function<void(const sf::Event&)> handler;
@@ -68,8 +71,17 @@ class Window {
         }
     };
 
+    struct KeyHoldHandler {
+        float timeout;
+        float cur_time = 0;
+        std::function<void()> handler;
+    };
+
     sf::RenderWindow window_;
     sf::Clock clock_;
 
     std::unordered_map<std::string, EventHandler> handlers_;
+
+    std::unordered_set<sf::Keyboard::Key> held_keys_;
+    std::unordered_map<sf::Keyboard::Key, std::vector<KeyHoldHandler>> key_hold_handlers_;
 };

@@ -19,20 +19,14 @@ void App::run() {
     sf::Clock timer;
     game_.register_events();
 
-    while (window_.is_open()) {
-        window_.process_events();
-        window_.clear();
-
-        window_.update_ui();
+    window_.main_loop([this, &timer] {
         if (!paused_) {
             game_.render(timer.restart().asSeconds());
         } else {
             timer.restart();
             game_.draw_objects();
         }
-
-        window_.display();
-    }
+    });
 }
 
 App::~App() {

@@ -8,6 +8,7 @@
 #include "Controls.hpp"
 #include "FuncInfo.hpp"
 #include "Json.hpp"
+#include "Transformable.hpp"
 
 class GameObject;
 
@@ -69,6 +70,8 @@ struct Func : public Rule {
 std::unique_ptr<Rule> linear(const sf::Vector2f& velocity = {0, -1});
 
 std::unique_ptr<Rule> following_parent();
+
+std::unique_ptr<Rule> tracking(std::weak_ptr<const Transformable>);
 
 std::unique_ptr<Rule> circular(const sf::Vector2f& radius, float speed);
 
