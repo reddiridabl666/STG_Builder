@@ -38,12 +38,42 @@ void to_json(nl::json& json, const SingleActionInput::Value& value) {
     json["with"] = value.with;
 }
 
+void from_json(const nl::json& json, SingleActionInput& input) {
+    input.value = json.value("value", SingleActionInput::Value{});
+    input.property = json.value("property", "score");
+    input.action = json.value("action", "add");
+    input.with = json.value("with", decltype(input.with){});
+}
+
+static const std::vector<std::string> no_property_types = {"die"};
+static const std::vector<std::string> non_value_types = {"reset", "inc", "dec", "shoot"};
+
+void to_json(nl::json& json, const SingleActionInput& input) {
+    json["action"] = input.action;
+
+    if (std::ranges::find(no_property_types, input.action) == no_property_types.end()) {
+        json["property"] = input.property;
+    }
+
+    if (std::ranges::find(non_value_types, input.action) == non_value_types.end()) {
+        json["value"] = input.value;
+    }
+
+    if (!input.with.empty()) {
+        json["with"] = input.with;
+    }
+}
+
 void from_json(const nl::json& json, ActionInput& input) {
-    fmt::println("{}", json.dump(4));
+    if (json.is_array()) {
+        input.actions = json.get<std::vector<SingleActionInput>>();
+        return;
+    }
+
     auto actions = json.find("actions");
 
     if (actions == json.end()) {
-        input.actions.push_back(json.get<SingleActionInput>());
+        input.actions.front() = json.get<SingleActionInput>();
         return;
     }
 
@@ -86,10 +116,12 @@ void SingleActionInput::Value::draw() {
 }
 
 void SingleActionInput::draw() {
-    static const std::vector<std::string> types = {"set", "add", "sub", "mul", "div", "reset", "inc", "dec"};
-    static const std::vector<std::string> non_value_types = {"reset", "inc", "dec"};
+    static const std::vector<std::string> types = {"set",   "add", "sub", "mul", "div",
+                                                   "reset", "inc", "dec", "die", "shoot"};
 
-    ImGui::InputText(message(Message::Property), &property);
+    if (std::ranges::find(no_property_types, action) == no_property_types.end()) {
+        ImGui::InputText(message(Message::Property), &property);
+    }
 
     action_id_ = combo::get_item_id(types, action);
     if (ImGui::Combo(message(Message::ActionType), &action_id_, types)) {

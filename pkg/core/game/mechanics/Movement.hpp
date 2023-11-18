@@ -109,13 +109,14 @@ inline std::unique_ptr<Rule> no_op() {
     return std::make_unique<Func>();
 }
 
-inline const char* const types[4] = {"none", "linear", "circular", "user_control"};
+inline const char* const types[6] = {"none", "linear", "circular", "user_control", "following_parent"};
 
 inline const std::unordered_map<std::string, nl::json> args = {
     {"none", nl::json::object()},
     {"linear", {{"x", 0}, {"y", 0}}},
     {"circular", {{"center", sf::Vector2f{}}, {"speed", 0}}},
     {"user_control", nl::json::object()},
+    {"following_parent", nl::json::object()},
 };
 
 // clang-format off

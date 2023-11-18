@@ -43,8 +43,8 @@
                 ]
             },
             "pos": {
-                "x": 536.0,
-                "y": 609.77783203125
+                "x": 527.0,
+                "y": 470.7778015136719
             },
             "rotation": 0,
             "type": "red enemy"
@@ -160,6 +160,6 @@
             "type": "enemy"
         }
     ],
-    "last_updated": 1699677784,
+    "last_updated": 1700329144,
     "name": "The first level"
 }

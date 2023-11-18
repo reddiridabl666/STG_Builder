@@ -25,6 +25,12 @@ class ObjectType {
 
     ObjectType(const std::string& name = "", const sf::Vector2f& size = {}) : name(name), size(size) {}
 
+    ObjectType(ObjectType&& other) = default;
+    ObjectType& operator=(ObjectType&& other) = default;
+
+    ObjectType(const ObjectType& other) = delete;
+    ObjectType& operator=(const ObjectType& other) = delete;
+
     std::shared_ptr<GameObject> create_object(const ObjectOptions& opts, assets::Manager& assets) const;
 
     std::shared_ptr<GameObject> create_player(const ObjectOptions& obj_opts, assets::Manager& assets,

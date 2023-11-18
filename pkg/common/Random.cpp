@@ -34,11 +34,13 @@ sf::Vector2f vec(const sf::FloatRect& rect) {
 
 std::pair<float, float> parse(std::string_view input) {
     input.remove_prefix(sizeof("random(") - 1);
-    float first = std::stof(std::string(input));
-    float second = std::stof(std::string(input.substr(input.find(",") + 1, input.find(")"))));
 
-    fmt::println("random args: {}, {}", first, second);
-
-    return std::pair(first, second);
+    try {
+        float first = std::stof(std::string(input));
+        float second = std::stof(std::string(input.substr(input.find(",") + 1, input.find(")"))));
+        return std::pair(first, second);
+    } catch (...) {
+        return std::pair(0, 0);
+    }
 }
 }  // namespace rng

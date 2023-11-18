@@ -39,7 +39,8 @@ struct SingleActionInput {
     std::unordered_map<std::string, float> with;
     std::string new_deco_;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(SingleActionInput, property, action, value, with)
+    friend void from_json(const nl::json& json, SingleActionInput& input);
+    friend void to_json(nl::json& json, const SingleActionInput& input);
 };
 
 struct ActionInput {

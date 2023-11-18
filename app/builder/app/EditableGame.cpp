@@ -180,7 +180,7 @@ GameObject& EditableGame::reload_object(const std::string& name, ObjectOptions&&
 }
 
 void EditableGame::update_object_type(const std::string& name, ObjectType&& obj_type) {
-    types_[name] = obj_type;
+    types_[name] = std::move(obj_type);
 
     reload_objects();
 }
