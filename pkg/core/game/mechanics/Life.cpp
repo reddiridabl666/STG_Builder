@@ -25,4 +25,26 @@ update property_condition(const std::string& property, std::function<bool(float,
         return cond(obj.props().get(property), than);
     };
 }
+
+update all(std::vector<update>&& updates) {
+    return [updates = std::move(updates)](const GameObject& obj, const GameField& field) {
+        for (auto& func : updates) {
+            if (!func(obj, field)) {
+                return false;
+            }
+        }
+        return true;
+    };
+}
+
+update any(std::vector<update>&& updates) {
+    return [updates = std::move(updates)](const GameObject& obj, const GameField& field) {
+        for (auto& func : updates) {
+            if (func(obj, field)) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
 }  // namespace alive

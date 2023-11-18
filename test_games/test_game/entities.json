@@ -12,7 +12,7 @@
       "fill_color": "transparent"
     },
     "image": "bullet.png",
-    "tag": "bullet",
+    "tag": "player_bullet",
     "speed": 500,
     "collision": {
       "enemy": {
@@ -36,7 +36,7 @@
       "fill_color": "transparent"
     },
     "image": "leaf_bullet.png",
-    "tag": "bullet",
+    "tag": "player_bullet",
     "speed": 600,
     "collision": {
       "enemy": {
@@ -45,7 +45,13 @@
     }
   },
   "enemy": {
-    "collision": {},
+    "collision": {
+      "player_bullet": {
+        "action": "sub",
+        "value": "damage",
+        "property": "health"
+      }
+    },
     "damage": 25,
     "description": "Simple enemy type",
     "health": 50,
@@ -87,12 +93,7 @@
       "enemy": {
         "action": "sub",
         "property": "health",
-        "value": {
-          "property": "damage",
-          "with": {
-            "mul": 0.5
-          }
-        },
+        "value": "damage",
         "with": {
           "timeout": 1.5
         }
@@ -210,7 +211,13 @@
     "tag": "player"
   },
   "red enemy": {
-    "collision": {},
+    "collision": {
+      "player_bullet": {
+        "action": "sub",
+        "value": "damage",
+        "property": "health"
+      }
+    },
     "damage": 25,
     "description": "Description goes here",
     "hitbox": {

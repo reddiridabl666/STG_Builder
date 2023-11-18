@@ -125,6 +125,30 @@
       }
     ]
   },
+  "game_over": {
+    "border": {
+      "color": "black",
+      "thickness": 2,
+      "rounded": 15
+    },
+    "color": "white",
+    "message": {
+      "EN": "Game over",
+      "RU": "Игра окончена",
+      "font": "ComicSans.ttf",
+      "size": 48
+    },
+    "retry": {
+      "EN": "Try again",
+      "RU": "Ещё раз?",
+      "size": 32
+    },
+    "exit": {
+      "EN": "Exit",
+      "RU": "Выйти",
+      "size": 32
+    }
+  },
   "size": {
     "x": 1280,
     "y": 720
