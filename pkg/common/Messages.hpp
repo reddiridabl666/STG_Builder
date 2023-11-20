@@ -43,6 +43,7 @@ enum class Message {
     Collisions,
     OnOwnActions,
     OnPlayerActions,
+    OnCharacterDeath,
     Games,
     Levels,
     Hitbox,

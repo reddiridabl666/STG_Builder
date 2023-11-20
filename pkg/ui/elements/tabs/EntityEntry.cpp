@@ -133,6 +133,8 @@ void EntityEntry::draw(const Window&) {
 
         on_own_action.draw(message(Message::OnOwnActions));
 
+        on_character_death.draw(message(Message::OnCharacterDeath));
+
         if (ImGui::CollapsingHeader(message(Message::Patterns))) {
             draw_map(patterns, new_pattern_);
         }

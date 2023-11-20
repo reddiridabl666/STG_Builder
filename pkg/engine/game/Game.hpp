@@ -29,6 +29,7 @@ class Game {
     void register_events();
 
     void render(float delta_time);
+    void zoom(float);
 
     void clear();
     void draw_objects();
@@ -53,6 +54,7 @@ class Game {
     void generate_players();
 
     void check_collisions();
+    void resolve_timed_actions(float delta_time);
 
     void clear_dead();
 

@@ -106,10 +106,14 @@ std::unique_ptr<Rule> following_parent() {
 }
 
 std::unique_ptr<Rule> tracking(std::weak_ptr<const Transformable> tracked) {
+    if (tracked.expired()) {
+        return linear();
+    }
+
     return std::make_unique<Func>([tracked](const GameObject& obj, float) {
         return Rule::Result{
             .type = Rule::Type::Velocity,
-            .velocity = !tracked.expired() ? linalg::unit(tracked.lock()->pos() - obj.pos()) : sf::Vector2f{},
+            .velocity = !tracked.expired() ? linalg::unit(tracked.lock()->pos() - obj.pos()) : obj.velocity(),
         };
     });
 }

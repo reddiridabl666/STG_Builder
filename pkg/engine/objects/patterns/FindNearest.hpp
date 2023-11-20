@@ -11,7 +11,12 @@ inline std::weak_ptr<const GameObject> find_nearest(const std::shared_ptr<GameOb
     std::weak_ptr<const GameObject> target;
 
     for (auto& obj : objects) {
+        if (obj.expired()) {
+            continue;
+        }
+
         float new_distance = linalg::distance(obj.lock()->pos(), to->pos());
+
         if (distance > new_distance && obj.lock()->name() != to->name()) {
             distance = new_distance;
             target = obj;

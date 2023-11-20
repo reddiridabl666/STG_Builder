@@ -66,9 +66,11 @@ void Game<RTreeType>::fire_key_event(sf::Keyboard::Key key, const std::string& s
     for (auto& [event, player] : events) {
         for (auto& [name, obj] : objects_) {
             if (name != player->name()) {
-                obj->on_player_action(event + suffix, *player);
+                types_[obj->type_name()].on_player(event + suffix, player, obj);
+                // obj->on_player_action(event + suffix, *player);
             } else {
-                obj->on_own_action(event + suffix);
+                types_[obj->type_name()].on_own(event + suffix, obj);
+                // obj->on_own_action(event + suffix);
             }
         }
     }
@@ -135,13 +137,28 @@ void Game<RTreeType>::draw_objects() {
 
 template <typename RTreeType>
 void Game<RTreeType>::check_collisions() {
-    for (auto obj = hitboxes_.begin(); obj != hitboxes_.end(); ++obj) {
-        for (auto subj = hitboxes_.intersects(obj->first); subj != hitboxes_.qend(); ++subj) {
-            if (obj->second == subj->second) {
+    for (auto obj_hitbox = hitboxes_.begin(); obj_hitbox != hitboxes_.end(); ++obj_hitbox) {
+        for (auto subj_hitbox = hitboxes_.intersects(obj_hitbox->first); subj_hitbox != hitboxes_.qend();
+             ++subj_hitbox) {
+            if (obj_hitbox->second == subj_hitbox->second) {
                 continue;
             }
-            objects_[obj->second]->resolve_collision(*objects_[subj->second]);
+            auto obj = objects_[obj_hitbox->second];
+            auto subj = objects_[subj_hitbox->second];
+
+            types_[obj->type_name()].collision(subj->tag(), subj, obj);
+            // objects_[obj->second]->resolve_collision(*objects_[subj->second]);
         }
+    }
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::resolve_timed_actions(float delta_time) {
+    for (auto& [_, obj] : objects_) {
+        if (!obj->is_active()) {
+            continue;
+        }
+        obj->resolve_timed_actions(delta_time);
     }
 }
 
@@ -160,11 +177,21 @@ void Game<RTreeType>::update(float delta_time) {
     }
 
     check_collisions();
+    resolve_timed_actions(delta_time);
     action::Queue::get().resolve(delta_time);
 
     clear_dead();
 
     assets_.clear_unused();
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::zoom(float value) {
+    if (!level_) {
+        return;
+    }
+
+    level_->field().zoom(value);
 }
 
 template <typename RTreeType>
@@ -180,7 +207,7 @@ void Game<RTreeType>::update_level() {
 
     level_ = res.value();
 
-    objects_.clear();
+    clear();
 
     return generate_players();
 }
@@ -237,8 +264,12 @@ void Game<RTreeType>::clear_dead() {
         if (!el.second->is_alive()) {
             GameState::get().emit(GameState::Event::ObjectDestroyed, *el.second);
 
+            if (el.second->tag() == GameObjectTag::Player) {
+                player_manager_.erase_player(el.second->props().get(kPlayerNum));
+            }
+
             for (auto& [_, obj] : objects_) {
-                obj->emit(GameEvent::ObjectDestroyed, *el.second);
+                types_[obj->type_name()].on_death(el.second->tag(), el.second, obj);
             }
 
             remove_object_from_rtree(el.second);
@@ -253,6 +284,7 @@ void Game<RTreeType>::clear() {
     objects_.clear();
     rtree_.clear();
     hitboxes_.clear();
+    player_manager_.clear();
     GameState::get().reset();
     for (auto& [_, type] : types_) {
         type.reset_count();

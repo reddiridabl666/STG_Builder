@@ -19,6 +19,15 @@ void App::run() {
     sf::Clock timer;
     game_.register_events();
 
+    window_.add_handler("app_zoom", sf::Event::KeyReleased, [this](const sf::Event& event) {
+        if (event.key.code == sf::Keyboard::Equal) {
+            game_.zoom(0.8);
+        }
+        if (event.key.code == sf::Keyboard::Dash) {
+            game_.zoom(1.25);
+        }
+    });
+
     window_.main_loop([this, &timer] {
         if (!paused_) {
             game_.render(timer.restart().asSeconds());

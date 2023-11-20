@@ -78,6 +78,7 @@ const char* message(Message type) {
         {Message::Collisions, {U8("Коллизии"), "Collisions"}},
         {Message::OnOwnActions, {U8("Обработчики событий объекта"), "On own actions"}},
         {Message::OnPlayerActions, {U8("Обработчики событий игроков"), "On player's actions"}},
+        {Message::OnCharacterDeath, {U8("Обработчики уничтожения объектов"), "On character death"}},
         {Message::Rotation, {U8("Поворот (в градусах)"), "Rotation (degrees)"}},
         {Message::Pos, {U8("Расположение"), "Position"}},
         {Message::Pixels, {U8("Пикселей"), "Pixels"}},

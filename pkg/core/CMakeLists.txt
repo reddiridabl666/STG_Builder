@@ -11,6 +11,7 @@ set(SOURCES
     game/mechanics/Life.cpp
     game/mechanics/actions/ActionFactory.cpp
     game/mechanics/actions/ActionQueue.cpp
+    game/mechanics/actions/TimedAction.cpp
     game/mechanics/actions/Decorators.cpp
     game/mechanics/Value.cpp
     game/objects/GameField.cpp

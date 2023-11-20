@@ -1,271 +1,360 @@
 {
-    "enemy": {
-        "collision": {
-            "player_bullet": {
-                "action": "sub",
-                "property": "health",
-                "value": "damage"
-            }
-        },
-        "damage": 25,
-        "description": "Simple enemy type",
-        "health": 50,
-        "hitbox": {
-            "fill_color": {
-                "a": 72,
-                "b": 0,
-                "g": 116,
-                "r": 255
-            },
-            "outline": 3,
-            "outline_color": {
-                "a": 255,
-                "b": 0,
-                "g": 71,
-                "r": 255
-            },
-            "shown": true,
-            "size": {
-                "x": 70.0,
-                "y": 70.0
-            },
-            "type": "rect"
-        },
-        "image": "enemy.png",
-        "on_own_action": {},
-        "on_player_action": {},
-        "patterns": {},
-        "score": 100,
-        "shots": 10,
-        "size": {
-            "x": 80.0,
-            "y": 80.0
-        },
-        "speed": 50.0,
-        "tag": "enemy"
+  "enemy": {
+    "collision": {
+      "player_bullet": {
+        "action": "sub",
+        "property": "health",
+        "value": "damage"
+      }
     },
-    "leaf_bullet": {
-        "collision": {
-            "enemy": {
-                "action": "die",
-                "value": 0.0
-            }
+    "patterns": {
+      "enemy_pattern": {
+        "bullet": "enemy_bullet",
+        "pos": {
+          "type": "line"
         },
-        "description": "Description goes here",
-        "hitbox": {
-            "outline_color": "green",
-            "shown": false,
-            "size": {
-                "x": 15.0,
-                "y": 25.0
-            },
-            "type": "rect"
+        "move": {
+          "type": "targeted",
+          "tag": "player"
         },
-        "image": "leaf_bullet.png",
-        "on_own_action": {},
-        "on_player_action": {},
-        "patterns": {},
-        "size": {
-            "x": 20.0,
-            "y": 35.0
-        },
-        "speed": 600.0,
-        "tag": "player_bullet"
+        "count": 1
+      }
     },
-    "player": {
-        "collision": {
-            "enemy": {
-                "action": "sub",
-                "property": "health",
-                "value": "damage",
-                "with": {
-                    "timeout": 1.5
-                }
-            }
-        },
-        "description": "Description goes here",
-        "hitbox": {
-            "fill_color": {
-                "a": 72,
-                "b": 0,
-                "g": 255,
-                "r": 0
-            },
-            "outline": 2,
-            "outline_color": "green",
-            "shown": true,
-            "size": {
-                "x": 20.0,
-                "y": 25.0
-            },
-            "type": "rect"
-        },
-        "image": "player.png",
-        "on_own_action": {
-            "shoot_pressed": {
-                "actions": [
-                    {
-                        "action": "shoot",
-                        "property": "circle_pattern"
-                    },
-                    {
-                        "action": "shoot",
-                        "property": "normal_pattern"
-                    }
-                ],
-                "with": {}
-            },
-            "slow_pressed": {
-                "action": "mul",
-                "property": "speed",
-                "value": 0.5
-            },
-            "slow_released": {
-                "action": "div",
-                "property": "speed",
-                "value": 0.5
-            }
-        },
-        "on_player_action": {},
-        "patterns": {
-            "circle_pattern": {
-                "bullet": "leaf_bullet",
-                "count": 4,
-                "move": {
-                    "max": {
-                        "x": 0.8,
-                        "y": -1
-                    },
-                    "min": {
-                        "x": -0.8,
-                        "y": -1
-                    },
-                    "type": "random"
-                },
-                "pos": {
-                    "angle": 60,
-                    "offset": {
-                        "x": 0,
-                        "y": 0
-                    },
-                    "radius": 70,
-                    "start_angle": -120,
-                    "type": "circle"
-                }
-            },
-            "normal_pattern": {
-                "bullet": "test_bullet",
-                "count": 2,
-                "move": {
-                    "tag": "enemy",
-                    "type": "tracking"
-                },
-                "pos": {
-                    "parent_offset": {
-                        "x": 0,
-                        "y": 0
-                    },
-                    "sibling_offset": {
-                        "x": 120,
-                        "y": 0
-                    },
-                    "type": "line"
-                }
-            },
-            "spread_pattern": {
-                "bullet": "test_bullet",
-                "count": "random(5, 7)",
-                "move": {
-                    "type": "from_center"
-                },
-                "pos": {
-                    "offset": {
-                        "x": 0,
-                        "y": -70
-                    },
-                    "space": {
-                        "x": 200,
-                        "y": 100
-                    },
-                    "type": "spread"
-                }
-            }
-        },
-        "score": 0,
-        "shots": 0,
-        "size": {
-            "x": 100.0,
-            "y": 60.0
-        },
-        "speed": 300.0,
-        "tag": "player"
+    "timed_actions": [
+      {
+        "action": "shoot",
+        "property": "enemy_pattern",
+        "timeout": 0.5
+      }
+    ],
+    "damage": 25,
+    "description": "Simple enemy type",
+    "health": 180,
+    "hitbox": {
+      "fill_color": {
+        "a": 72,
+        "b": 0,
+        "g": 116,
+        "r": 255
+      },
+      "outline": 3,
+      "outline_color": {
+        "a": 255,
+        "b": 0,
+        "g": 71,
+        "r": 255
+      },
+      "shown": true,
+      "size": {
+        "x": 70.0,
+        "y": 70.0
+      },
+      "type": "rect"
     },
-    "red enemy": {
-        "collision": {
-            "player_bullet": {
-                "action": "sub",
-                "property": "health",
-                "value": "damage"
-            }
-        },
-        "damage": 25,
-        "description": "Description goes here",
-        "hitbox": {
-            "fill_color": {
-                "a": 72,
-                "b": 0,
-                "g": 116,
-                "r": 255
-            },
-            "outline": 2,
-            "outline_color": "red",
-            "shown": true,
-            "size": {
-                "x": 90.0,
-                "y": 95.0
-            },
-            "type": "rect"
-        },
-        "image": "red_enemy.png",
-        "on_own_action": {},
-        "on_player_action": {
-            "slow_pressed": {
-                "action": "mul",
-                "property": "speed",
-                "value": 0.699999988079071
-            }
-        },
-        "patterns": {},
-        "size": {
-            "x": 100.0,
-            "y": 100.0
-        },
-        "speed": 10.0,
-        "tag": "enemy"
+    "image": "enemy.png",
+    "on_own_action": {},
+    "on_player_action": {},
+    "score": 100,
+    "shots": 10,
+    "size": {
+      "x": 80.0,
+      "y": 80.0
     },
-    "test_bullet": {
-        "collision": {
-            "enemy": {
-                "action": "die",
-                "value": 0.0
-            }
+    "speed": 50.0,
+    "tag": "enemy",
+    "lives": {
+      "type": "all",
+      "args": [
+        {
+          "args": {
+            "op": ">",
+            "property": "health",
+            "than": 0
+          },
+          "type": "condition"
         },
-        "description": "Description goes here",
-        "hitbox": {
-            "outline_color": "green",
-            "radius": 10.0,
-            "shown": false,
-            "type": "circle"
-        },
-        "image": "bullet.png",
-        "on_own_action": {},
-        "on_player_action": {},
-        "patterns": {},
-        "size": {
-            "x": 25.0,
-            "y": 25.0
-        },
-        "speed": 500.0,
-        "tag": "player_bullet"
+        {
+          "type": "bounds",
+          "args": {
+            "margin": 100
+          }
+        }
+      ]
     }
+  },
+  "leaf_bullet": {
+    "collision": {
+      "enemy": {
+        "action": "die",
+        "value": 0.0
+      }
+    },
+    "damage": 25,
+    "hitbox": {
+      "outline_color": "green",
+      "shown": false,
+      "size": {
+        "x": 15.0,
+        "y": 25.0
+      },
+      "type": "rect"
+    },
+    "image": "leaf_bullet.png",
+    "on_own_action": {},
+    "on_player_action": {},
+    "patterns": {},
+    "size": {
+      "x": 20.0,
+      "y": 35.0
+    },
+    "speed": 600.0,
+    "tag": "player_bullet"
+  },
+  "enemy_bullet": {
+    "collision": {
+      "player": {
+        "action": "die",
+        "value": 0.0
+      }
+    },
+    "damage": 25,
+    "hitbox": {
+      "outline_color": "red",
+      "shown": true,
+      "radius": 15,
+      "type": "circle"
+    },
+    "image": "red_enemy_bullet.png",
+    "size": {
+      "x": 30.0,
+      "y": 30
+    },
+    "speed": 600.0,
+    "tag": "enemy"
+  },
+  "player": {
+    "collision": {
+      "enemy": {
+        "action": "sub",
+        "property": "health",
+        "value": "damage",
+        "with": {
+          "timeout": 1.5
+        }
+      }
+    },
+    "on_character_death": {
+      "enemy": {
+        "action": "add",
+        "property": "score",
+        "value": "score"
+      }
+    },
+    "description": "Description goes here",
+    "hitbox": {
+      "fill_color": {
+        "a": 72,
+        "b": 0,
+        "g": 255,
+        "r": 0
+      },
+      "outline": 2,
+      "outline_color": "green",
+      "shown": true,
+      "size": {
+        "x": 20.0,
+        "y": 25.0
+      },
+      "type": "rect"
+    },
+    "image": "player.png",
+    "on_own_action": {
+      "shoot_pressed": {
+        "actions": [
+          {
+            "action": "shoot",
+            "property": "circle_pattern"
+          },
+          {
+            "action": "shoot",
+            "property": "normal_pattern"
+          }
+        ],
+        "with": {}
+      },
+      "slow_pressed": {
+        "action": "mul",
+        "property": "speed",
+        "value": 0.5
+      },
+      "slow_released": {
+        "action": "div",
+        "property": "speed",
+        "value": 0.5
+      }
+    },
+    "on_player_action": {},
+    "patterns": {
+      "circle_pattern": {
+        "bullet": "leaf_bullet",
+        "count": 4,
+        "move": {
+          "max": {
+            "x": 0.4,
+            "y": -1
+          },
+          "min": {
+            "x": -0.4,
+            "y": -1
+          },
+          "type": "random"
+        },
+        "pos": {
+          "angle": 60,
+          "offset": {
+            "x": 0,
+            "y": 0
+          },
+          "radius": 70,
+          "start_angle": -120,
+          "type": "circle"
+        }
+      },
+      "normal_pattern": {
+        "bullet": "test_bullet",
+        "count": 2,
+        "move": {
+          "tag": "enemy",
+          "type": "tracking"
+        },
+        "pos": {
+          "parent_offset": {
+            "x": 0,
+            "y": 0
+          },
+          "sibling_offset": {
+            "x": 120,
+            "y": 0
+          },
+          "type": "line"
+        }
+      },
+      "spread_pattern": {
+        "bullet": "test_bullet",
+        "count": "random(5, 7)",
+        "move": {
+          "type": "from_center"
+        },
+        "pos": {
+          "offset": {
+            "x": 0,
+            "y": -70
+          },
+          "space": {
+            "x": 200,
+            "y": 100
+          },
+          "type": "spread"
+        }
+      }
+    },
+    "score": 0,
+    "shots": 0,
+    "size": {
+      "x": 100.0,
+      "y": 60.0
+    },
+    "speed": 300.0,
+    "tag": "player"
+  },
+  "red enemy": {
+    "collision": {
+      "player_bullet": {
+        "action": "sub",
+        "property": "health",
+        "value": "damage"
+      }
+    },
+    "score": 200,
+    "health": 250,
+    "damage": 25,
+    "description": "Description goes here",
+    "hitbox": {
+      "fill_color": {
+        "a": 72,
+        "b": 0,
+        "g": 116,
+        "r": 255
+      },
+      "outline": 2,
+      "outline_color": "red",
+      "shown": true,
+      "size": {
+        "x": 90.0,
+        "y": 95.0
+      },
+      "type": "rect"
+    },
+    "image": "red_enemy.png",
+    "on_own_action": {},
+    "on_player_action": {
+      "slow_pressed": {
+        "action": "mul",
+        "property": "speed",
+        "value": 0.699999988079071
+      }
+    },
+    "patterns": {},
+    "size": {
+      "x": 100.0,
+      "y": 100.0
+    },
+    "speed": 10.0,
+    "tag": "enemy",
+    "lives": {
+      "type": "all",
+      "args": [
+        {
+          "args": {
+            "op": ">",
+            "property": "health",
+            "than": 0
+          },
+          "type": "condition"
+        },
+        {
+          "type": "bounds",
+          "args": {
+            "margin": 100
+          }
+        }
+      ]
+    }
+  },
+  "test_bullet": {
+    "collision": {
+      "enemy": {
+        "action": "die",
+        "value": 0.0
+      }
+    },
+    "damage": 15,
+    "description": "Description goes here",
+    "hitbox": {
+      "outline_color": "green",
+      "radius": 10.0,
+      "shown": false,
+      "type": "circle"
+    },
+    "image": "bullet.png",
+    "on_own_action": {},
+    "on_player_action": {},
+    "patterns": {},
+    "size": {
+      "x": 25.0,
+      "y": 25.0
+    },
+    "speed": 500.0,
+    "tag": "player_bullet"
+  }
 }

@@ -1,5 +1,6 @@
 #include "ObjectTypeFactory.hpp"
 
+#include "FuncBuilder.hpp"
 #include "PatternFactory.hpp"
 
 ObjectTypeFactory::res_type ObjectTypeFactory::generate(const nl::json& json) {
@@ -92,7 +93,18 @@ struct CollisionHandler : public Handler<ObjectType> {
     }
 
     void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
-        obj.collision = value;
+        obj.collision = value.get<ObjectType::CollisionAction>();
+    }
+};
+
+struct LifeHandler : Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "lives";
+    }
+
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        auto life_info = value.template get<FuncInfo>();
+        obj.life_func = FuncBuilder::generate<alive::update>(life_info);
     }
 };
 
@@ -112,7 +124,17 @@ struct OnDeathHandler : public Handler<ObjectType> {
     }
 
     void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
-        obj.on_death = value;
+        value.get_to(obj.on_death);
+    }
+};
+
+struct TimedActionsHandler : public Handler<ObjectType> {
+    bool should_handle(const std::string& key) const override {
+        return key == "timed_actions";
+    }
+
+    void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
+        obj.timed_actions = value;
     }
 };
 
@@ -122,7 +144,7 @@ struct OnOwnHandler : public Handler<ObjectType> {
     }
 
     void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
-        obj.on_own = value;
+        value.get_to(obj.on_own);
     }
 };
 
@@ -132,7 +154,7 @@ struct OnPlayerHandler : public Handler<ObjectType> {
     }
 
     void handle(ObjectType& obj, const std::string&, const nl::json& value) override {
-        obj.on_player = value;
+        value.get_to(obj.on_player);
     }
 };
 
@@ -151,7 +173,7 @@ struct PatternHandler : public Handler<ObjectType> {
 
 HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     std::vector<std::unique_ptr<Handler<ObjectType>>> res;
-    res.reserve(12);
+    res.reserve(14);
 
     res.push_back(std::make_unique<SizeHandler>());
     res.push_back(std::make_unique<SpeedHandler>());
@@ -159,12 +181,15 @@ HandlerChain<ObjectType> ObjectTypeFactory::handler_chain_ = [] {
     res.push_back(std::make_unique<ImageHandler>());
     res.push_back(std::make_unique<SoundHandler>());
 
+    res.push_back(std::make_unique<LifeHandler>());
+
     res.push_back(std::make_unique<HitboxHandler>());
     res.push_back(std::make_unique<CollisionHandler>());
 
     res.push_back(std::make_unique<OnDeathHandler>());
     res.push_back(std::make_unique<OnOwnHandler>());
     res.push_back(std::make_unique<OnPlayerHandler>());
+    res.push_back(std::make_unique<TimedActionsHandler>());
 
     res.push_back(std::make_unique<PatternHandler>());
     res.push_back(std::make_unique<PropsHandler<ObjectType>>());

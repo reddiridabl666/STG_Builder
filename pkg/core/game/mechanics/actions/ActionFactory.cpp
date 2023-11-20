@@ -229,8 +229,6 @@ std::unique_ptr<ActionType> create_single_action(const nl::json& json) {
 
 template <typename ActionType>
 std::unique_ptr<ActionType> create_multi_action(const nl::json& json) {
-    fmt::println("actions: {}", json.dump(4));
-
     std::vector<std::unique_ptr<ActionType>> actions;
     actions.reserve(json.size());
 
@@ -247,7 +245,6 @@ std::unique_ptr<ActionType> create_multi_action(const nl::json& json) {
 
 template <typename ActionType>
 std::unique_ptr<ActionType> Factory::create(const nl::json& json) {
-    fmt::println("actions: {}", json.dump(4));
     if (json.is_array()) {
         return create_multi_action<ActionType>(json);
     }

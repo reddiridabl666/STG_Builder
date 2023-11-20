@@ -37,7 +37,8 @@ struct EntityEntry : public Element {
     }
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(EntityEntry, image, speed, description, tag, size, hitbox,
-                                                on_player_action, on_own_action, collision, patterns)
+                                                on_player_action, on_own_action, collision, on_character_death,
+                                                patterns)
 
   private:
     std::shared_ptr<sf::Texture> texture_;
@@ -59,6 +60,7 @@ struct EntityEntry : public Element {
     ActionMapInput on_player_action;
     ActionMapInput on_own_action;
     ActionMapInput collision;
+    ActionMapInput on_character_death;
 
     std::unordered_map<std::string, PatternInput> patterns;
     std::string new_pattern_;

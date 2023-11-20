@@ -16,17 +16,32 @@ std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts,
 
     auto hitbox = HitboxFactory::create(hitbox_props);
 
+    // clang-format off
     auto res = std::make_shared<GameObject>(
-        obj_name, size, std::move(displayable), speed, tag, props, opts.activity_start, opts.life_func,
-        opts.move->clone(), std::move(hitbox), collision.get<GameObject::CollisionAction>(),
-        on_player.get<GameObject::PlayerAction>(), on_own.get<GameObject::OwnAction>(),
-        action::Factory::create<action::BinaryAction>(on_death), opts.stop_at_bounds);
+        obj_name,
+        size,
+        std::move(displayable),
+        speed,
+        tag,
+        props,
+        opts.activity_start,
+        opts.life_func,
+        opts.move->clone(), 
+        std::move(hitbox),
+        timed_actions.is_null() ? std::vector<action::Timed>{} : timed_actions.get<std::vector<action::Timed>>(),
+        // collision.get<GameObject::CollisionAction>(),
+        // on_player.get<GameObject::PlayerAction>(),
+        // on_own.get<GameObject::OwnAction>(),
+        // action::Factory::create<action::BinaryAction>(on_death),
+        opts.stop_at_bounds
+    );
+    // clang-format on
+
+    res->set_life_update(life_func);
 
     opts.set_props(*res);
 
     GameState::get().emit(GameState::Event::ObjectCreated, *res);
-
-    // set bullet rules
 
     ++obj_count_;
     return res;

@@ -15,8 +15,8 @@ struct TargetedMovement : Pattern::MovementSetter {
     void set(const GameObject&, Pattern::objects& objects) const override {
         auto targets = GameState::get().objects_by_tag(tag_);
         for (auto& obj : objects) {
-            auto target = find_nearest(obj, targets).lock()->pos();
-            auto direction = linalg::unit(target - obj->pos());
+            auto target = find_nearest(obj, targets);
+            auto direction = target.expired() ? sf::Vector2f{0, -1} : linalg::unit(target.lock()->pos() - obj->pos());
             obj->set_movement(movement::linear(direction));
             obj->set_rotation(math::to_degrees(std::atan(-direction.x / direction.y)));
         }

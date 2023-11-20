@@ -19,8 +19,10 @@ class DelegatedPattern : public Pattern {
         auto& bullet_type = types.at(bullet_type_);
 
         for (size_t i = 0; i < res.capacity(); ++i) {
-            res.push_back(bullet_type.create_object(ObjectOptions{}, assets));
-            res.back()->set_parent(parent);
+            auto bullet = bullet_type.create_object(ObjectOptions{}, assets);
+            bullet->set_parent(parent);
+            bullet->activate();
+            res.push_back(std::move(bullet));
         }
 
         if (pos_) {

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ActionMap.hpp"
 #include "Asset.hpp"
 #include "AssetManager.hpp"
 #include "GameObject.hpp"
@@ -13,6 +14,7 @@
 #include "ObjectOptions.hpp"
 #include "Pattern.hpp"
 #include "Properties.hpp"
+#include "TimedAction.hpp"
 
 class Player;
 struct PlayerOptions;
@@ -22,6 +24,11 @@ static constexpr const char* kPlayerNum = "__player_num";
 class ObjectType {
   public:
     using AssetPaths = std::vector<std::string>;
+
+    using CollisionAction = action::Map<GameObjectTag, action::BinaryAction>;
+    using DeathAction = action::Map<GameObjectTag, action::BinaryAction>;
+    using PlayerAction = action::Map<std::string, action::BinaryAction>;
+    using OwnAction = action::Map<std::string, action::Action>;
 
     ObjectType(const std::string& name = "", const sf::Vector2f& size = {}) : name(name), size(size) {}
 
@@ -55,10 +62,20 @@ class ObjectType {
 
     HitboxProps hitbox_props;
 
-    nl::json collision;
-    nl::json on_death;
-    nl::json on_player;
-    nl::json on_own;
+    alive::update life_func = GameObject::kDefaultLifeFunc;
+
+    // nl::json collision;
+    // nl::json on_death;
+    // nl::json on_player;
+    // nl::json on_own;
+
+    CollisionAction collision;
+    DeathAction on_death;
+
+    PlayerAction on_player;
+    OwnAction on_own;
+
+    nl::json timed_actions;
 
     std::unordered_map<std::string, std::unique_ptr<Pattern>> patterns;
 

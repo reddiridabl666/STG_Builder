@@ -28,7 +28,7 @@ struct ObjectOptions {
     std::string type;
 
     std::unique_ptr<movement::Rule> move = movement::no_op();
-    alive::update life_func = GameObject::kDefaultLifeFunc;
+    alive::update life_func = nullptr;
 
     Properties props;
 

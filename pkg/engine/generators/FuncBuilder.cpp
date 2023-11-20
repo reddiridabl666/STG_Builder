@@ -3,8 +3,9 @@
 #include "Life.hpp"
 
 namespace {
+std::vector<alive::update> get_multiple(const nl::json& json);
 alive::update alive_condition(const nl::json& json);
-}
+}  // namespace
 
 template <>
 std::unique_ptr<movement::Rule> FuncBuilder::generate(const FuncInfo& info) {
@@ -40,6 +41,14 @@ alive::update FuncBuilder::generate(const FuncInfo& info) {
         return alive::default_func;
     }
 
+    if (info.type == "all") {
+        return alive::all(get_multiple(info.args));
+    }
+
+    if (info.type == "any") {
+        return alive::any(get_multiple(info.args));
+    }
+
     if (info.type == "bounds") {
         return alive::in_bounds(info.args.at("margin").get<float>());
     }
@@ -56,7 +65,7 @@ alive::update FuncBuilder::generate(const FuncInfo& info) {
         return alive_condition(info.args);
     }
 
-    throw std::runtime_error("Unsupported alive func type");
+    return nullptr;
 }
 
 std::unique_ptr<movement::Rule> FuncBuilder::generate(const movement::MultiInfo& info) {
@@ -75,6 +84,20 @@ std::unique_ptr<movement::Rule> FuncBuilder::generate(const movement::MultiInfo&
 }
 
 namespace {
+std::vector<alive::update> get_multiple(const nl::json& json) {
+    std::vector<alive::update> funcs;
+    funcs.reserve(json.size());
+
+    for (auto& [_, value] : json.items()) {
+        auto res = FuncBuilder::generate<alive::update>(value.get<FuncInfo>());
+        if (res) {
+            funcs.push_back(res);
+        }
+    }
+
+    return funcs;
+}
+
 alive::update alive_condition(const nl::json& json) {
     static const std::unordered_map<std::string, std::function<bool(float, float)>> op_map = {
         {"<", std::less<float>{}},           {">", std::greater<float>{}},   {"<=", std::less_equal<float>{}},
