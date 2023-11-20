@@ -17,6 +17,7 @@ set(SOURCES
     game/objects/GameField.cpp
     game/objects/Player.cpp
     game/objects/GameObject.cpp
+    game/objects/DisplayableFactory.cpp
 )
 
 set(INCLUDE_DIRS

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <filesystem>
@@ -17,6 +18,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2i, x, y);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2u, x, y);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector2<std::string>, x, y);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FloatRect, left, top, width, height);
+
+void from_json(const nl::json& json, Color& color);
+void to_json(nl::json& json, const Color& color);
 }  // namespace sf
 
 namespace nlohmann {

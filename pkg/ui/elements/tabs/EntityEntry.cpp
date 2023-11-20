@@ -6,7 +6,7 @@
 #include "Combo.hpp"
 
 namespace {
-static const std::vector<std::string> object_tags = {"enemy", "player", "bullet"};
+static const std::vector<std::string> object_tags = {"enemy", "player", "enemy_bullet", "player_bullet"};
 }  // namespace
 
 namespace ui {

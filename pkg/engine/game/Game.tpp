@@ -12,8 +12,9 @@
 namespace engine {
 
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerManager&& player_manager,
-                      assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
+Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOver&& game_over,
+                      PlayerManager&& player_manager, assets::Manager&& assets, ObjectTypeFactory::res_type&& types,
+                      LevelManager&& levels, int fps)
     : window_(window),
       bg_(std::move(bg)),
       menu_(std::move(menu)),
@@ -21,7 +22,8 @@ Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, Player
       types_(std::move(types)),
       levels_(std::move(levels)),
       fps_(fps),
-      player_manager_(std::move(player_manager)) {}
+      player_manager_(std::move(player_manager)),
+      game_over_(std::move(game_over)) {}
 
 template <typename RTreeType>
 void Game<RTreeType>::register_events() {
@@ -41,6 +43,14 @@ void Game<RTreeType>::register_events() {
         if (pattern) {
             add_objects(pattern->create(obj, types_, assets_));
         }
+    });
+
+    GameBus::get().on(GameEvent::GameRestarted, [this](const auto&) {
+        status_ = Status::Restart;
+    });
+
+    GameBus::get().on(GameEvent::WindowClosed, [this](const auto&) {
+        status_ = Status::Ended;
     });
 
     events_registered_ = true;
@@ -67,23 +77,30 @@ void Game<RTreeType>::fire_key_event(sf::Keyboard::Key key, const std::string& s
         for (auto& [name, obj] : objects_) {
             if (name != player->name()) {
                 types_[obj->type_name()].on_player(event + suffix, player, obj);
-                // obj->on_player_action(event + suffix, *player);
             } else {
                 types_[obj->type_name()].on_own(event + suffix, obj);
-                // obj->on_own_action(event + suffix);
             }
         }
     }
 }
 
 template <typename RTreeType>
-void Game<RTreeType>::render(float delta_time) {
+Game<RTreeType>::Status Game<RTreeType>::render(float delta_time) {
+    status_ = Status::GameOver;
     update(delta_time);
 
     draw_with_default_view(bg_);
     draw_objects();
 
     draw_ui();
+
+    if (status_ == Status::GameOver) {
+        window_.set_default_view();
+        game_over_.draw(window_);
+        window_.set_view(level_->field().view());
+    }
+
+    return status_;
 }
 
 template <typename RTreeType>
@@ -147,7 +164,6 @@ void Game<RTreeType>::check_collisions() {
             auto subj = objects_[subj_hitbox->second];
 
             types_[obj->type_name()].collision(subj->tag(), subj, obj);
-            // objects_[obj->second]->resolve_collision(*objects_[subj->second]);
         }
     }
 }
@@ -181,6 +197,9 @@ void Game<RTreeType>::update(float delta_time) {
     action::Queue::get().resolve(delta_time);
 
     clear_dead();
+    if (player_manager_.count() == 0) {
+        status_ = Status::GameOver;
+    }
 
     assets_.clear_unused();
 }
@@ -265,7 +284,9 @@ void Game<RTreeType>::clear_dead() {
             GameState::get().emit(GameState::Event::ObjectDestroyed, *el.second);
 
             if (el.second->tag() == GameObjectTag::Player) {
-                player_manager_.erase_player(el.second->props().get(kPlayerNum));
+                size_t id = el.second->props().get(kPlayerNum);
+                player_manager_.erase_player(id);
+                menu_.erase_player(id);
             }
 
             for (auto& [_, obj] : objects_) {
@@ -289,6 +310,7 @@ void Game<RTreeType>::clear() {
     for (auto& [_, type] : types_) {
         type.reset_count();
     }
+    status_ = Status::Running;
 }
 
 template <typename RTreeType>

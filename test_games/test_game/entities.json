@@ -24,7 +24,8 @@
       {
         "action": "shoot",
         "property": "enemy_pattern",
-        "timeout": 0.5
+        "timeout": 0.7,
+        "delay": 1.5
       }
     ],
     "damage": 25,
@@ -130,11 +131,19 @@
       "y": 30
     },
     "speed": 600.0,
-    "tag": "enemy"
+    "tag": "enemy_bullet"
   },
   "player": {
     "collision": {
       "enemy": {
+        "action": "sub",
+        "property": "health",
+        "value": "damage",
+        "with": {
+          "timeout": 1.5
+        }
+      },
+      "enemy_bullet": {
         "action": "sub",
         "property": "health",
         "value": "damage",

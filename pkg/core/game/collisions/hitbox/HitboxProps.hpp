@@ -16,11 +16,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(Hitbox::Type, {
 })
 // clang-format on
 
-namespace sf {
-void from_json(const nl::json& json, Color& color);
-void to_json(nl::json& json, const Color& color);
-}  // namespace sf
-
 struct HitboxProps {
     Hitbox::Type type = Hitbox::Type::No;
 

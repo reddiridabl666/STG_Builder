@@ -2,12 +2,14 @@
 
 #include <SFML/System/Clock.hpp>
 
+#include "GameFactory.hpp"
 #include "GameState.hpp"
 #include "Utils.hpp"
 #include "ui/elements/StatBox.hpp"
 
 namespace engine {
-App::App(Window& window, Game<>&& game) : window_(window), game_(std::move(game)) {
+App::App(Window& window, const std::filesystem::path& game_path)
+    : window_(window), game_path_(game_path), game_(load_game()) {
     window_.add_handler("app_engine_pause", sf::Event::KeyReleased, [this](sf::Event event) {
         if (event.key.code == sf::Keyboard::Escape) {
             paused_ = !paused_;
@@ -15,25 +17,47 @@ App::App(Window& window, Game<>&& game) : window_(window), game_(std::move(game)
     });
 }
 
+std::unique_ptr<Game<>> App::load_game() {
+    auto game_json = json::read(game_path_ / "game.json");
+    if (!game_json) {
+        throw game_json.error();
+    }
+
+    auto entities_json = json::read(game_path_ / "entities.json");
+    if (!entities_json) {
+        throw entities_json.error();
+    }
+
+    return GameFactory::generate_unique<>(window_, *game_json, *entities_json, game_path_);
+}
+
 void App::run() {
     sf::Clock timer;
-    game_.register_events();
+    game_->register_events();
 
     window_.add_handler("app_zoom", sf::Event::KeyReleased, [this](const sf::Event& event) {
         if (event.key.code == sf::Keyboard::Equal) {
-            game_.zoom(0.8);
+            game_->zoom(0.8);
         }
         if (event.key.code == sf::Keyboard::Dash) {
-            game_.zoom(1.25);
+            game_->zoom(1.25);
         }
     });
 
     window_.main_loop([this, &timer] {
-        if (!paused_) {
-            game_.render(timer.restart().asSeconds());
-        } else {
+        if (paused_) {
             timer.restart();
-            game_.draw_objects();
+            game_->draw_objects();
+            return;
+        }
+
+        auto status = game_->render(timer.restart().asSeconds());
+        if (status == Game<>::Status::Restart) {
+            game_ = load_game();
+        }
+
+        if (status == Game<>::Status::Ended) {
+            window_.close();
         }
     });
 }

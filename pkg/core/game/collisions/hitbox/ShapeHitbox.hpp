@@ -11,11 +11,8 @@ class CircleShapeHitbox : public CircleHitbox, public CircleObject {
   public:
     CircleShapeHitbox(float radius, sf::Color outline_color = sf::Color::White,
                       sf::Color fill_color = sf::Color::Transparent, size_t outline = 1)
-        : CircleObject(radius) {
+        : CircleObject(radius, fill_color, outline_color, outline) {
         set_origin();
-        shape_.setFillColor(fill_color);
-        shape_.setOutlineColor(outline_color);
-        shape_.setOutlineThickness(outline);
     }
 
     float radius() const override {
@@ -36,11 +33,8 @@ class RectShapeHitbox : public RectHitbox, public RectObject {
   public:
     RectShapeHitbox(const sf::Vector2f& size, sf::Color outline_color = sf::Color::White,
                     sf::Color fill_color = sf::Color::Transparent, size_t outline = 1)
-        : RectObject(size) {
+        : RectObject(size, fill_color, outline_color, outline) {
         set_origin();
-        shape_.setFillColor(fill_color);
-        shape_.setOutlineColor(outline_color);
-        shape_.setOutlineThickness(outline);
     }
 
     FloatRect rect() const override {

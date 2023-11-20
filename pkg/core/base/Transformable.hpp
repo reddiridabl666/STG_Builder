@@ -18,6 +18,10 @@ class Transformable {
         return const_cast<Transformable*>(this)->transformable();
     }
 
+    const sf::Vector2f& get_origin() const {
+        return transformable().getOrigin();
+    }
+
     const sf::Vector2f& pos() const {
         return transformable().getPosition();
     }
@@ -35,7 +39,7 @@ class Transformable {
     }
 
     void set_width(float size, bool save_proportions = true) {
-        float new_scale = size / get_size().x;
+        float new_scale = size / original_size().x;
 
         if (save_proportions) {
             return scale(new_scale, new_scale);
@@ -72,6 +76,10 @@ class Transformable {
 
     void rotate(float angle) {
         set_rotation(transformable().getRotation() + angle);
+    }
+
+    sf::Vector2f original_size() const {
+        return get_size() / transformable().getScale();
     }
 
     virtual ~Transformable() = default;

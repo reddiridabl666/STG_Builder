@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <concepts>
@@ -45,20 +46,42 @@ class ShapeObject : virtual public Displayable {
 
 class RectObject : public ShapeObject<sf::RectangleShape> {
   public:
-    RectObject(const sf::Vector2f& size = {}) : ShapeObject(sf::RectangleShape(size)) {}
-    RectObject(float x, float y) : RectObject(sf::Vector2f{x, y}) {}
+    RectObject(const sf::Vector2f& size = {}, sf::Color fill_color = sf::Color::White,
+               sf::Color outline_color = sf::Color::Transparent, size_t outline = 0)
+        : ShapeObject(make_shape(size, fill_color, outline_color, outline)) {}
 
     sf::Vector2f get_size() const override {
         return shape_.getSize();
+    }
+
+  private:
+    sf::RectangleShape make_shape(const sf::Vector2f& size, sf::Color fill_color, sf::Color outline_color,
+                                  size_t outline) {
+        sf::RectangleShape shape(size);
+        shape.setFillColor(fill_color);
+        shape.setOutlineColor(outline_color);
+        shape.setOutlineThickness(outline);
+        return shape;
     }
 };
 
 class CircleObject : public ShapeObject<sf::CircleShape> {
   public:
-    CircleObject(float radius = 0) : ShapeObject(sf::CircleShape(radius)) {}
+    CircleObject(float radius = 0, sf::Color fill_color = sf::Color::White,
+                 sf::Color outline_color = sf::Color::Transparent, size_t outline = 0)
+        : ShapeObject(make_shape(radius, fill_color, outline_color, outline)) {}
 
     sf::Vector2f get_size() const override {
         auto radius = shape_.getRadius();
         return sf::Vector2f{radius, radius};
+    }
+
+  private:
+    sf::CircleShape make_shape(float radius, sf::Color fill_color, sf::Color outline_color, size_t outline) {
+        sf::CircleShape shape(radius);
+        shape.setFillColor(fill_color);
+        shape.setOutlineColor(outline_color);
+        shape.setOutlineThickness(outline);
+        return shape;
     }
 };

@@ -6,7 +6,7 @@
 namespace engine {
 class App {
   public:
-    App(Window& window, Game<>&& game);
+    App(Window& window, const std::filesystem::path& game_path);
 
     void run();
 
@@ -14,9 +14,11 @@ class App {
 
   private:
     void draw_ui();
+    std::unique_ptr<Game<>> load_game();
 
     Window& window_;
-    Game<> game_;
+    std::filesystem::path game_path_;
+    std::unique_ptr<Game<>> game_;
     bool paused_ = false;
 };
 }  // namespace engine

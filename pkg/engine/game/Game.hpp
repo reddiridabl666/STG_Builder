@@ -9,15 +9,24 @@
 #include "Player.hpp"
 #include "PlayerManager.hpp"
 #include "RTree.hpp"
-#include "SideMenu.hpp"
 #include "Window.hpp"
+#include "ui/GameOver.hpp"
+#include "ui/SideMenu.hpp"
 
 namespace engine {
 template <typename RTreeType = RTree<>>
 class Game {
   public:
-    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, PlayerManager&& player_manager, assets::Manager&& assets,
-         ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
+    enum class Status {
+        Running,
+        Restart,
+        Paused,
+        GameOver,
+        Ended,
+    };
+
+    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOver&& game_over, PlayerManager&& player_manager,
+         assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
 
     Game() = delete;
     Game(const Game&) = delete;
@@ -28,7 +37,7 @@ class Game {
 
     void register_events();
 
-    void render(float delta_time);
+    Status render(float delta_time);
     void zoom(float);
 
     void clear();
@@ -82,8 +91,11 @@ class Game {
 
     PlayerManager player_manager_;
 
+    GameOver game_over_;
+
   private:
     bool events_registered_ = false;
+    Status status_ = Status::Running;
 };
 }  // namespace engine
 

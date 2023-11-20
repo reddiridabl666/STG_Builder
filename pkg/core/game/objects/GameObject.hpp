@@ -34,10 +34,6 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
         std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
         std::unique_ptr<Hitbox>&& hitbox = nullptr,
         std::vector<action::Timed>&& timed_actions = {},
-        // CollisionAction&& collision = {},
-        // PlayerAction&& on_player = {},
-        // OwnAction&& on_own = {},
-        // std::unique_ptr<action::BinaryAction>&& on_character_death = nullptr,
         bool stop_at_bounds = false,
         sf::Vector2f velocity = {},
         bool alive = true,
@@ -58,8 +54,6 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
     float height() const;
 
     float width() const;
-
-    // void emit(GameEvent event, const GameObject& other);
 
     void set_movement(std::unique_ptr<movement::Rule>&& move) {
         move_update_ = std::move(move);
@@ -152,10 +146,6 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
 
     void resolve_timed_actions(float delta_time);
 
-    // void resolve_collision(GameObject& other);
-    // void on_player_action(const std::string& action, const GameObject& player);
-    // void on_own_action(const std::string& action);
-
     void draw(Window&) const override;
     void set_pos(const sf::Vector2f&) override;
     using ImageContainer::set_pos;
@@ -181,12 +171,6 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
 
     std::unique_ptr<Hitbox> hitbox_;
     std::vector<action::Timed> timed_actions_;
-
-    // CollisionAction collision_action_;
-    // std::unique_ptr<action::BinaryAction> on_character_death_;
-
-    // PlayerAction on_player_action_;
-    // OwnAction on_own_action_;
 
     bool active_ = false;
     bool alive_ = true;

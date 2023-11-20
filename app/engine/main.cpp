@@ -15,19 +15,9 @@ int main() {
         return -1;
     }
 
-    auto entities_json = json::read(kBase / "entities.json");
-    if (!entities_json) {
-        std::cout << entities_json.error() << std::endl;
-        return -1;
-    }
-
     try {
         auto window = game_json->get<WindowInfo>().make_window();
-
-        auto app = engine::App{
-            window,
-            engine::GameFactory::generate<>(window, *game_json, *entities_json, kBase),
-        };
+        auto app = engine::App{window, kBase};
         app.run();
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;

@@ -7,7 +7,7 @@
     {
       "activity_start": "30%",
       "move": {
-        "repeat": "last",
+        "repeat": "repeat",
         "rules": [
           {
             "args": {

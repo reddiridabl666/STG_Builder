@@ -14,7 +14,8 @@ set(SOURCES
     level/Level.cpp
     level/LevelLoader.cpp
     level/LevelManager.cpp
-    game/SideMenu.cpp
+    ui/SideMenu.cpp
+    ui/GameOver.cpp
 )
 
 set(INCLUDE_DIRS

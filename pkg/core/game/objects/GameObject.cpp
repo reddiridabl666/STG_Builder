@@ -16,10 +16,6 @@ GameObject::GameObject(
     std::unique_ptr<movement::Rule>&& move_func,
     std::unique_ptr<Hitbox>&& hitbox,
     std::vector<action::Timed>&& timed_actions,
-    // GameObject::CollisionAction&& collision,
-    // GameObject::PlayerAction&& on_player,
-    // GameObject::OwnAction&& on_own,
-    // std::unique_ptr<action::BinaryAction>&& on_character_death,
     bool stop_at_bounds,
     sf::Vector2f velocity,
     bool alive,
@@ -33,11 +29,6 @@ GameObject::GameObject(
       move_update_(std::move(move_func)),
       life_update_(life_func),
       timed_actions_(std::move(timed_actions)),
-    //   hitbox_(std::move(hitbox)),
-    //   collision_action_(std::move(collision)),
-    //   on_character_death_(std::move(on_character_death)),
-    //   on_player_action_(std::move(on_player)),
-    //   on_own_action_(std::move(on_own)),
       active_(active),
       alive_(alive),
       stop_at_bounds_(stop_at_bounds),
@@ -58,9 +49,6 @@ void GameObject::update(const GameField& field, float delta_time) {
     if (!update_activity(field)) {
         return;
     }
-    // if (!parent_.expired() && parent_.lock()->name() == "enemy-1") {
-    //     fmt::println("hi");
-    // }
     alive_ = life_update_(*this, field);
     update_position(field, delta_time);
 }
@@ -68,18 +56,6 @@ void GameObject::update(const GameField& field, float delta_time) {
 std::string GameObject::type_name() const {
     return name_.substr(0, name_.rfind('-'));
 }
-
-// void GameObject::resolve_collision(GameObject& other) {
-//     collision_action_(other.tag(), other.weak_from_this(), weak_from_this());
-// }
-
-// void GameObject::on_player_action(const std::string& action, const GameObject& player) {
-//     on_player_action_(action, player.weak_from_this(), weak_from_this());
-// }
-
-// void GameObject::on_own_action(const std::string& action) {
-//     on_own_action_(action, weak_from_this());
-// }
 
 void GameObject::resolve_timed_actions(float delta_time) {
     for (auto& timed_action : timed_actions_) {

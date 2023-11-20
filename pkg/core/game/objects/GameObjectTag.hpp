@@ -5,7 +5,7 @@ enum class GameObjectTag {
     Object,
     Item,
     Enemy,
-    Bullet,
+    EnemyBullet,
     Player,
     PlayerBullet
 };
@@ -15,7 +15,7 @@ enum class GameObjectTag {
     {GameObjectTag::Object, "object"}, \
     {GameObjectTag::Item, "item"}, \
     {GameObjectTag::Enemy, "enemy"}, \
-    {GameObjectTag::Bullet, "bullet"}, \
+    {GameObjectTag::EnemyBullet, "enemy_bullet"}, \
     {GameObjectTag::Player, "player"}, \
     {GameObjectTag::PlayerBullet, "player_bullet"},
 

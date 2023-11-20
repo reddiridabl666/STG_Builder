@@ -1,185 +1,172 @@
 {
-    "bg": "bg.jpg",
-    "description": "All features are being tested in this game",
-    "field_size": {
-        "height": 0.8999999761581421,
-        "left": 0.05000000074505806,
-        "top": 0.05000000074505806,
-        "width": 0.5
+  "bg": "bg.jpg",
+  "description": "All features are being tested in this game",
+  "field_size": {
+    "height": 0.8999999761581421,
+    "left": 0.05000000074505806,
+    "top": 0.05000000074505806,
+    "width": 0.5
+  },
+  "fps": 60,
+  "fullscreen": false,
+  "game_over": {
+    "bg": {
+      "type": "rect",
+      "size": { "x": 400, "y": 200 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "outline": 3
     },
-    "fps": 60,
-    "fullscreen": false,
-    "game_over": {
-        "border": {
-            "color": "black",
-            "rounded": 15,
-            "thickness": 2
-        },
-        "color": "white",
-        "exit": {
-            "EN": "Exit",
-            "RU": "Выйти",
-            "size": 32
-        },
-        "message": {
-            "EN": "Game over",
-            "RU": "Игра окончена",
-            "font": "ComicSans.ttf",
-            "size": 48
-        },
-        "retry": {
-            "EN": "Try again",
-            "RU": "Ещё раз?",
-            "size": 32
-        }
+    "message": {
+      "text": "Game over",
+      "font": "ComicSans.ttf",
+      "size": 48
     },
-    "last_updated": 1700329144,
-    "levels": 2,
-    "menu": {
-        "ratio": 0.3,
-        "stats": [
-            "health",
-            "score"
-        ]
+    "retry": {
+      "message": {
+        "text": "Try again",
+        "size": 32
+      },
+      "bg": {
+        "type": "rect",
+        "size": { "x": 100, "y": 50 },
+        "fill_color": "black",
+        "outline_color": "white",
+        "outline": 2
+      }
     },
-    "name": "My first game",
-    "players": [
-        {
-            "health": 100,
-            "lives": {
-                "args": {
-                    "op": ">",
-                    "property": "health",
-                    "than": 0
-                },
-                "type": "condition"
-            },
-            "opts": {
-                "joy": {
-                    "shoot": 0,
-                    "slow": 0,
-                    "special": 0
-                },
-                "keys": {
-                    "move": {
-                        "down": [
-                            "S"
-                        ],
-                        "left": [
-                            "A"
-                        ],
-                        "right": [
-                            "D"
-                        ],
-                        "up": [
-                            "W"
-                        ]
-                    },
-                    "other": {
-                        "shoot": [
-                            "Space"
-                        ],
-                        "slow": [
-                            "LShift"
-                        ]
-                    }
-                }
-            },
-            "pos": {
-                "x": 267.0,
-                "y": 1013.77783203125
-            },
-            "rotation": 0,
-            "score": 0,
-            "stop_at_bounds": true,
-            "type": "player"
-        },
-        {
-            "health": 100,
-            "lives": {
-                "args": {
-                    "op": ">",
-                    "property": "health",
-                    "than": 0
-                },
-                "type": "condition"
-            },
-            "opts": {
-                "joy": {
-                    "shoot": 0,
-                    "slow": 0,
-                    "special": 0
-                },
-                "keys": {
-                    "move": {
-                        "down": [
-                            "Down"
-                        ],
-                        "left": [
-                            "Left"
-                        ],
-                        "right": [
-                            "Right"
-                        ],
-                        "up": [
-                            "Up"
-                        ]
-                    },
-                    "other": {
-                        "shoot": [
-                            "Z"
-                        ],
-                        "slow": [
-                            "X"
-                        ],
-                        "special": [
-                            "C"
-                        ]
-                    }
-                }
-            },
-            "pos": {
-                "x": 513.0,
-                "y": 1081.77783203125
-            },
-            "rotation": 0,
-            "stop_at_bounds": true,
-            "type": "player"
-        }
-    ],
-    "side_menu": {
-        "bg": "level1_bg.jpg",
-        "gap": 25.0,
-        "offset": {
-            "x": 65.0,
-            "y": 40.0
-        },
-        "player_gap": 50.0,
-        "size": {
-            "height": 0.8999999761581421,
-            "left": 0.6700000166893005,
-            "top": 0.05000000074505806,
-            "width": 0.27000001072883606
-        },
-        "stats": [
-            {
-                "font": "ComicSans.ttf",
-                "prefix": "Score:",
-                "size": 48,
-                "type": "counter",
-                "value": "score"
-            },
-            {
-                "empty": "player_hp_empty.png",
-                "full": "player_hp_full.png",
-                "type": "bar",
-                "value": "health",
-                "width": 200
-            }
-        ]
-    },
-    "size": {
-        "x": 1280,
-        "y": 720
+    "quit": {
+      "message": {
+        "text": "Quit",
+        "size": 32
+      },
+      "bg": {
+        "type": "rect",
+        "size": { "x": 100, "y": 50 },
+        "fill_color": "black",
+        "outline_color": "white",
+        "outline": 2
+      }
     }
+  },
+  "last_updated": 1700329144,
+  "levels": 2,
+  "menu": {
+    "ratio": 0.3,
+    "stats": ["health", "score"]
+  },
+  "name": "My first game",
+  "players": [
+    {
+      "health": 100,
+      "lives": {
+        "args": {
+          "op": ">",
+          "property": "health",
+          "than": 0
+        },
+        "type": "condition"
+      },
+      "opts": {
+        "joy": {
+          "shoot": 0,
+          "slow": 0,
+          "special": 0
+        },
+        "keys": {
+          "move": {
+            "down": ["S"],
+            "left": ["A"],
+            "right": ["D"],
+            "up": ["W"]
+          },
+          "other": {
+            "shoot": ["Space"],
+            "slow": ["LShift"]
+          }
+        }
+      },
+      "pos": {
+        "x": 267.0,
+        "y": 1013.77783203125
+      },
+      "rotation": 0,
+      "score": 0,
+      "stop_at_bounds": true,
+      "type": "player"
+    },
+    {
+      "health": 100,
+      "lives": {
+        "args": {
+          "op": ">",
+          "property": "health",
+          "than": 0
+        },
+        "type": "condition"
+      },
+      "opts": {
+        "joy": {
+          "shoot": 0,
+          "slow": 0,
+          "special": 0
+        },
+        "keys": {
+          "move": {
+            "down": ["Down"],
+            "left": ["Left"],
+            "right": ["Right"],
+            "up": ["Up"]
+          },
+          "other": {
+            "shoot": ["Z"],
+            "slow": ["X"],
+            "special": ["C"]
+          }
+        }
+      },
+      "pos": {
+        "x": 513.0,
+        "y": 1081.77783203125
+      },
+      "rotation": 0,
+      "stop_at_bounds": true,
+      "type": "player"
+    }
+  ],
+  "side_menu": {
+    "bg": "level1_bg.jpg",
+    "gap": 25.0,
+    "offset": {
+      "x": 65.0,
+      "y": 40.0
+    },
+    "player_gap": 50.0,
+    "size": {
+      "height": 0.8999999761581421,
+      "left": 0.6700000166893005,
+      "top": 0.05000000074505806,
+      "width": 0.27000001072883606
+    },
+    "stats": [
+      {
+        "font": "ComicSans.ttf",
+        "prefix": "Score:",
+        "size": 48,
+        "type": "counter",
+        "value": "score"
+      },
+      {
+        "empty": "player_hp_empty.png",
+        "full": "player_hp_full.png",
+        "type": "bar",
+        "value": "health",
+        "width": 200
+      }
+    ]
+  },
+  "size": {
+    "x": 1280,
+    "y": 720
+  }
 }

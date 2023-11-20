@@ -6,6 +6,7 @@ set(SOURCES
     Messages.cpp
     Random.cpp
     Errors.cpp
+    Json.cpp
 )
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})
