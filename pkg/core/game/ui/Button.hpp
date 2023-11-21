@@ -38,15 +38,7 @@ class Button : public Displayable {
         text_.scale(x, y);
     }
 
-    void draw(Window& window) const override {
-        window.draw(*bg_);
-        window.draw(text_);
-
-        auto mouse_pos = window.pixel_to_coords(sf::Mouse::getPosition(window.base()));
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && get_bounds().contains(mouse_pos)) {
-            cb_();
-        }
-    }
+    void draw(Window& window) const override;
 
   private:
     std::unique_ptr<Displayable> bg_;

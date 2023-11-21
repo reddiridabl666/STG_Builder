@@ -9,13 +9,7 @@
 
 namespace engine {
 App::App(Window& window, const std::filesystem::path& game_path)
-    : window_(window), game_path_(game_path), game_(load_game()) {
-    window_.add_handler("app_engine_pause", sf::Event::KeyReleased, [this](sf::Event event) {
-        if (event.key.code == sf::Keyboard::Escape) {
-            paused_ = !paused_;
-        }
-    });
-}
+    : window_(window), game_path_(game_path), game_(load_game()) {}
 
 std::unique_ptr<Game<>> App::load_game() {
     auto game_json = json::read(game_path_ / "game.json");
@@ -45,12 +39,6 @@ void App::run() {
     });
 
     window_.main_loop([this, &timer] {
-        if (paused_) {
-            timer.restart();
-            game_->draw_objects();
-            return;
-        }
-
         auto status = game_->render(timer.restart().asSeconds());
         if (status == Game<>::Status::Restart) {
             game_ = load_game();

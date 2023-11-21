@@ -149,18 +149,4 @@ float GameObject::bottom() const {
     return pos().y + height() / 2;
 }
 
-float GameObject::height() const {
-    return get_size().y;
-}
-
-float GameObject::width() const {
-    return get_size().x;
-}
-
-// void GameObject::emit(GameEvent event, const GameObject& other) {
-//     if (on_character_death_ && event == GameEvent::ObjectDestroyed) {
-//         on_character_death_->operator()(other.weak_from_this(), weak_from_this());
-//     }
-// }
-
 const alive::update GameObject::kDefaultLifeFunc = alive::in_bounds(GameObject::kLoadDelta);

@@ -15,6 +15,7 @@ set(SOURCES
     level/LevelLoader.cpp
     level/LevelManager.cpp
     ui/SideMenu.cpp
+    ui/PauseMenu.cpp
     ui/GameOver.cpp
 )
 

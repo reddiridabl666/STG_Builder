@@ -84,6 +84,7 @@ void Window::main_loop(const std::function<void()>& cb) {
     sf::Clock timer;
 
     while (is_open()) {
+        set_mouse_cursor(sf::Cursor::Arrow);
         process_events(timer.restart().asSeconds());
         clear();
 

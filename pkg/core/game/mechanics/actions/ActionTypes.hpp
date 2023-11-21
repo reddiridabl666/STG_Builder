@@ -84,7 +84,7 @@ struct Shooter : public Action {
             {"type", object.lock()->type_name()},
             {"pattern", pattern_},
         };
-        GameBus::get().emit(GameEvent::BulletCreated, payload);
+        GameBus::get().emit(GameEvent::BulletShot, payload);
     }
 
   private:
@@ -189,9 +189,8 @@ struct MultiAction : public ActionType {
   public:
     MultiAction(std::vector<std::unique_ptr<ActionType>>&& actions) : actions_(std::move(actions)) {}
 
-    void operator()(std::weak_ptr<const GameObject> subject, std::weak_ptr<GameObject> object) const
-        requires std::is_same_v<ActionType, BinaryAction>
-    {
+    void operator()(std::weak_ptr<const GameObject> subject,
+                    std::weak_ptr<GameObject> object) const requires std::is_same_v<ActionType, BinaryAction> {
         for (auto& action : actions_) {
             action->operator()(subject, object);
         }

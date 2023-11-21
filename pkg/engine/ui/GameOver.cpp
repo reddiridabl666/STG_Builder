@@ -8,8 +8,13 @@ engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& 
       quit_(std::move(quit)),
       offset_(offset),
       margin_(margin) {
-    // auto bg_x = bg_->get_size().x;
-    auto bg_x = 2 * std::max(retry_.get_size().x, quit_.get_size().x) + margin_ + 2 * offset_;
+    if (quit_.width() < retry_.width()) {
+        quit_.set_width(retry_.width());
+    } else {
+        retry_.set_width(quit_.width());
+    }
+
+    auto bg_x = 2 * retry_.width() + margin_ + 2 * offset_;
     auto bg_y = std::max(retry_.get_size().y, quit_.get_size().y) + margin_ + offset_ + msg_.get_size().y;
 
     bg_->set_size(sf::Vector2f{bg_x, bg_y}, false);
@@ -21,7 +26,7 @@ engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& 
     });
 
     quit_.set_cb([] {
-        GameBus::get().emit(GameEvent::WindowClosed, nullptr);
+        GameBus::get().emit(GameEvent::GameEnded, nullptr);
     });
 
     set_pos(window.get_center() - get_size() / 2);
@@ -29,8 +34,8 @@ engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& 
 
 void engine::GameOver::set_pos(const sf::Vector2f& pos) {
     bg_->set_pos(pos);
-    msg_.set_pos(bg_->pos() + sf::Vector2f{bg_->get_size().x / 2, offset_});
+    msg_.set_pos(bg_->pos() + sf::Vector2f{bg_->width() / 2, offset_});
     quit_.set_pos(bg_->pos() +
-                  sf::Vector2f{bg_->get_size().x / 2 - quit_.get_size().x - margin_ / 2, msg_.get_size().y + margin_});
-    retry_.set_pos(quit_.pos() + sf::Vector2f{margin_ + quit_.get_size().x, 0});
+                  sf::Vector2f{bg_->width() / 2 - quit_.width() - margin_ / 2, msg_.get_size().y + margin_});
+    retry_.set_pos(quit_.pos() + sf::Vector2f{margin_ + quit_.width(), 0});
 }

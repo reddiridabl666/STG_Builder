@@ -55,14 +55,6 @@ class GameField : public ImageContainer {
         return pos().y + height();
     }
 
-    float height() const {
-        return get_size().y;
-    }
-
-    float width() const {
-        return get_size().x;
-    }
-
     const sf::View& view() const {
         return view_;
     }

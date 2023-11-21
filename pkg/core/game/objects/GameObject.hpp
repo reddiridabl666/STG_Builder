@@ -51,10 +51,6 @@ class GameObject : public ImageContainer, public Hideable, public std::enable_sh
 
     float bottom() const;
 
-    float height() const;
-
-    float width() const;
-
     void set_movement(std::unique_ptr<movement::Rule>&& move) {
         move_update_ = std::move(move);
     }

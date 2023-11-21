@@ -1,5 +1,13 @@
 #include "Transformable.hpp"
 
+float Transformable::height() const {
+    return get_size().y;
+}
+
+float Transformable::width() const {
+    return get_size().x;
+}
+
 const sf::Transformable& Transformable::transformable() const {
     return const_cast<Transformable*>(this)->transformable();
 }
@@ -24,14 +32,12 @@ void Transformable::set_origin(const sf::Vector2f& origin) {
     transformable().setOrigin(origin);
 }
 
-void Transformable::set_width(float size, bool save_proportions) {
-    float new_scale = size / get_size().x;
+void Transformable::set_width(float width, bool save_proportions) {
+    set_size(sf::Vector2f{width, get_size().y}, save_proportions);
+}
 
-    if (save_proportions) {
-        return scale(new_scale, new_scale);
-    }
-
-    scale(new_scale, 1);
+void Transformable::set_height(float height, bool save_proportions) {
+    set_size(sf::Vector2f{width(), height}, save_proportions);
 }
 
 void Transformable::set_size(const sf::Vector2f& size, bool save_proportions) {

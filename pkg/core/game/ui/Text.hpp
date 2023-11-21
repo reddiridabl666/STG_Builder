@@ -7,22 +7,10 @@
 class Text : virtual public Displayable {
   public:
     Text(const std::string& content, std::shared_ptr<sf::Font>&& font, size_t size)
-        : font_(std::move(font)), text_(content, *font_, size), rect_(get_size()) {
-        rect_.setOutlineColor(sf::Color::Green);
-        rect_.setFillColor(sf::Color::Transparent);
-        rect_.setOutlineThickness(2);
-    }
+        : font_(std::move(font)), text_(content, *font_, size) {}
 
     sf::Drawable& drawable() override {
         return text_;
-    }
-
-    void draw(Window& window) const override {
-        rect_.setPosition(text_.getPosition() - text_.getOrigin());
-        rect_.setSize(get_size());
-
-        window.draw(text_);
-        // window.draw(rect_);
     }
 
     sf::Transformable& transformable() override {
@@ -54,5 +42,4 @@ class Text : virtual public Displayable {
   private:
     std::shared_ptr<sf::Font> font_;
     sf::Text text_;
-    mutable sf::RectangleShape rect_;
 };

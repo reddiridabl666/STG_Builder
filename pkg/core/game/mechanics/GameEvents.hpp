@@ -4,9 +4,10 @@
 
 enum class GameEvent {
     ObjectDestroyed,
-    BulletCreated,
+    BulletShot,
     GameRestarted,
-    WindowClosed,
+    GameEnded,
+    GameUnpaused,
 };
 
 // clang-format off

@@ -3,6 +3,8 @@
 #include "ShapeObject.hpp"
 #include "SpriteObject.hpp"
 
+static constexpr float kDefaultSize = 50;
+
 std::unique_ptr<Displayable> DisplayableFactory::create(const nl::json& json, assets::Textures& assets) {
     // clang-format off
     if (json.contains("image")) {
@@ -10,7 +12,7 @@ std::unique_ptr<Displayable> DisplayableFactory::create(const nl::json& json, as
             assets.get_or(json.value("image", ""), assets::kFallbackImage)
         );
         if (json.contains("size")) {
-            res->set_size(json.value("size", sf::Vector2f{}));
+            res->set_size(json.value("size", sf::Vector2f{kDefaultSize, kDefaultSize}));
         }
         return res;
     }
@@ -18,7 +20,7 @@ std::unique_ptr<Displayable> DisplayableFactory::create(const nl::json& json, as
     auto type = json.value("type", "rect");
     if (type == "rect") {
         return std::make_unique<RectObject>(
-            json.value("size", sf::Vector2f{}),
+            json.value("size", sf::Vector2f{kDefaultSize, kDefaultSize}),
             json.value("fill_color", sf::Color::White),
             json.value("outline_color", sf::Color::Transparent),
             json.value("outline", 0zu)
@@ -27,7 +29,7 @@ std::unique_ptr<Displayable> DisplayableFactory::create(const nl::json& json, as
 
     if (type == "circle") {
         return std::make_unique<CircleObject>(
-            json.value("radius", 0.f),
+            json.value("radius", kDefaultSize),
             json.value("fill_color", sf::Color::White),
             json.value("outline_color", sf::Color::Transparent),
             json.value("outline", 0zu)

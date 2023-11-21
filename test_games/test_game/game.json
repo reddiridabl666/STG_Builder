@@ -51,6 +51,46 @@
       }
     }
   },
+  "pause_menu": {
+    "offset": 40,
+    "bg": {
+      "type": "rect",
+      "size": { "x": 400, "y": 200 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "outline": 3
+    },
+    "message": {
+      "text": "Pause",
+      "size": 48
+    },
+    "continue": {
+      "message": {
+        "text": "Continue",
+        "size": 32
+      },
+      "bg": {
+        "type": "rect",
+        "size": { "x": 100, "y": 50 },
+        "fill_color": "black",
+        "outline_color": "white",
+        "outline": 2
+      }
+    },
+    "quit": {
+      "message": {
+        "text": "Quit",
+        "size": 32
+      },
+      "bg": {
+        "type": "rect",
+        "size": { "x": 145, "y": 50 },
+        "fill_color": "black",
+        "outline_color": "white",
+        "outline": 2
+      }
+    }
+  },
   "last_updated": 1700329144,
   "levels": 2,
   "menu": {

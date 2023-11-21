@@ -2,8 +2,12 @@
 #include "AssetManager.hpp"
 #include "GameBus.hpp"
 #include "GameState.hpp"
+#include "LevelManager.hpp"
 #include "ObjectTypeFactory.hpp"
+#include "PlayerManager.hpp"
 #include "Utils.hpp"
+#include "ui/GameOver.hpp"
+#include "ui/SideMenu.hpp"
 
 #ifdef DEBUG
 #include "ui/elements/StatBox.hpp"
@@ -12,7 +16,7 @@
 namespace engine {
 
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOver&& game_over,
+Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOver&& game_over, PauseMenu&& pause_menu,
                       PlayerManager&& player_manager, assets::Manager&& assets, ObjectTypeFactory::res_type&& types,
                       LevelManager&& levels, int fps)
     : window_(window),
@@ -23,11 +27,16 @@ Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOv
       levels_(std::move(levels)),
       fps_(fps),
       player_manager_(std::move(player_manager)),
-      game_over_(std::move(game_over)) {}
+      game_over_(std::move(game_over)),
+      pause_menu_(std::move(pause_menu)) {}
 
 template <typename RTreeType>
 void Game<RTreeType>::register_events() {
     window_.add_handler("game_key_pressed", sf::Event::KeyPressed, [this](const sf::Event& event) {
+        if (event.key.code == sf::Keyboard::Escape) {
+            status_ = (status_ == Status::Paused ? Status::Running : Status::Paused);
+            return;
+        }
         fire_key_event(event.key.code, "_pressed");
     });
 
@@ -35,7 +44,7 @@ void Game<RTreeType>::register_events() {
         fire_key_event(event.key.code, "_released");
     });
 
-    GameBus::get().on(GameEvent::BulletCreated, [this](const nl::json& payload) {
+    GameBus::get().on(GameEvent::BulletShot, [this](const nl::json& payload) {
         std::string type_name = payload.value("type", "");
 
         auto obj = objects_.at(payload.value("object", ""));
@@ -49,8 +58,14 @@ void Game<RTreeType>::register_events() {
         status_ = Status::Restart;
     });
 
-    GameBus::get().on(GameEvent::WindowClosed, [this](const auto&) {
+    GameBus::get().on(GameEvent::GameEnded, [this](const auto&) {
         status_ = Status::Ended;
+    });
+
+    GameBus::get().on(GameEvent::GameUnpaused, [this](const auto&) {
+        if (status_ == Status::Paused) {
+            status_ = Status::Running;
+        }
     });
 
     events_registered_ = true;
@@ -66,7 +81,10 @@ Game<RTreeType>::~Game() {
     if (events_registered_) {
         window_.remove_handler("game_key_pressed");
         window_.remove_handler("game_key_released");
-        GameBus::get().off(GameEvent::BulletCreated);
+        GameBus::get().off(GameEvent::BulletShot);
+        GameBus::get().off(GameEvent::GameRestarted);
+        GameBus::get().off(GameEvent::GameEnded);
+        GameBus::get().off(GameEvent::GameUnpaused);
     }
 }
 
@@ -86,28 +104,35 @@ void Game<RTreeType>::fire_key_event(sf::Keyboard::Key key, const std::string& s
 
 template <typename RTreeType>
 Game<RTreeType>::Status Game<RTreeType>::render(float delta_time) {
-    status_ = Status::GameOver;
-    update(delta_time);
+    if (status_ == Status::Running) {
+        update(delta_time);
+    }
 
     draw_with_default_view(bg_);
     draw_objects();
 
-    draw_ui();
-
-    if (status_ == Status::GameOver) {
-        window_.set_default_view();
-        game_over_.draw(window_);
-        window_.set_view(level_->field().view());
+    switch (status_) {
+        case Status::GameOver:
+            draw_with_default_view(game_over_);
+            break;
+        case Status::Paused:
+            draw_with_default_view(pause_menu_);
+            break;
+        default:
+            break;
     }
+
+    draw_ui();
 
     return status_;
 }
 
 template <typename RTreeType>
-void Game<RTreeType>::draw_with_default_view(Drawable& obj) {
+template <typename T>
+void Game<RTreeType>::draw_with_default_view(T&& obj) {
     window_.set_default_view();
     obj.draw(window_);
-    window_.set_view(level_->field().view());
+    window_.set_view(level_ ? level_->field().view() : window_.get_view());
 }
 
 template <typename RTreeType>

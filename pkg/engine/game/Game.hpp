@@ -11,6 +11,7 @@
 #include "RTree.hpp"
 #include "Window.hpp"
 #include "ui/GameOver.hpp"
+#include "ui/PauseMenu.hpp"
 #include "ui/SideMenu.hpp"
 
 namespace engine {
@@ -25,8 +26,9 @@ class Game {
         Ended,
     };
 
-    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOver&& game_over, PlayerManager&& player_manager,
-         assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
+    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOver&& game_over, PauseMenu&& pause_menu,
+         PlayerManager&& player_manager, assets::Manager&& assets, ObjectTypeFactory::res_type&& types,
+         LevelManager&& levels, int fps);
 
     Game() = delete;
     Game(const Game&) = delete;
@@ -69,7 +71,8 @@ class Game {
 
     void draw_ui();
 
-    void draw_with_default_view(Drawable&);
+    template <typename T>
+    void draw_with_default_view(T&&);
 
     void fire_key_event(sf::Keyboard::Key, const std::string& suffix = "");
 
@@ -92,6 +95,7 @@ class Game {
     PlayerManager player_manager_;
 
     GameOver game_over_;
+    PauseMenu pause_menu_;
 
   private:
     bool events_registered_ = false;

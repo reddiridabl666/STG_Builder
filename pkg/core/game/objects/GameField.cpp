@@ -73,9 +73,9 @@ void GameField::keep_in_bounds(Transformable& obj) const {
     }
 
     if (obj_bounds.left < bounds.left) {
-        new_pos.x = bounds.left + obj.get_size().x / 2;
+        new_pos.x = bounds.left + obj.width() / 2;
     } else if (obj_bounds.left + obj_bounds.width > bounds.left + bounds.width) {
-        new_pos.x = bounds.left + bounds.width - obj.get_size().x / 2;
+        new_pos.x = bounds.left + bounds.width - obj.width() / 2;
     }
 
     obj.set_pos(new_pos);

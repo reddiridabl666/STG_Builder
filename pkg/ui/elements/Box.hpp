@@ -47,8 +47,7 @@ Box<T>::Box(const VariableText& name, Items&& elems, const ImVec2& size, const I
     : Element(pos, size), name_(name), elems_(std::move(elems)), is_child_(false) {}
 
 template <typename T>
-Box<T>::Box(Items&& elems, const ImVec2& size)
-    : Element({}, size), elems_(std::move(elems)), is_child_(true) {}
+Box<T>::Box(Items&& elems, const ImVec2& size) : Element({}, size), elems_(std::move(elems)), is_child_(true) {}
 
 template <typename T>
 void Box<T>::draw(const Window& window) {

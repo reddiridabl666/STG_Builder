@@ -24,6 +24,16 @@ class Window {
         return window_.mapPixelToCoords(sf::Vector2i{x, y});
     }
 
+    void set_mouse_cursor(sf::Cursor::Type cursor_type) {
+        auto cursor = cursors_.find(cursor_type);
+        if (cursor != cursors_.end()) {
+            window_.setMouseCursor(cursor->second);
+            return;
+        }
+        cursors_[cursor_type].loadFromSystem(cursor_type);
+        window_.setMouseCursor(cursors_[cursor_type]);
+    }
+
     sf::Vector2f pixel_to_coords(const sf::Vector2i& vec) const {
         return window_.mapPixelToCoords(vec);
     }
@@ -81,6 +91,7 @@ class Window {
     sf::Clock clock_;
 
     std::unordered_map<std::string, EventHandler> handlers_;
+    std::unordered_map<sf::Cursor::Type, sf::Cursor> cursors_;
 
     std::unordered_set<sf::Keyboard::Key> held_keys_;
     std::unordered_map<sf::Keyboard::Key, std::vector<KeyHoldHandler>> key_hold_handlers_;

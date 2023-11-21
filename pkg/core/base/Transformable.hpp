@@ -10,6 +10,10 @@ class Transformable {
   public:
     virtual sf::Vector2f get_size() const = 0;
 
+    float height() const;
+
+    float width() const;
+
     virtual sf::FloatRect get_bounds() const = 0;
 
     virtual sf::Transformable& transformable() = 0;
@@ -27,6 +31,8 @@ class Transformable {
     void set_origin(const sf::Vector2f& origin);
 
     void set_width(float size, bool save_proportions = true);
+
+    void set_height(float height, bool save_proportions = true);
 
     virtual void set_size(const sf::Vector2f& size, bool save_proportions = true);
 
