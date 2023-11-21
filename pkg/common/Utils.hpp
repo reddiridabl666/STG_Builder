@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <ctime>
 #include <deque>
 #include <ostream>
@@ -8,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+namespace utils {
 inline std::string time_to_str(time_t time) {
     static constexpr size_t kBufferSize = 80;
 
@@ -23,6 +25,17 @@ std::string to_string(const T& obj) {
     out << obj;
     return out.str();
 }
+
+template <typename T, typename... Args>
+T max(T&& a, Args&&... args) {
+    return std::max(Max(args...), a);
+}
+
+template <typename T, typename... Args>
+T min(T&& a, Args&&... args) {
+    return std::min(Max(args...), a);
+}
+}  // namespace utils
 
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec) {

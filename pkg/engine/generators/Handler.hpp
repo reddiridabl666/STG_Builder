@@ -81,7 +81,8 @@ class HandlerChain {
                     handler->handle(res, key, value);
                     return Error::OK;
                 } catch (std::exception& e) {
-                    auto msg = fmt::format("While handling '{}': '{}', got error: {}", key, to_string(value), e.what());
+                    auto msg =
+                        fmt::format("While handling '{}': '{}', got error: {}", key, utils::to_string(value), e.what());
                     return Error(msg);
                 }
             }

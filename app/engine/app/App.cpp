@@ -8,8 +8,8 @@
 #include "ui/elements/StatBox.hpp"
 
 namespace engine {
-App::App(Window& window, const std::filesystem::path& game_path)
-    : window_(window), game_path_(game_path), game_(load_game()) {}
+App::App(Window& window, MainMenu&& menu, const std::filesystem::path& game_path)
+    : window_(window), game_path_(game_path), game_(load_game()), main_menu_(std::move(menu)) {}
 
 std::unique_ptr<Game<>> App::load_game() {
     auto game_json = json::read(game_path_ / "game.json");
@@ -39,14 +39,20 @@ void App::run() {
     });
 
     window_.main_loop([this, &timer] {
-        auto status = game_->render(timer.restart().asSeconds());
-        if (status == Game<>::Status::Restart) {
-            game_ = load_game();
-            game_->register_events();
+        if (state_ == State::MainMenu) {
+            main_menu_.draw(window_);
         }
 
-        if (status == Game<>::Status::Ended) {
-            window_.close();
+        if (state_ == State::Game) {
+            auto status = game_->render(timer.restart().asSeconds());
+            if (status == Game<>::Status::Restart) {
+                game_ = load_game();
+                game_->register_events();
+            }
+
+            if (status == Game<>::Status::Ended) {
+                window_.close();
+            }
         }
     });
 }

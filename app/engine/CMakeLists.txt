@@ -17,6 +17,7 @@ set(INCLUDE_DIRS
 
 set (SOURCES
     app/App.cpp
+    ui/MainMenu.cpp
     main.cpp
 )
 

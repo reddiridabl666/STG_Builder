@@ -20,9 +20,9 @@ class StatBox {
     template <typename T, typename... Ts>
     static void draw_(T&& val, Ts&&... vals) {
         if constexpr (std::is_pointer_v<decltype(val.value)>) {
-            ImGui::Text("%s: %s", val.prefix.c_str(), to_string(*val.value).c_str());
+            ImGui::Text("%s: %s", val.prefix.c_str(), utils::to_string(*val.value).c_str());
         } else {
-            ImGui::Text("%s: %s", val.prefix.c_str(), to_string(val.value).c_str());
+            ImGui::Text("%s: %s", val.prefix.c_str(), utils::to_string(val.value).c_str());
         }
 
         if constexpr (sizeof...(vals) > 0) {

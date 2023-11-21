@@ -15,7 +15,7 @@ void LevelInfo::draw(const Window&) {
 
     ImGui::BeginGroup();
     ImGui::Text(name_.c_str());
-    ImGui::Text(message(Message::LastUpdated), time_to_str(last_updated_).c_str());
+    ImGui::Text(message(Message::LastUpdated), utils::time_to_str(last_updated_).c_str());
     ImGui::EndGroup();
 
     ImGui::EndGroupPanel();

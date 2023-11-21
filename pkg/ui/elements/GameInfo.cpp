@@ -12,7 +12,7 @@ void GameInfo::draw(const Window&) {
 
     ImGui::Text(description.c_str());
     ImGui::Text("%s: %s", message(Message::Levels), std::to_string(levels).c_str());
-    ImGui::Text(message(Message::LastUpdated), time_to_str(last_updated).c_str());
+    ImGui::Text(message(Message::LastUpdated), utils::time_to_str(last_updated).c_str());
 
     ImGui::EndGroupPanel();
 
