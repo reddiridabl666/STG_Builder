@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.25)
 project(stg_builder_core)
 
 set(SOURCES
+    base/Transformable.cpp
     window/Window.cpp
     game/collisions/hitbox/Hitbox.cpp
     game/collisions/hitbox/HitboxProps.cpp
@@ -18,6 +19,7 @@ set(SOURCES
     game/objects/Player.cpp
     game/objects/GameObject.cpp
     game/objects/DisplayableFactory.cpp
+    game/ui/Button.cpp
 )
 
 set(INCLUDE_DIRS

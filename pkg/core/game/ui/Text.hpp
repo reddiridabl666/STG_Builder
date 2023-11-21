@@ -18,10 +18,11 @@ class Text : virtual public Displayable {
     }
 
     void draw(Window& window) const override {
-        rect_.setPosition(text_.getPosition());
+        rect_.setPosition(text_.getPosition() - text_.getOrigin());
+        rect_.setSize(get_size());
 
         window.draw(text_);
-        window.draw(rect_);
+        // window.draw(rect_);
     }
 
     sf::Transformable& transformable() override {
@@ -29,15 +30,15 @@ class Text : virtual public Displayable {
     }
 
     sf::Vector2f get_size() const override {
-        auto bounds = get_bounds();
-        return sf::Vector2f{bounds.width, bounds.height};
+        auto bounds = text_.getLocalBounds();
+        return sf::Vector2f{bounds.width, bounds.height} * text_.getScale();
     }
 
     sf::FloatRect get_bounds() const override {
         return text_.getGlobalBounds();
     }
 
-    void set_size(size_t size) {
+    void set_font_size(size_t size) {
         text_.setCharacterSize(size);
     }
 

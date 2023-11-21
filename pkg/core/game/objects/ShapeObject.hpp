@@ -63,6 +63,10 @@ class RectObject : public ShapeObject<sf::RectangleShape> {
         shape.setOutlineThickness(outline);
         return shape;
     }
+
+    void set_size(const sf::Vector2f& size, bool) override {
+        shape_.setSize(size);
+    }
 };
 
 class CircleObject : public ShapeObject<sf::CircleShape> {
@@ -83,5 +87,9 @@ class CircleObject : public ShapeObject<sf::CircleShape> {
         shape.setOutlineColor(outline_color);
         shape.setOutlineThickness(outline);
         return shape;
+    }
+
+    void set_size(const sf::Vector2f& size, bool) override {
+        shape_.setRadius(size.x / 2);
     }
 };

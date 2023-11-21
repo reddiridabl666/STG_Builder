@@ -54,6 +54,7 @@ void App::run() {
         auto status = game_->render(timer.restart().asSeconds());
         if (status == Game<>::Status::Restart) {
             game_ = load_game();
+            game_->register_events();
         }
 
         if (status == Game<>::Status::Ended) {

@@ -2,6 +2,7 @@
 
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
+#include <ostream>
 
 template <typename T, typename U>
 auto operator*(T val, const sf::Vector2<U>& vec) {

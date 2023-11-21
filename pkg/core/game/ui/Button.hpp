@@ -4,11 +4,7 @@
 
 class Button : public Displayable {
   public:
-    Button(std::unique_ptr<Displayable>&& bg, Text&& text, std::function<void()>&& cb = nullptr, sf::Vector2f pos = {})
-        : bg_(std::move(bg)), text_(std::move(text)), cb_(std::move(cb)) {
-        text_.set_origin(text_.get_size() / 2);
-        set_pos(pos);
-    }
+    Button(std::unique_ptr<Displayable>&& bg, Text&& text, std::function<void()>&& cb = nullptr, sf::Vector2f pos = {});
 
     sf::Drawable& drawable() override {
         return bg_->drawable();
@@ -30,10 +26,7 @@ class Button : public Displayable {
         return bg_->transformable();
     }
 
-    void set_pos(const sf::Vector2f& pos) override {
-        bg_->set_pos(pos);
-        text_.set_pos(pos - bg_->get_origin() + bg_->get_size() / 2);
-    }
+    void set_pos(const sf::Vector2f& pos) override;
 
     void set_rotation(float angle) override {
         bg_->set_rotation(angle);
@@ -59,4 +52,5 @@ class Button : public Displayable {
     std::unique_ptr<Displayable> bg_;
     Text text_;
     std::function<void()> cb_;
+    float padding_ = 10;
 };

@@ -10,6 +10,8 @@
   "fps": 60,
   "fullscreen": false,
   "game_over": {
+    "offset": 40,
+    "margin": 75,
     "bg": {
       "type": "rect",
       "size": { "x": 400, "y": 200 },
@@ -42,7 +44,7 @@
       },
       "bg": {
         "type": "rect",
-        "size": { "x": 100, "y": 50 },
+        "size": { "x": 145, "y": 50 },
         "fill_color": "black",
         "outline_color": "white",
         "outline": 2

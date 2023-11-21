@@ -6,7 +6,8 @@
 namespace engine {
 class GameOver {
   public:
-    GameOver(const Window& window, std::unique_ptr<Displayable>&& bg, Text&& msg, Button&& retry, Button&& quit);
+    GameOver(const Window& window, std::unique_ptr<Displayable>&& bg, Text&& msg, Button&& retry, Button&& quit,
+             float offset, float margin);
 
     void set_pos(const sf::Vector2f& pos);
 
@@ -27,7 +28,7 @@ class GameOver {
     Button retry_;
     Button quit_;
 
-    float margin_ = 200;
-    float offset_ = 50;
+    float offset_;
+    float margin_;
 };
 }  // namespace engine

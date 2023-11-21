@@ -77,6 +77,8 @@ inline GameOver GameFactory::create_game_over(const Window& window, const nl::js
             DisplayableFactory::create(game_over.at("/quit/bg"_json_pointer), assets.textures()),
             TextFactory::create(game_over.at("/quit/message"_json_pointer), assets.fonts()),
         },
+        game_over.value("offset", 50.f),
+        game_over.value("margin", 100.f),
     };
     return res;
 }
