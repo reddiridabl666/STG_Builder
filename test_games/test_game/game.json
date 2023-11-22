@@ -10,7 +10,7 @@
   "fps": 60,
   "fullscreen": false,
   "main_menu": {
-    "offset": 50,
+    "offset": 40,
     "bg": {
       "type": "rect",
       "size": { "x": 400, "y": 200 },
@@ -37,7 +37,7 @@
   },
   "game_over": {
     "offset": 40,
-    "margin": 75,
+    "margin": 40,
     "bg": {
       "type": "rect",
       "size": { "x": 400, "y": 200 },
@@ -74,6 +74,7 @@
       "type": "rect",
       "size": { "x": 100, "y": 50 },
       "fill_color": "black",
+      "font_size": 32,
       "outline_color": "white",
       "outline": 2
     },

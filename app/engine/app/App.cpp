@@ -43,6 +43,7 @@ void App::run() try {
         auto status = game_->render(timer.restart().asSeconds());
         if (status == Game<>::Status::Restart) {
             game_->reset();
+            game_->start();
         }
 
         if (status == Game<>::Status::Ended) {

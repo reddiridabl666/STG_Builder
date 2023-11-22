@@ -28,7 +28,7 @@ MainMenu::MainMenu(const Window& window, std::unique_ptr<Displayable>&& bg, Text
     });
 
     settings_.set_cb([] {
-        GameBus::get().emit(GameEvent::SettingsOpened, nullptr);
+        //     GameBus::get().emit(GameEvent::SettingsOpened, nullptr);
     });
 
     quit_.set_cb([] {
@@ -49,7 +49,7 @@ void MainMenu::draw(Window& window) {
 void MainMenu::set_pos(const sf::Vector2f& pos) {
     bg_->set_pos(pos);
     msg_.set_pos(bg_->pos() + sf::Vector2f{bg_->width() / 2, offset_});
-    start_.set_pos(msg_.pos() + sf::Vector2f{0, offset_ + msg_.height()});
-    settings_.set_pos(start_.pos() + sf::Vector2f{0, offset_ + start_.height()});
-    quit_.set_pos(settings_.pos() + sf::Vector2f{0, offset_ + settings_.height()});
+    start_.set_pos(msg_.pos() + sf::Vector2f{0, offset_ + msg_.height() / 2 + start_.height() / 2});
+    settings_.set_pos(start_.pos() + sf::Vector2f{0, offset_ + start_.height() / 2 + settings_.height() / 2});
+    quit_.set_pos(settings_.pos() + sf::Vector2f{0, offset_ + settings_.height() / 2 + quit_.height() / 2});
 }

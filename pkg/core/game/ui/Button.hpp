@@ -38,6 +38,10 @@ class Button : public Displayable {
         text_.scale(x, y);
     }
 
+    void set_size(const sf::Vector2f& size, bool save_proportions) override {
+        bg_->set_size(size, save_proportions);
+    }
+
     void draw(Window& window) const override;
 
   private:

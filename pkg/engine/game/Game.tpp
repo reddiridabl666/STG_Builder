@@ -128,8 +128,7 @@ void Game<RTreeType>::start() {
 
 template <typename RTreeType>
 void Game<RTreeType>::to_main_menu() {
-    clear();
-    status_ = Status::MainMenu;
+    reset();
 }
 
 template <typename RTreeType>
@@ -368,6 +367,11 @@ void Game<RTreeType>::reset() {
 
 template <typename RTreeType>
 void Game<RTreeType>::draw_ui() {
+    if (status_ != Status::MainMenu && status_ != Status::Settings) {
+        menu_.update(player_manager_.players());
+        menu_.draw(window_);
+    }
+
     switch (status_) {
         case Status::Settings:
             [[fallthrough]];
@@ -381,23 +385,19 @@ void Game<RTreeType>::draw_ui() {
         case Status::Paused:
             draw_with_default_view(pause_menu_);
             break;
+        case Status::Running:
+#ifdef DEBUG  // clang-format off
+            ui::StatBox::draw("Debug",
+                ui::StatLine{"Objects active", &objects_},
+                ui::StatLine{"Objects not loaded", &(level_->object_props())},
+                ui::StatLine{"View pos", level_->field().view().getCenter().y},
+                ui::StatLine{"Textures loaded", &assets_.textures().storage()},
+                ui::StatLine{"Enemies left", GameState::get().enemy_count()}
+            );
+#endif  // clang-format on
+            break;
         default:
             break;
     }
-
-#ifdef DEBUG
-    // clang-format off
-    ui::StatBox::draw("Debug",
-        ui::StatLine{"Objects active", &objects_},
-        ui::StatLine{"Objects not loaded", &(level_->object_props())},
-        ui::StatLine{"View pos", level_->field().view().getCenter().y},
-        ui::StatLine{"Textures loaded", &assets_.textures().storage()},
-        ui::StatLine{"Enemies left", GameState::get().enemy_count()}
-    );
-    // clang-format on
-#endif
-
-    menu_.update(player_manager_.players());
-    menu_.draw(window_);
 }
 }  // namespace engine
