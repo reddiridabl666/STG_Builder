@@ -7,6 +7,8 @@
 #include "PlayerManager.hpp"
 #include "Utils.hpp"
 #include "ui/GameOver.hpp"
+#include "ui/MainMenu.hpp"
+#include "ui/PauseMenu.hpp"
 #include "ui/SideMenu.hpp"
 
 #ifdef DEBUG
@@ -14,11 +16,10 @@
 #endif
 
 namespace engine {
-
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOver&& game_over, PauseMenu&& pause_menu,
-                      PlayerManager&& player_manager, assets::Manager&& assets, ObjectTypeFactory::res_type&& types,
-                      LevelManager&& levels, int fps)
+Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, MainMenu&& main_menu, GameOver&& game_over,
+                      PauseMenu&& pause_menu, PlayerManager&& player_manager, assets::Manager&& assets,
+                      ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
     : window_(window),
       bg_(std::move(bg)),
       menu_(std::move(menu)),
@@ -27,6 +28,7 @@ Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, GameOv
       levels_(std::move(levels)),
       fps_(fps),
       player_manager_(std::move(player_manager)),
+      main_menu_(std::move(main_menu)),
       game_over_(std::move(game_over)),
       pause_menu_(std::move(pause_menu)) {}
 
@@ -68,6 +70,18 @@ void Game<RTreeType>::register_events() {
         }
     });
 
+    GameBus::get().on(GameEvent::GameStarted, [this](const auto&) {
+        start();
+    });
+
+    GameBus::get().on(GameEvent::SettingsOpened, [this](const auto&) {
+        status_ = Status::Settings;
+    });
+
+    GameBus::get().on(GameEvent::MainMenuOpened, [this](const auto&) {
+        to_main_menu();
+    });
+
     events_registered_ = true;
 }
 
@@ -85,6 +99,9 @@ Game<RTreeType>::~Game() {
         GameBus::get().off(GameEvent::GameRestarted);
         GameBus::get().off(GameEvent::GameEnded);
         GameBus::get().off(GameEvent::GameUnpaused);
+        GameBus::get().off(GameEvent::SettingsOpened);
+        GameBus::get().off(GameEvent::MainMenuOpened);
+        GameBus::get().off(GameEvent::GameStarted);
     }
 }
 
@@ -103,6 +120,19 @@ void Game<RTreeType>::fire_key_event(sf::Keyboard::Key key, const std::string& s
 }
 
 template <typename RTreeType>
+void Game<RTreeType>::start() {
+    if (status_ == Status::MainMenu) {
+        status_ = Status::Running;
+    }
+}
+
+template <typename RTreeType>
+void Game<RTreeType>::to_main_menu() {
+    clear();
+    status_ = Status::MainMenu;
+}
+
+template <typename RTreeType>
 Game<RTreeType>::Status Game<RTreeType>::render(float delta_time) {
     if (status_ == Status::Running) {
         update(delta_time);
@@ -110,17 +140,6 @@ Game<RTreeType>::Status Game<RTreeType>::render(float delta_time) {
 
     draw_with_default_view(bg_);
     draw_objects();
-
-    switch (status_) {
-        case Status::GameOver:
-            draw_with_default_view(game_over_);
-            break;
-        case Status::Paused:
-            draw_with_default_view(pause_menu_);
-            break;
-        default:
-            break;
-    }
 
     draw_ui();
 
@@ -335,11 +354,37 @@ void Game<RTreeType>::clear() {
     for (auto& [_, type] : types_) {
         type.reset_count();
     }
+
     status_ = Status::Running;
 }
 
 template <typename RTreeType>
+void Game<RTreeType>::reset() {
+    clear();
+    levels_.reset();
+    level_ = nullptr;
+    status_ = Status::MainMenu;
+}
+
+template <typename RTreeType>
 void Game<RTreeType>::draw_ui() {
+    switch (status_) {
+        case Status::Settings:
+            [[fallthrough]];
+        case Status::MainMenu:
+            window_.set_default_view();
+            main_menu_.draw(window_);
+            return;
+        case Status::GameOver:
+            draw_with_default_view(game_over_);
+            break;
+        case Status::Paused:
+            draw_with_default_view(pause_menu_);
+            break;
+        default:
+            break;
+    }
+
 #ifdef DEBUG
     // clang-format off
     ui::StatBox::draw("Debug",

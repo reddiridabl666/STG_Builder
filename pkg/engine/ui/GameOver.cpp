@@ -26,7 +26,7 @@ engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& 
     });
 
     quit_.set_cb([] {
-        GameBus::get().emit(GameEvent::GameEnded, nullptr);
+        GameBus::get().emit(GameEvent::MainMenuOpened, nullptr);
     });
 
     set_pos(window.get_center() - get_size() / 2);

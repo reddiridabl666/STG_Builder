@@ -7,10 +7,10 @@
 
 namespace engine {
 struct ButtonFactory {
-    static Button create(const nl::json& json, assets::Manager& assets) {
+    static Button create(const std::string& text, const nl::json& json, assets::Manager& assets) {
         return Button{
-            DisplayableFactory::create(json.at("bg"), assets.textures()),
-            TextFactory::create(json.at("message"), assets.fonts()),
+            DisplayableFactory::create(json, assets.textures()),
+            TextFactory::create(json, assets.fonts(), text),
         };
     }
 };

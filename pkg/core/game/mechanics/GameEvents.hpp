@@ -8,6 +8,9 @@ enum class GameEvent {
     GameRestarted,
     GameEnded,
     GameUnpaused,
+    SettingsOpened,
+    GameStarted,
+    MainMenuOpened,
 };
 
 // clang-format off

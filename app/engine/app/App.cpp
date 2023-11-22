@@ -5,11 +5,11 @@
 #include "GameFactory.hpp"
 #include "GameState.hpp"
 #include "Utils.hpp"
-#include "ui/elements/StatBox.hpp"
+#include "ui/elements/ErrorPopup.hpp"
 
 namespace engine {
-App::App(Window& window, MainMenu&& menu, const std::filesystem::path& game_path)
-    : window_(window), game_path_(game_path), game_(load_game()), main_menu_(std::move(menu)) {}
+App::App(Window& window, const std::filesystem::path& game_path)
+    : window_(window), game_path_(game_path), game_(load_game()) {}
 
 std::unique_ptr<Game<>> App::load_game() {
     auto game_json = json::read(game_path_ / "game.json");
@@ -25,8 +25,7 @@ std::unique_ptr<Game<>> App::load_game() {
     return GameFactory::generate_unique<>(window_, *game_json, *entities_json, game_path_);
 }
 
-void App::run() {
-    sf::Clock timer;
+void App::run() try {
     game_->register_events();
 
     window_.add_handler("app_zoom", sf::Event::KeyReleased, [this](const sf::Event& event) {
@@ -38,23 +37,22 @@ void App::run() {
         }
     });
 
+    sf::Clock timer;
+
     window_.main_loop([this, &timer] {
-        if (state_ == State::MainMenu) {
-            main_menu_.draw(window_);
+        auto status = game_->render(timer.restart().asSeconds());
+        if (status == Game<>::Status::Restart) {
+            game_->reset();
         }
 
-        if (state_ == State::Game) {
-            auto status = game_->render(timer.restart().asSeconds());
-            if (status == Game<>::Status::Restart) {
-                game_ = load_game();
-                game_->register_events();
-            }
-
-            if (status == Game<>::Status::Ended) {
-                window_.close();
-            }
+        if (status == Game<>::Status::Ended) {
+            window_.close();
         }
     });
+} catch (std::exception& e) {
+    ui::ErrorPopup(window_, e.what());
+} catch (...) {
+    ui::ErrorPopup(window_, message(Message::UnexpectedError));
 }
 
 App::~App() {

@@ -9,6 +9,32 @@
   },
   "fps": 60,
   "fullscreen": false,
+  "main_menu": {
+    "offset": 50,
+    "bg": {
+      "type": "rect",
+      "size": { "x": 400, "y": 200 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "outline": 3
+    },
+    "message": {
+      "text": "Hello, world!",
+      "font_size": 48
+    },
+    "button_style": {
+      "type": "rect",
+      "size": { "x": 100, "y": 50 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "font_size": 32,
+      "outline": 2
+    },
+    "start": "Start",
+    "settings": "Settings",
+    "leaderboards": "Leaderboards",
+    "quit": "Exit"
+  },
   "game_over": {
     "offset": 40,
     "margin": 75,
@@ -22,34 +48,18 @@
     "message": {
       "text": "Game over",
       "font": "ComicSans.ttf",
-      "size": 48
+      "font_size": 48
     },
-    "retry": {
-      "message": {
-        "text": "Try again",
-        "size": 32
-      },
-      "bg": {
-        "type": "rect",
-        "size": { "x": 100, "y": 50 },
-        "fill_color": "black",
-        "outline_color": "white",
-        "outline": 2
-      }
+    "button_style": {
+      "type": "rect",
+      "size": { "x": 100, "y": 50 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "font_size": 32,
+      "outline": 2
     },
-    "quit": {
-      "message": {
-        "text": "Quit",
-        "size": 32
-      },
-      "bg": {
-        "type": "rect",
-        "size": { "x": 145, "y": 50 },
-        "fill_color": "black",
-        "outline_color": "white",
-        "outline": 2
-      }
-    }
+    "retry": "Try again",
+    "quit": "Quit"
   },
   "pause_menu": {
     "offset": 40,
@@ -60,36 +70,19 @@
       "outline_color": "white",
       "outline": 3
     },
+    "button_style": {
+      "type": "rect",
+      "size": { "x": 100, "y": 50 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "outline": 2
+    },
     "message": {
       "text": "Pause",
-      "size": 48
+      "font_size": 48
     },
-    "continue": {
-      "message": {
-        "text": "Continue",
-        "size": 32
-      },
-      "bg": {
-        "type": "rect",
-        "size": { "x": 100, "y": 50 },
-        "fill_color": "black",
-        "outline_color": "white",
-        "outline": 2
-      }
-    },
-    "quit": {
-      "message": {
-        "text": "Quit",
-        "size": 32
-      },
-      "bg": {
-        "type": "rect",
-        "size": { "x": 145, "y": 50 },
-        "fill_color": "black",
-        "outline_color": "white",
-        "outline": 2
-      }
-    }
+    "continue": "Continue",
+    "quit": "Quit"
   },
   "last_updated": 1700329144,
   "levels": 2,

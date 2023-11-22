@@ -26,15 +26,6 @@ std::string to_string(const T& obj) {
     return out.str();
 }
 
-template <typename T, typename... Args>
-T max(T&& a, Args&&... args) {
-    return std::max(Max(args...), a);
-}
-
-template <typename T, typename... Args>
-T min(T&& a, Args&&... args) {
-    return std::min(Max(args...), a);
-}
 }  // namespace utils
 
 template <typename T>

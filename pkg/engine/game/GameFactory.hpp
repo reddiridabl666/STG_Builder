@@ -21,8 +21,9 @@ class GameFactory {
 
   private:
     static SideMenu create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets);
-    static GameOver create_game_over(const Window& window, const nl::json& game_over, assets::Manager& assets);
-    static PauseMenu create_pause_menu(const Window& window, const nl::json& game_over, assets::Manager& assets);
+    static GameOver create_game_over(const Window& window, const nl::json& json, assets::Manager& assets);
+    static PauseMenu create_pause_menu(const Window& window, const nl::json& json, assets::Manager& assets);
+    static MainMenu create_main_menu(const Window& window, const nl::json& json, assets::Manager& assets);
 
     template <typename T, typename Constructor>
     static T create(Window& window, const nl::json& game, const nl::json& entities, const std::string& base_dir,
@@ -57,40 +58,6 @@ inline std::unique_ptr<GameType> GameFactory::generate_unique(Window& window, co
     return create<std::unique_ptr<GameType>>(window, game, entities, base_dir, BindMakeUnique<GameType>{});
 }
 
-inline SideMenu GameFactory::create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets) {
-    auto props = menu.get<SideMenuProps>();
-    return SideMenu{
-        window,
-        assets.textures().get_or(props.bg, assets::kFallbackImage),
-        props,
-    };
-}
-
-inline GameOver GameFactory::create_game_over(const Window& window, const nl::json& game_over,
-                                              assets::Manager& assets) {
-    return GameOver{
-        window,
-        DisplayableFactory::create(game_over.at("bg"), assets.textures()),
-        TextFactory::create(game_over.at("message"), assets.fonts()),
-        ButtonFactory::create(game_over.at("retry"), assets),
-        ButtonFactory::create(game_over.at("quit"), assets),
-        game_over.value("offset", 50.f),
-        game_over.value("margin", 100.f),
-    };
-}
-
-inline PauseMenu GameFactory::create_pause_menu(const Window& window, const nl::json& pause_menu,
-                                                assets::Manager& assets) {
-    return PauseMenu{
-        window,
-        DisplayableFactory::create(pause_menu.at("bg"), assets.textures()),
-        TextFactory::create(pause_menu.value("message", nl::json::object()), assets.fonts()),
-        ButtonFactory::create(pause_menu.value("continue", nl::json::object()), assets),
-        ButtonFactory::create(pause_menu.value("quit", nl::json::object()), assets),
-        pause_menu.value("offset", 50.f),
-    };
-}
-
 template <typename T, typename Constructor>
 inline T GameFactory::create(Window& window, const nl::json& game, const nl::json& entities,
                              const std::string& base_dir, Constructor&& constructor) {
@@ -110,6 +77,7 @@ inline T GameFactory::create(Window& window, const nl::json& game, const nl::jso
         window,
         SpriteObject(manager.textures().get_or(game.value("bg", ""), assets::kFallbackImage)),
         create_side_menu(window, game.value("side_menu", nl::json::object()), manager),
+        create_main_menu(window, game.value("main_menu", nl::json::object()), manager),
         create_game_over(window, game.value("game_over", nl::json::object()), manager),
         create_pause_menu(window, game.value("pause_menu", nl::json::object()), manager),
         PlayerLoader(game.value("players", nl::json::array())),

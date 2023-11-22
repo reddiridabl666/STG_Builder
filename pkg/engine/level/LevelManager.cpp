@@ -22,4 +22,8 @@ ErrorOr<std::shared_ptr<Level>> LevelManager::get(size_t num, Window& window) {
 ErrorOr<std::shared_ptr<Level>> LevelManager::reload(Window& window) {
     return get(cur_num_, window);
 }
+
+void LevelManager::reset() {
+    cur_num_ = 0;
+}
 }  // namespace engine

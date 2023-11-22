@@ -15,9 +15,8 @@ set(INCLUDE_DIRS
     game
 )
 
-set (SOURCES
+set(SOURCES
     app/App.cpp
-    ui/MainMenu.cpp
     main.cpp
 )
 

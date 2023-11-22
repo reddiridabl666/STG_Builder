@@ -9,12 +9,6 @@ engine::PauseMenu::PauseMenu(const Window& window, std::unique_ptr<Displayable>&
       continue_(std::move(continue_btn)),
       quit_(std::move(quit)),
       offset_(offset) {
-    if (quit_.width() < continue_.width()) {
-        quit_.set_width(continue_.width());
-    } else {
-        continue_.set_width(quit_.width());
-    }
-
     bg_->set_height(quit_.height() + continue_.height() + msg_.height() + offset * 4);
 
     msg_.set_origin(msg_.get_size() / 2);
@@ -26,7 +20,7 @@ engine::PauseMenu::PauseMenu(const Window& window, std::unique_ptr<Displayable>&
     });
 
     quit_.set_cb([] {
-        GameBus::get().emit(GameEvent::GameEnded, nullptr);
+        GameBus::get().emit(GameEvent::MainMenuOpened, nullptr);
     });
 
     set_pos(window.get_center() - bg_->get_size() / 2);

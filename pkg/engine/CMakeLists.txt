@@ -10,6 +10,7 @@ set(SOURCES
     objects/ObjectOptions.cpp
     objects/ObjectType.cpp
     game/GameState.cpp
+    game/GameFactory.cpp
     game/PlayerManager.cpp
     level/Level.cpp
     level/LevelLoader.cpp
@@ -17,6 +18,7 @@ set(SOURCES
     ui/SideMenu.cpp
     ui/PauseMenu.cpp
     ui/GameOver.cpp
+    ui/MainMenu.cpp
 )
 
 set(INCLUDE_DIRS

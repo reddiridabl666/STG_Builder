@@ -22,7 +22,7 @@ class Lang {
     }
 
   private:
-    static inline Value current_lang_ = Value::RU;
+    static inline Value current_lang_ = Value::EN;
 };
 
 enum class Message {
