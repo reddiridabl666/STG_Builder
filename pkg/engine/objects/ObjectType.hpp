@@ -13,13 +13,11 @@
 #include "HitboxProps.hpp"
 #include "ObjectOptions.hpp"
 #include "Pattern.hpp"
+#include "Player.hpp"
 #include "Properties.hpp"
 #include "TimedAction.hpp"
 
-class Player;
 struct PlayerOptions;
-
-static constexpr const char* kPlayerNum = "__player_num";
 
 class ObjectType {
   public:

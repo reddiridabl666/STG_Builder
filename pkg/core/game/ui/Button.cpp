@@ -9,7 +9,7 @@ Button::Button(std::unique_ptr<Displayable>&& bg, Text&& text, std::function<voi
         x = text_.width() + padding_ * 2;
     }
 
-    bg_->set_size(sf::Vector2f{x, text_.get_size().y + padding_ * 2}, false);
+    bg_->set_size(sf::Vector2f{x, text_.height() + padding_ * 2}, false);
     set_pos(pos);
 }
 

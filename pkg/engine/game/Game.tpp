@@ -193,6 +193,7 @@ void Game<RTreeType>::draw_objects() {
     for (const auto& [_, obj] : objects_) {
         obj->draw(window_);
     }
+    player_manager_.draw_markers(window_);
 }
 
 template <typename RTreeType>

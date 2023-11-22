@@ -1,5 +1,7 @@
 #include "PlayerManager.hpp"
 
+#include "TextFactory.hpp"
+
 void PlayerManager::add_player(const std::shared_ptr<GameObject>& player, const PlayerOptions& opts) {
     players_.push_back(player);
 
@@ -15,6 +17,7 @@ void PlayerManager::add_player(const std::shared_ptr<GameObject>& player, const 
 void PlayerManager::erase_player(size_t id) {
     players_.erase(players_.begin() + id);
     key_map_.erase(key_map_.begin() + id);
+    markers_.erase(markers_.begin() + id);
 }
 
 void PlayerManager::clear() {
@@ -29,8 +32,15 @@ PlayerList PlayerManager::load_players(assets::Manager& assets, const GameField&
     PlayerList res;
     res.reserve(players.size());
 
+    auto marker_props = loader_.marker_props();
+
     for (auto& [player, opts] : players) {
         add_player(player, opts);
+        markers_.push_back(PlayerMarker{
+            engine::TextFactory::create(marker_props.text, assets.fonts()),
+            player,
+            marker_props.offset,
+        });
         res.push_back(std::move(player));
     }
 
@@ -49,4 +59,10 @@ PlayerManager::EventList PlayerManager::get_events(sf::Keyboard::Key key) {
     }
 
     return res;
+}
+
+void PlayerManager::draw_markers(Window& window) {
+    for (auto& marker : markers_) {
+        marker.draw(window);
+    }
 }

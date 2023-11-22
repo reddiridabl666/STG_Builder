@@ -32,6 +32,8 @@ class PlayerManager {
 
     EventList get_events(sf::Keyboard::Key);
 
+    void draw_markers(Window& window);
+
   private:
     void add_player(const std::shared_ptr<GameObject>&, const PlayerOptions&);
 
@@ -40,5 +42,6 @@ class PlayerManager {
     PlayerLoader loader_;
 
     std::vector<std::shared_ptr<GameObject>> players_;
+    std::vector<PlayerMarker> markers_;
     std::vector<KeyActions> key_map_;
 };

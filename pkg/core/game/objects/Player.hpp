@@ -2,30 +2,9 @@
 
 #include "Controls.hpp"
 #include "GameObject.hpp"
+#include "Text.hpp"
 
-// class Player : public GameObject {
-//     // clang-format off
-//     Player(
-//         const std::string& name,
-//         const sf::Vector2f& size,
-//         std::unique_ptr<Displayable>&& image,
-//         int speed = 50,
-//         GameObjectTag tag = GameObjectTag::Object,
-//         const Properties& props = {},
-//         float activity_start = kDefaultActivityStart,
-//         const alive::update& life_func = kDefaultLifeFunc,
-//         std::unique_ptr<movement::Rule>&& move_func = movement::no_op(),
-//         std::unique_ptr<Hitbox>&& hitbox = nullptr,
-//         CollisionReaction&& collision = {},
-
-//         std::unique_ptr<action::Action>&& on_character_death = nullptr,
-//         bool stop_at_bounds = false,
-//         sf::Vector2f velocity = {},
-//         bool alive = true,
-//         bool active = false
-//     );
-//     // clang-format on
-// };
+static constexpr const char* kPlayerNum = "__player_num";
 
 struct PlayerOptions {
     size_t num;
@@ -34,5 +13,24 @@ struct PlayerOptions {
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(PlayerOptions, keys, joy)
+
+struct PlayerMarker {
+  public:
+    PlayerMarker(Text&& props, const std::shared_ptr<GameObject>& player, const sf::Vector2f& offset);
+
+    void draw(Window& window);
+
+  private:
+    Text text_;
+    sf::Vector2f offset_;
+    std::weak_ptr<GameObject> parent_;
+};
+
+struct PlayerMarkerProps {
+    TextProps text;
+    sf::Vector2f offset = {0, -20};
+};
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(PlayerMarkerProps, text, offset)
 
 using PlayerList = std::vector<std::shared_ptr<GameObject>>;

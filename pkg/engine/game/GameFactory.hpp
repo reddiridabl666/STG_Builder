@@ -80,7 +80,7 @@ inline T GameFactory::create(Window& window, const nl::json& game, const nl::jso
         create_main_menu(window, game.value("main_menu", nl::json::object()), manager),
         create_game_over(window, game.value("game_over", nl::json::object()), manager),
         create_pause_menu(window, game.value("pause_menu", nl::json::object()), manager),
-        PlayerLoader(game.value("players", nl::json::array())),
+        PlayerLoader(game.value("players", nl::json::array()), game.value("player_marker", PlayerMarkerProps{})),
         std::move(manager),
         std::move(types),
         std::move(levels),

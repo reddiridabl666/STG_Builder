@@ -4,13 +4,15 @@
 #include "ObjectOptionsFactory.hpp"
 #include "ObjectTypeFactory.hpp"
 #include "Player.hpp"
+#include "Text.hpp"
 
 class PlayerLoader {
   private:
     using PlayerWithOptions = std::pair<PlayerList::value_type, PlayerOptions>;
 
   public:
-    PlayerLoader(const nl::json& players) : players_(players) {}
+    PlayerLoader(const nl::json& players, PlayerMarkerProps&& props)
+        : players_(players), marker_props_(std::move(props)) {}
 
     std::vector<PlayerWithOptions> load_players(assets::Manager& assets, const GameField& field,
                                                 ObjectTypeFactory::res_type& types);
@@ -18,8 +20,13 @@ class PlayerLoader {
     PlayerWithOptions load_player(size_t idx, assets::Manager& assets, ObjectType& obj_type,
                                   const ObjectOptionsFactory& opts_factory);
 
+    const auto& marker_props() const {
+        return marker_props_;
+    }
+
   private:
     nl::json players_;
+    PlayerMarkerProps marker_props_;
 };
 
 inline std::vector<PlayerLoader::PlayerWithOptions> PlayerLoader::load_players(assets::Manager& assets,

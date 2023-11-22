@@ -8,6 +8,7 @@
 #include "GameUi.hpp"
 #include "Player.hpp"
 #include "SpriteObject.hpp"
+#include "Text.hpp"
 #include "Window.hpp"
 
 namespace engine {
@@ -18,10 +19,13 @@ struct SideMenuProps {
     float player_gap = 50;
     std::string bg;
     sf::FloatRect size = {0.65f, 0.05f, 0.3f, 0.9f};
+    TextProps player_label = {.text = "Player {}"};
     nl::json stats = nl::json::array();
+    float player_label_gap = 0;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(SideMenuProps, offset, gap, player_gap, bg, size, stats)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(SideMenuProps, offset, gap, player_gap, player_label, player_label_gap,
+                                                bg, size, stats)
 
 struct PlayerStat {
     std::string key;
@@ -31,7 +35,8 @@ struct PlayerStat {
 class SideMenu {
   public:
     SideMenu(const Window& window, const sf::Vector2f& offset, float gap, float player_gap,
-             const sf::FloatRect& screen_pos, std::shared_ptr<sf::Texture>&& bg, const nl::json& settings);
+             const sf::FloatRect& screen_pos, std::shared_ptr<sf::Texture>&& bg, const nl::json& settings,
+             const TextProps& player_label, float player_label_gap);
 
     SideMenu(const Window& window, std::shared_ptr<sf::Texture>&& bg, const SideMenuProps& props);
 
@@ -54,7 +59,10 @@ class SideMenu {
         return bg_.pos();
     }
 
-    using PlayerStats = std::vector<PlayerStat>;
+    struct PlayerStats {
+        Text label;
+        std::vector<PlayerStat> stats;
+    };
 
   private:
     void initialize_view(const Window& window, const sf::FloatRect& screen_pos);
@@ -69,5 +77,9 @@ class SideMenu {
     float gap_;
     float player_gap_;
     sf::Vector2f prev_pos_;
+
+    TextProps player_label_props_;
+    std::string player_tmpl_;
+    float player_label_gap_;
 };
 }  // namespace engine

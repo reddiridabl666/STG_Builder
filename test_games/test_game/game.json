@@ -87,6 +87,13 @@
   },
   "last_updated": 1700329144,
   "levels": 2,
+  "player_marker": {
+    "offset": { "x": 0, "y": -60 },
+    "text": {
+      "text": "P{}",
+      "font_size": 20
+    }
+  },
   "menu": {
     "ratio": 0.3,
     "stats": ["health", "score"]
@@ -178,6 +185,11 @@
       "y": 40.0
     },
     "player_gap": 50.0,
+    "player_label_gap": 5,
+    "player_label": {
+      "text": "Player {}",
+      "font_size": 24
+    },
     "size": {
       "height": 0.8999999761581421,
       "left": 0.6700000166893005,
