@@ -6,10 +6,6 @@ class Button : public Displayable {
   public:
     Button(std::unique_ptr<Displayable>&& bg, Text&& text, std::function<void()>&& cb = nullptr, sf::Vector2f pos = {});
 
-    sf::Drawable& drawable() override {
-        return bg_->drawable();
-    }
-
     void set_cb(std::function<void()>&& cb) {
         cb_ = std::move(cb);
     }

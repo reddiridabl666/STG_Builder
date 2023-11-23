@@ -15,10 +15,6 @@ class Bar : public GameUi {
         }
     }
 
-    sf::Drawable& drawable() override {
-        return empty_.drawable();
-    }
-
     sf::Transformable& transformable() override {
         return empty_.transformable();
     }

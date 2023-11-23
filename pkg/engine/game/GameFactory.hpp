@@ -84,7 +84,8 @@ inline T GameFactory::create(Window& window, const nl::json& game, const nl::jso
         std::move(manager),
         std::move(types),
         std::move(levels),
-        fps
+        fps,
+        game.value("level_transition", 2.f)
     );
     // clang-format on
 }

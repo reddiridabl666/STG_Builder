@@ -117,7 +117,7 @@ void Window::set_default_view() {
 }
 
 void Window::draw(const Drawable& obj) {
-    window_.draw(obj.drawable());
+    obj.draw(*this);
 }
 
 void Window::draw(const sf::Drawable& obj) {

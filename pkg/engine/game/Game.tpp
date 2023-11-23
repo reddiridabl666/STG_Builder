@@ -19,7 +19,7 @@ namespace engine {
 template <typename RTreeType>
 Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, MainMenu&& main_menu, GameOver&& game_over,
                       PauseMenu&& pause_menu, PlayerManager&& player_manager, assets::Manager&& assets,
-                      ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps)
+                      ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps, float level_transition)
     : window_(window),
       bg_(std::move(bg)),
       menu_(std::move(menu)),
@@ -30,7 +30,9 @@ Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, MainMe
       player_manager_(std::move(player_manager)),
       main_menu_(std::move(main_menu)),
       game_over_(std::move(game_over)),
-      pause_menu_(std::move(pause_menu)) {}
+      pause_menu_(std::move(pause_menu)),
+      level_transition_(level_transition),
+      level_transition_cur_(level_transition_ + 1) {}
 
 template <typename RTreeType>
 void Game<RTreeType>::register_events() {
@@ -224,7 +226,9 @@ void Game<RTreeType>::resolve_timed_actions(float delta_time) {
 
 template <typename RTreeType>
 void Game<RTreeType>::update(float delta_time) {
-    update_level();
+    if (!update_level(delta_time)) {
+        return;
+    }
 
     generate_objects();
 
@@ -258,21 +262,30 @@ void Game<RTreeType>::zoom(float value) {
 }
 
 template <typename RTreeType>
-void Game<RTreeType>::update_level() {
+bool Game<RTreeType>::update_level(float delta_time) {
     if (level_ && !level_->has_ended()) {
-        return;
+        return true;
     }
+
+    if (level_transition_cur_ < level_transition_) {
+        level_transition_cur_ += delta_time;
+        return true;
+    }
+
+    level_transition_cur_ = 0;
 
     auto res = levels_.start_next(window_);
     if (!res) {
-        throw res.error();
+        to_main_menu();
+        return false;
     }
 
     level_ = res.value();
 
     clear();
 
-    return generate_players();
+    generate_players();
+    return true;
 }
 
 template <typename RTreeType>
@@ -356,6 +369,7 @@ void Game<RTreeType>::clear() {
     }
 
     status_ = Status::Running;
+    level_transition_cur_ = level_transition_ + 1;
 }
 
 template <typename RTreeType>

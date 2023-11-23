@@ -17,8 +17,7 @@ void ErrorPopup(Window& window, const char* msg) {
             pop_up = true;
         }
 
-        if (ImGui::BeginPopupModal(message(Message::UnexpectedError), nullptr,
-                                   ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize)) {
+        if (ImGui::BeginPopupModal(message(Message::UnexpectedError), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             ImGui::Text(msg);
             ImGui::NewLine();
 

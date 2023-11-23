@@ -19,6 +19,8 @@ set(SOURCES
     ui/PauseMenu.cpp
     ui/GameOver.cpp
     ui/MainMenu.cpp
+    ui/Layout.cpp
+    ui/VerticalLayout.cpp
 )
 
 set(INCLUDE_DIRS

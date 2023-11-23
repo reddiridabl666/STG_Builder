@@ -16,8 +16,8 @@ class ShapeObject : virtual public Displayable {
   public:
     ShapeObject(const T& shape) : shape_(shape) {}
 
-    sf::Drawable& drawable() override {
-        return shape_;
+    void draw(Window& window) const override {
+        window.draw(shape_);
     }
 
     sf::Transformable& transformable() override {

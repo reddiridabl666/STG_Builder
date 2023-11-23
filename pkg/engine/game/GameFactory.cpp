@@ -19,9 +19,9 @@ PauseMenu GameFactory::create_pause_menu(const Window& window, const nl::json& j
     return PauseMenu{
         window,
         DisplayableFactory::create(json.at("bg"), assets.textures()),
-        TextFactory::create(json.value("message", nl::json::object()), assets.fonts()),
-        ButtonFactory::create(json.value("continue", ""), btn_style, assets),
-        ButtonFactory::create(json.value("quit", ""), btn_style, assets),
+        TextFactory::create_unique(json.value("message", nl::json::object()), assets.fonts()),
+        ButtonFactory::create_unique(json.value("continue", ""), btn_style, assets),
+        ButtonFactory::create_unique(json.value("quit", ""), btn_style, assets),
         json.value("offset", 50.f),
     };
 }
@@ -31,10 +31,10 @@ MainMenu GameFactory::create_main_menu(const Window& window, const nl::json& jso
     return MainMenu{
         window,
         DisplayableFactory::create(json.at("bg"), assets.textures()),
-        TextFactory::create(json.value("message", nl::json::object()), assets.fonts()),
-        ButtonFactory::create(json.value("start", ""), btn_style, assets),
-        ButtonFactory::create(json.value("settings", ""), btn_style, assets),
-        ButtonFactory::create(json.value("quit", ""), btn_style, assets),
+        TextFactory::create_unique(json.value("message", nl::json::object()), assets.fonts()),
+        ButtonFactory::create_unique(json.value("start", ""), btn_style, assets),
+        ButtonFactory::create_unique(json.value("settings", ""), btn_style, assets),
+        ButtonFactory::create_unique(json.value("quit", ""), btn_style, assets),
         json.value("offset", 50.f),
     };
 }

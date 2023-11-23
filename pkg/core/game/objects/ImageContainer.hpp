@@ -14,8 +14,8 @@ class ImageContainer : public Displayable {
         return image_;
     }
 
-    sf::Drawable& drawable() override {
-        return image_->drawable();
+    void draw(Window& window) const override {
+        window.draw(*image_);
     }
 
     sf::Transformable& transformable() override {

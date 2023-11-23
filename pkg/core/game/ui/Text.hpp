@@ -24,8 +24,8 @@ class Text : virtual public Displayable {
     Text(Text&&) = default;
     Text& operator=(Text&&) = default;
 
-    sf::Drawable& drawable() override {
-        return text_;
+    void draw(Window& window) const override {
+        window.draw(text_);
     }
 
     std::string contents() const {

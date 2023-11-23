@@ -31,7 +31,7 @@ class Game {
 
     Game(Window& window, SpriteObject&& bg, SideMenu&& menu, MainMenu&& main_menu, GameOver&& game_over,
          PauseMenu&& pause_menu, PlayerManager&& player_manager, assets::Manager&& assets,
-         ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps);
+         ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps, float level_transition);
 
     Game() = delete;
     Game(const Game&) = delete;
@@ -57,7 +57,7 @@ class Game {
   protected:
     void update(float delta_time);
 
-    void update_level();
+    bool update_level(float delta_time);
 
     std::shared_ptr<GameObject> generate_object(const ObjectOptions& opts);
 
@@ -104,6 +104,9 @@ class Game {
     MainMenu main_menu_;
     GameOver game_over_;
     PauseMenu pause_menu_;
+
+    float level_transition_;
+    float level_transition_cur_;
 
   private:
     bool events_registered_ = false;
