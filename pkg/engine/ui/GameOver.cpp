@@ -1,41 +1,44 @@
 #include "GameOver.hpp"
 
-engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& bg, Text&& msg, Button&& retry,
-                           Button&& quit, float offset, float margin)
-    : bg_(std::move(bg)),
-      msg_(std::move(msg)),
-      retry_(std::move(retry)),
-      quit_(std::move(quit)),
-      offset_(offset),
-      margin_(margin) {
-    if (quit_.width() < retry_.width()) {
-        quit_.set_width(retry_.width(), false);
-    } else {
-        retry_.set_width(quit_.width(), false);
-    }
+#include "DummyDisplayable.hpp"
+#include "HorizontalLayout.hpp"
 
-    auto bg_x = 2 * retry_.width() + margin_ + 2 * offset_;
-    auto bg_y = std::max(retry_.height(), quit_.height()) + margin_ + 2 * offset_ + msg_.height();
-
-    bg_->set_size(sf::Vector2f{bg_x, bg_y}, false);
-
-    msg_.set_origin(msg_.get_size() / 2);
-
-    retry_.set_cb([] {
+engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
+                           std::unique_ptr<Button>&& retry, std::unique_ptr<Button>&& quit, float offset, float margin)
+    : layout_(margin) {
+    retry->set_cb([] {
         GameBus::get().emit(GameEvent::GameRestarted, nullptr);
     });
 
-    quit_.set_cb([] {
+    quit->set_cb([] {
         GameBus::get().emit(GameEvent::MainMenuOpened, nullptr);
     });
+
+    std::vector<std::unique_ptr<Displayable>> btns;
+    btns.reserve(2);
+
+    btns.push_back(std::move(retry));
+    btns.push_back(std::move(quit));
+
+    auto horizontal = std::make_unique<HorizontalLayout>(std::make_unique<DummyDisplayable>(), std::move(btns), offset);
+
+    std::vector<std::unique_ptr<Displayable>> items;
+    items.reserve(2);
+
+    items.push_back(std::move(msg));
+    items.push_back(std::move(horizontal));
+
+    layout_.set_container(std::move(bg));
+    layout_.set_items(std::move(items));
+    layout_.init(2);
 
     set_pos(window.get_center() - get_size() / 2);
 }
 
+void engine::GameOver::draw(Window& window) const {
+    layout_.draw(window);
+}
+
 void engine::GameOver::set_pos(const sf::Vector2f& pos) {
-    bg_->set_pos(pos);
-    msg_.set_pos(bg_->pos() + sf::Vector2f{bg_->width() / 2, offset_});
-    quit_.set_pos(bg_->pos() +
-                  sf::Vector2f{bg_->width() / 2 - quit_.width() - margin_ / 2, offset_ + msg_.height() + margin_});
-    retry_.set_pos(quit_.pos() + sf::Vector2f{margin_ + quit_.width(), 0});
+    layout_.set_pos(pos);
 }

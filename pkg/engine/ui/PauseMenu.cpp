@@ -16,7 +16,7 @@ engine::PauseMenu::PauseMenu(const Window& window, std::unique_ptr<Displayable>&
     layout_.set_container(std::move(bg));
 
     std::vector<std::unique_ptr<Displayable>> items;
-    items.reserve(4);
+    items.reserve(3);
 
     items.push_back(std::move(msg));
     items.push_back(std::move(continue_btn));

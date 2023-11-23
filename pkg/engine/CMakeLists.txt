@@ -21,6 +21,7 @@ set(SOURCES
     ui/MainMenu.cpp
     ui/Layout.cpp
     ui/VerticalLayout.cpp
+    ui/HorizontalLayout.cpp
 )
 
 set(INCLUDE_DIRS

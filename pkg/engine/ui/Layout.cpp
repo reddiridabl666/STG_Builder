@@ -1,5 +1,7 @@
 #include "Layout.hpp"
 
+#include <algorithm>
+
 void Layout::draw(Window& window) const {
     container_->draw(window);
     for (auto& item : items_) {
@@ -21,19 +23,16 @@ void Layout::set_rotation(float angle) {
     }
 }
 
-float Layout::max_width(const std::vector<std::unique_ptr<Displayable>>& items, size_t from) {
-    float max = std::numeric_limits<float>::min();
-
-    for (size_t i = std::min(from, items.size()); i < items.size(); ++i) {
-        if (items[i]->width() > max) {
-            max = items[i]->width();
-        }
-    }
-    return max;
-}
-
 void Layout::normalize_width(size_t from) {
-    float width = max_width(items_, from);
+    auto it = std::max_element(items_.begin() + from, items_.end(), [](const auto& left, const auto& right) {
+        return left->width() < right->width();
+    });
+
+    if (it == items_.end()) {
+        return;
+    }
+
+    float width = (*it)->width();
     for (size_t i = std::min(from, items_.size()); i < items_.size(); ++i) {
         items_[i]->set_width(width);
     }

@@ -40,9 +40,6 @@ class Layout : public Displayable {
         items_ = std::move(items);
     }
 
-  private:
-    static float max_width(const std::vector<std::unique_ptr<Displayable>>& items, size_t from = 0);
-
   protected:
     void normalize_width(size_t from = 0);
 

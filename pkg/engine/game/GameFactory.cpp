@@ -6,9 +6,9 @@ GameOver GameFactory::create_game_over(const Window& window, const nl::json& jso
     return GameOver{
         window,
         DisplayableFactory::create(json.at("bg"), assets.textures()),
-        TextFactory::create(json.at("message"), assets.fonts()),
-        ButtonFactory::create(json.value("retry", ""), btn_style, assets),
-        ButtonFactory::create(json.value("quit", ""), btn_style, assets),
+        TextFactory::create_unique(json.at("message"), assets.fonts()),
+        ButtonFactory::create_unique(json.value("retry", ""), btn_style, assets),
+        ButtonFactory::create_unique(json.value("quit", ""), btn_style, assets),
         json.value("offset", 50.f),
         json.value("margin", 100.f),
     };

@@ -285,6 +285,7 @@ bool Game<RTreeType>::update_level(float delta_time) {
     clear();
 
     generate_players();
+
     return true;
 }
 

@@ -14,7 +14,8 @@ void VerticalLayout::set_pos(const sf::Vector2f& pos) {
         return;
     }
 
-    items_.front()->set_pos(container_->pos() + sf::Vector2f{container_->width() / 2, offset_});
+    items_.front()->set_pos(container_->pos() - container_->get_origin() +
+                            sf::Vector2f{container_->width() / 2, offset_ + items_.front()->height() / 2});
     for (size_t i = 1; i < items_.size(); ++i) {
         auto offset = sf::Vector2f{0, offset_ + items_[i - 1]->height() / 2 + items_[i]->height() / 2};
         items_[i]->set_pos(items_[i - 1]->pos() + offset);
