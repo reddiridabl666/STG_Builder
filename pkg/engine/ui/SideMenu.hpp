@@ -5,9 +5,9 @@
 
 #include "AssetManager.hpp"
 #include "GameObject.hpp"
-#include "GameUi.hpp"
 #include "Player.hpp"
 #include "SpriteObject.hpp"
+#include "StatUi.hpp"
 #include "Text.hpp"
 #include "Window.hpp"
 
@@ -29,7 +29,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(SideMenuProps, offset, gap, play
 
 struct PlayerStat {
     std::string key;
-    std::unique_ptr<GameUi> ui;
+    std::unique_ptr<StatUi> ui;
 };
 
 class SideMenu {

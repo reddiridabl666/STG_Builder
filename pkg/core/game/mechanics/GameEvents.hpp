@@ -11,6 +11,7 @@ enum class GameEvent {
     SettingsOpened,
     GameStarted,
     MainMenuOpened,
+    ScoreInputOpened,
 };
 
 // clang-format off

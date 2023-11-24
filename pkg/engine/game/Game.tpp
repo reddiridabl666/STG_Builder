@@ -17,20 +17,18 @@
 
 namespace engine {
 template <typename RTreeType>
-Game<RTreeType>::Game(Window& window, SpriteObject&& bg, SideMenu&& menu, MainMenu&& main_menu, GameOver&& game_over,
-                      PauseMenu&& pause_menu, PlayerManager&& player_manager, assets::Manager&& assets,
-                      ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps, float level_transition)
+Game<RTreeType>::Game(Window& window, SpriteObject&& bg, GameUi&& ui, SideMenu&& menu, PlayerManager&& player_manager,
+                      assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps,
+                      float level_transition)
     : window_(window),
       bg_(std::move(bg)),
-      menu_(std::move(menu)),
       assets_(std::move(assets)),
       types_(std::move(types)),
       levels_(std::move(levels)),
       fps_(fps),
       player_manager_(std::move(player_manager)),
-      main_menu_(std::move(main_menu)),
-      game_over_(std::move(game_over)),
-      pause_menu_(std::move(pause_menu)),
+      ui_(std::move(ui)),
+      menu_(std::move(menu)),
       level_transition_(level_transition),
       level_transition_cur_(level_transition_ + 1) {}
 
@@ -84,13 +82,18 @@ void Game<RTreeType>::register_events() {
         to_main_menu();
     });
 
+    GameBus::get().on(GameEvent::ScoreInputOpened, [this](const auto&) {
+        status_ = Status::ScoreInput;
+    });
+
     events_registered_ = true;
 }
 
 template <typename RTreeType>
 Game<RTreeType>::Game(Game&& other)
-    : Game(other.window_, std::move(other.bg_), std::move(other.menu_), std::move(other.player_manager_),
-           std::move(other.assets_), std::move(other.types_), std::move(other.levels_), other.fps_) {}
+    : Game(other.window_, std::move(other.bg_), std::move(other.ui_), std::move(other.menu_),
+           std::move(other.player_manager_), std::move(other.assets_), std::move(other.types_),
+           std::move(other.levels_), other.fps_) {}
 
 template <typename RTreeType>
 Game<RTreeType>::~Game() {
@@ -276,7 +279,7 @@ bool Game<RTreeType>::update_level(float delta_time) {
 
     auto res = levels_.start_next(window_);
     if (!res) {
-        to_main_menu();
+        status_ = Status::WinScreen;
         return false;
     }
 
@@ -393,13 +396,16 @@ void Game<RTreeType>::draw_ui() {
             [[fallthrough]];
         case Status::MainMenu:
             window_.set_default_view();
-            main_menu_.draw(window_);
+            ui_.main_menu.draw(window_);
             return;
         case Status::GameOver:
-            draw_with_default_view(game_over_);
+            draw_with_default_view(ui_.game_over);
             break;
         case Status::Paused:
-            draw_with_default_view(pause_menu_);
+            draw_with_default_view(ui_.pause_menu);
+            break;
+        case Status::WinScreen:
+            draw_with_default_view(ui_.win_screen);
             break;
         case Status::Running:
 #ifdef DEBUG  // clang-format off

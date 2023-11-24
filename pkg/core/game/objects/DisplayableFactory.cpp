@@ -1,11 +1,20 @@
 #include "DisplayableFactory.hpp"
 
+#include "DummyDisplayable.hpp"
 #include "ShapeObject.hpp"
 #include "SpriteObject.hpp"
 
 static constexpr float kDefaultSize = 50;
 
 std::unique_ptr<Displayable> DisplayableFactory::create(const nl::json& json, assets::Textures& assets) {
+    if (json == "none") {
+        return std::make_unique<DummyDisplayable>();
+    }
+
+    if (!json.is_object()) {
+        return nullptr;
+    }
+
     // clang-format off
     if (json.contains("image")) {
         auto res = std::make_unique<SpriteObject>(

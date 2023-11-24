@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Button.hpp"
-#include "GameBus.hpp"
 #include "VerticalLayout.hpp"
 
 namespace engine {
@@ -20,8 +19,5 @@ class GameOver {
 
   private:
     VerticalLayout layout_;
-
-    float offset_;
-    float margin_;
 };
 }  // namespace engine

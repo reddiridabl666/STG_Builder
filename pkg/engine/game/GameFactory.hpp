@@ -4,8 +4,6 @@
 #include "DisplayableFactory.hpp"
 #include "Game.hpp"
 #include "TextFactory.hpp"
-#include "ui/GameOver.hpp"
-#include "ui/PauseMenu.hpp"
 #include "ui/SideMenu.hpp"
 
 namespace engine {
@@ -20,10 +18,8 @@ class GameFactory {
                                                      const std::string& base_dir);
 
   private:
+    static GameUi create_game_ui(const Window& window, const nl::json& game, assets::Manager& assets);
     static SideMenu create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets);
-    static GameOver create_game_over(const Window& window, const nl::json& json, assets::Manager& assets);
-    static PauseMenu create_pause_menu(const Window& window, const nl::json& json, assets::Manager& assets);
-    static MainMenu create_main_menu(const Window& window, const nl::json& json, assets::Manager& assets);
 
     template <typename T, typename Constructor>
     static T create(Window& window, const nl::json& game, const nl::json& entities, const std::string& base_dir,
@@ -76,10 +72,8 @@ inline T GameFactory::create(Window& window, const nl::json& game, const nl::jso
     return constructor(
         window,
         SpriteObject(manager.textures().get_or(game.value("bg", ""), assets::kFallbackImage)),
+        create_game_ui(window, game, manager),
         create_side_menu(window, game.value("side_menu", nl::json::object()), manager),
-        create_main_menu(window, game.value("main_menu", nl::json::object()), manager),
-        create_game_over(window, game.value("game_over", nl::json::object()), manager),
-        create_pause_menu(window, game.value("pause_menu", nl::json::object()), manager),
         PlayerLoader(game.value("players", nl::json::array()), game.value("player_marker", PlayerMarkerProps{})),
         std::move(manager),
         std::move(types),

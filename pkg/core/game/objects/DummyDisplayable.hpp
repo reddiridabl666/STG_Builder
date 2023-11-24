@@ -32,5 +32,5 @@ class DummyDisplayable : public Displayable {
 
   private:
     sf::Transformable dummy_;
-    sf::Vector2f size_;
+    sf::Vector2f size_ = {1, 1};
 };

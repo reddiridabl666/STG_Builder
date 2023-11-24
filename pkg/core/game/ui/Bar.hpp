@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GameUi.hpp"
 #include "SpriteObject.hpp"
+#include "StatUi.hpp"
 
-class Bar : public GameUi {
+class Bar : public StatUi {
   public:
     Bar(float cur, float max, float width, std::shared_ptr<sf::Texture>&& empty, std::shared_ptr<sf::Texture>&& full)
         : empty_(std::move(empty)), full_(std::move(full)), max_(max) {

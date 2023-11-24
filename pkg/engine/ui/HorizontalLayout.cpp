@@ -36,8 +36,9 @@ void HorizontalLayout::init(size_t from) {
     }();
 
     container_width += offset_ * (items_.size() + 1);
+    float container_height = std::max(container_->height(), (*highest)->height());
 
-    container_->set_size(sf::Vector2f{container_width, (*highest)->height()});
+    container_->set_size(sf::Vector2f{container_width, container_height});
 
     for (auto& item : items_) {
         item->set_origin(item->get_size() / 2);

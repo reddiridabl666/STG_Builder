@@ -11,11 +11,11 @@
 
 class StatDisplayFactory {
   public:
-    static std::unique_ptr<GameUi> create(Value value, const nl::json&, assets::Manager&);
+    static std::unique_ptr<StatUi> create(Value value, const nl::json&, assets::Manager&);
 };
 
 // clang-format off
-std::unique_ptr<GameUi> StatDisplayFactory::create(Value value, const nl::json& json, assets::Manager& assets) {
+std::unique_ptr<StatUi> StatDisplayFactory::create(Value value, const nl::json& json, assets::Manager& assets) {
     auto type = json.value("type", "");
 
     if (type == "bar") {

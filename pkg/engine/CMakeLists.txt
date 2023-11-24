@@ -19,6 +19,7 @@ set(SOURCES
     ui/PauseMenu.cpp
     ui/GameOver.cpp
     ui/MainMenu.cpp
+    ui/WinScreen.cpp
     ui/Layout.cpp
     ui/VerticalLayout.cpp
     ui/HorizontalLayout.cpp

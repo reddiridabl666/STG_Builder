@@ -4,15 +4,13 @@
 
 #include "AssetManager.hpp"
 #include "GameField.hpp"
+#include "GameUi.hpp"
 #include "LevelManager.hpp"
 #include "ObjectTypeFactory.hpp"
 #include "Player.hpp"
 #include "PlayerManager.hpp"
 #include "RTree.hpp"
 #include "Window.hpp"
-#include "ui/GameOver.hpp"
-#include "ui/MainMenu.hpp"
-#include "ui/PauseMenu.hpp"
 #include "ui/SideMenu.hpp"
 
 namespace engine {
@@ -26,12 +24,14 @@ class Game {
         Paused,
         Settings,
         GameOver,
+        WinScreen,
+        ScoreInput,
         Ended,
     };
 
-    Game(Window& window, SpriteObject&& bg, SideMenu&& menu, MainMenu&& main_menu, GameOver&& game_over,
-         PauseMenu&& pause_menu, PlayerManager&& player_manager, assets::Manager&& assets,
-         ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps, float level_transition);
+    Game(Window& window, SpriteObject&& bg, GameUi&& ui, SideMenu&& menu, PlayerManager&& player_manager,
+         assets::Manager&& assets, ObjectTypeFactory::res_type&& types, LevelManager&& levels, int fps,
+         float level_transition);
 
     Game() = delete;
     Game(const Game&) = delete;
@@ -85,7 +85,6 @@ class Game {
 
     Window& window_;
     SpriteObject bg_;
-    SideMenu menu_;
 
     assets::Manager assets_;
 
@@ -101,9 +100,8 @@ class Game {
 
     PlayerManager player_manager_;
 
-    MainMenu main_menu_;
-    GameOver game_over_;
-    PauseMenu pause_menu_;
+    GameUi ui_;
+    SideMenu menu_;
 
     float level_transition_;
     float level_transition_cur_;

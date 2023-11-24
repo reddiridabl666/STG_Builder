@@ -3,6 +3,7 @@
 #include "Button.hpp"
 #include "VerticalLayout.hpp"
 
+namespace engine {
 class MainMenu {
   public:
     MainMenu(const Window& window, std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
@@ -14,11 +15,6 @@ class MainMenu {
     void set_pos(const sf::Vector2f& pos);
 
   private:
-    // std::unique_ptr<Displayable> bg_;
-    // Text msg_;
-    // Button start_;
-    // Button settings_;
-    // Button quit_;
-
     VerticalLayout layout_;
 };
+}  // namespace engine

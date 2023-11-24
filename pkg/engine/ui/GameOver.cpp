@@ -1,6 +1,7 @@
 #include "GameOver.hpp"
 
 #include "DummyDisplayable.hpp"
+#include "GameBus.hpp"
 #include "HorizontalLayout.hpp"
 
 engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
@@ -17,8 +18,8 @@ engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& 
     std::vector<std::unique_ptr<Displayable>> btns;
     btns.reserve(2);
 
-    btns.push_back(std::move(retry));
     btns.push_back(std::move(quit));
+    btns.push_back(std::move(retry));
 
     auto horizontal = std::make_unique<HorizontalLayout>(std::make_unique<DummyDisplayable>(), std::move(btns), offset);
 

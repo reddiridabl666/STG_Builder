@@ -2,6 +2,7 @@
 
 #include "GameBus.hpp"
 
+namespace engine {
 MainMenu::MainMenu(const Window& window, std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
                    std::unique_ptr<Button>&& start, std::unique_ptr<Button>&& settings, std::unique_ptr<Button>&& quit,
                    float offset)
@@ -41,3 +42,4 @@ void MainMenu::draw(Window& window) {
 void MainMenu::set_pos(const sf::Vector2f& pos) {
     layout_.set_pos(pos);
 }
+}  // namespace engine

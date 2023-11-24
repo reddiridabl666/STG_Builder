@@ -2,11 +2,11 @@
 
 #include <fmt/core.h>
 
-#include "GameUi.hpp"
+#include "StatUi.hpp"
 #include "Text.hpp"
 #include "Value.hpp"
 
-class Counter : public GameUi, public Text {
+class Counter : public StatUi, public Text {
   public:
     Counter(float val, const std::string& prefix, std::shared_ptr<sf::Font>&& font, size_t size)
         : Text("", std::move(font), size), prefix_(prefix) {

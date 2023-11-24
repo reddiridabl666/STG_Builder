@@ -25,6 +25,10 @@ void VerticalLayout::set_pos(const sf::Vector2f& pos) {
 void VerticalLayout::init(size_t from) {
     normalize_width(from);
 
+    auto widest = std::max_element(items_.begin(), items_.end(), [](const auto& left, const auto& right) {
+        return left->width() < right->width();
+    });
+
     float container_height = [this] {
         float res = 0;
         for (auto& item : items_) {
@@ -34,8 +38,9 @@ void VerticalLayout::init(size_t from) {
     }();
 
     container_height += offset_ * (items_.size() + 1);
+    float container_width = std::max(container_->width(), (*widest)->width());
 
-    container_->set_height(container_height);
+    container_->set_size(sf::Vector2f{container_width, container_height});
 
     for (auto& item : items_) {
         item->set_origin(item->get_size() / 2);
