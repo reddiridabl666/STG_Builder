@@ -5,7 +5,7 @@
 template <typename LayoutType>
 class Form {
   public:
-    Form(float offset) : layout_(offset) {}
+    Form(std::unique_ptr<Displayable>&& container, float offset) : layout_(std::move(container), offset) {}
     Form(LayoutType&& layout) : layout_(std::move(layout)) {}
 
     void draw(Window& window) {

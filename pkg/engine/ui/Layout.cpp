@@ -2,6 +2,15 @@
 
 #include <algorithm>
 
+// void Layout::insert_item(size_t pos, std::unique_ptr<Displayable>&& item, size_t init_val) {
+//     if (pos > items_.size()) {
+//         return;
+//     }
+
+//     items_.insert(items_.begin() + pos, std::move(item));
+//     init(init_val);
+// }
+
 void Layout::draw(Window& window) const {
     container_->draw(window);
     for (auto& item : items_) {

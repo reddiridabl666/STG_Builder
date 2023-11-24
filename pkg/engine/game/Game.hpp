@@ -26,6 +26,7 @@ class Game {
         GameOver,
         WinScreen,
         ScoreInput,
+        Leaderboards,
         Ended,
     };
 

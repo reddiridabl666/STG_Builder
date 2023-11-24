@@ -86,6 +86,10 @@ void Game<RTreeType>::register_events() {
         status_ = Status::ScoreInput;
     });
 
+    GameBus::get().on(GameEvent::NameEntered, [this](const auto&) {
+        status_ = Status::Leaderboards;
+    });
+
     events_registered_ = true;
     status_ = Status::WinScreen;
 }
@@ -108,6 +112,8 @@ Game<RTreeType>::~Game() {
         GameBus::get().off(GameEvent::SettingsOpened);
         GameBus::get().off(GameEvent::MainMenuOpened);
         GameBus::get().off(GameEvent::GameStarted);
+        GameBus::get().off(GameEvent::ScoreInputOpened);
+        GameBus::get().off(GameEvent::NameEntered);
     }
 }
 

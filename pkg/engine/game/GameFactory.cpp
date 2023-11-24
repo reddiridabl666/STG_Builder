@@ -64,16 +64,10 @@ WinScreen create_win_screen(const Window& window, const nl::json& json, assets::
 
 ScoreInput create_score_input(Window& window, const nl::json& json, assets::Manager& assets) {
     auto btn_style = json.value("button_style", nl::json::object());
-
-    auto text_input = TextInputFactory::create(window, json.value("input", nl::json::object()), assets);
-    text_input->set_cb([](const std::string& name) {
-        GameBus::get().emit(GameEvent::NameEntered, name);
-    });
-
     auto res = ScoreInput{
         DisplayableFactory::create(json.at("bg"), assets.textures()),
         TextFactory::create_unique(json.at("message"), assets.fonts()),
-        std::move(text_input),
+        TextInputFactory::create(window, json.value("input", nl::json::object()), assets),
         ButtonFactory::create_unique(json.value("submit", ""), btn_style, assets),
         json.value("offset", 50.f),
     };

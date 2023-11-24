@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <memory>
 
 #include "Displayable.hpp"
@@ -12,6 +13,10 @@ class TextInput : public Displayable {
 
     void set_cb(std::function<void(const std::string&)>&& cb) {
         cb_ = std::move(cb);
+    }
+
+    const std::string& get_text() const {
+        return buffer_;
     }
 
     sf::Vector2f get_size() const override {
@@ -47,13 +52,25 @@ class TextInput : public Displayable {
     ~TextInput() override;
 
   private:
+    void shift_right();
+    void shift_left();
+
+    void update();
+
     std::unique_ptr<Displayable> bg_;
     Text text_;
     mutable bool is_focused_ = false;
     std::string buffer_;
 
+    size_t start_ = 0;
+    size_t num_shown_ = std::numeric_limits<size_t>::max();
+    bool overflow_ = false;
+
     std::function<void(const std::string&)> cb_;
     Window& window_;
 
     float padding_ = 10;
+
+    const size_t id_;
+    static size_t max_id_;
 };

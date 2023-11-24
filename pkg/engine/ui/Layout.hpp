@@ -14,9 +14,22 @@ class Layout : public Displayable {
 
     template <typename... Items>
     Layout(std::unique_ptr<Displayable>&& container, Items&&... items) : container_(std::move(container)) {
-        items_.reserve(sizeof...(items));
+        add_items(std::forward<Items>(items)...);
+    }
+
+    template <typename... Items>
+    void add_items(Items&&... items) {
+        items_.reserve(items_.size() + sizeof...(items));
         (items_.push_back(std::move(items)), ...);
     }
+
+    void clear() {
+        items_.clear();
+    }
+
+    // virtual void init(size_t from) = 0;
+
+    // void insert_item(size_t pos, std::unique_ptr<Displayable>&& item, size_t init_val = 0);
 
     Layout(Layout&&) = default;
     Layout& operator=(Layout&&) = default;

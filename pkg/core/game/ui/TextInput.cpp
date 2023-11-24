@@ -4,16 +4,16 @@
 
 TextInput::TextInput(Window& window, std::unique_ptr<Displayable>&& bg, Text&& text,
                      std::function<void(const std::string&)>&& cb, sf::Vector2f pos)
-    : bg_(std::move(bg)), text_(std::move(text)), cb_(std::move(cb)), window_(window) {
+    : bg_(std::move(bg)), text_(std::move(text)), cb_(std::move(cb)), window_(window), id_(max_id_) {
     float x = bg_->width();
     if (x < text_.width() + padding_ * 2) {
         x = text_.width() + padding_ * 2;
     }
-
-    // bg_->set_size(sf::Vector2f{x, text_.height() + padding_ * 2}, false);
     set_pos(pos);
 
-    window.add_handler("text_input_handler", sf::Event::KeyPressed, [this](const sf::Event& event) {
+    ++max_id_;
+
+    window.add_handler(fmt::format("__text_input_{}", id_), sf::Event::KeyPressed, [this](const sf::Event& event) {
         if (!is_focused_) {
             return;
         }
@@ -23,20 +23,55 @@ TextInput::TextInput(Window& window, std::unique_ptr<Displayable>&& bg, Text&& t
             if (!event.key.shift) {
                 key[0] = tolower(key[0]);
             }
+
             buffer_ += key;
+            if (overflow_) {
+                start_ = buffer_.size() - num_shown_;
+                update();
+                return;
+            }
+
             text_.set_contents(buffer_);
-            if (text_.width() > bg_->width()) {
+            if (text_.width() + 2 * padding_ > bg_->width()) {
+                num_shown_ = buffer_.size() - 1;
+                shift_right();
+                overflow_ = true;
             }
         }
 
         if (event.key.code == sf::Keyboard::Backspace && !buffer_.empty()) {
             buffer_.pop_back();
+
+            if (overflow_) {
+                if (buffer_.size() < num_shown_) {
+                    overflow_ = false;
+                    text_.set_contents(buffer_);
+                    return;
+                }
+
+                start_ = buffer_.size() - num_shown_;
+                update();
+                return;
+            }
+
             text_.set_contents(buffer_);
         }
 
         if (event.key.code == sf::Keyboard::Enter && buffer_.size() > 0) {
             is_focused_ = false;
             cb_(buffer_);
+        }
+
+        if (event.key.code == sf::Keyboard::Right) {
+            if (overflow_) {
+                shift_right();
+            }
+        }
+
+        if (event.key.code == sf::Keyboard::Left) {
+            if (overflow_) {
+                shift_left();
+            }
         }
     });
 }
@@ -64,5 +99,29 @@ void TextInput::draw(Window& window) const {
 }
 
 TextInput::~TextInput() {
-    window_.remove_handler("text_input_handler");
+    window_.remove_handler(fmt::format("__text_input_{}", id_));
 }
+
+void TextInput::shift_right() {
+    if (start_ >= buffer_.size() - num_shown_) {
+        return;
+    }
+
+    ++start_;
+    update();
+}
+
+void TextInput::shift_left() {
+    if (start_ == 0) {
+        return;
+    }
+
+    --start_;
+    update();
+}
+
+void TextInput::update() {
+    text_.set_contents(buffer_.substr(start_, num_shown_));
+}
+
+size_t TextInput::max_id_ = 0;
