@@ -12,6 +12,15 @@ class Layout : public Displayable {
     Layout(std::unique_ptr<Displayable>&& container, std::vector<std::unique_ptr<Displayable>>&& items)
         : container_(std::move(container)), items_(std::move(items)) {}
 
+    template <typename... Items>
+    Layout(std::unique_ptr<Displayable>&& container, Items&&... items) : container_(std::move(container)) {
+        items_.reserve(sizeof...(items));
+        (items_.push_back(std::move(items)), ...);
+    }
+
+    Layout(Layout&&) = default;
+    Layout& operator=(Layout&&) = default;
+
     void draw(Window& window) const override;
 
     void set_pos(const sf::Vector2f& pos) = 0;

@@ -36,6 +36,43 @@
     "leaderboards": "Leaderboards",
     "quit": "Exit"
   },
+  "score_input": {
+    "offset": 40,
+    "bg": {
+      "type": "rect",
+      "size": { "x": 400, "y": 200 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "outline": 3
+    },
+    "message": {
+      "text": "Enter your name",
+      "font_size": 48
+    },
+    "button_style": {
+      "type": "rect",
+      "size": { "x": 100, "y": 50 },
+      "fill_color": "black",
+      "outline_color": "white",
+      "font_size": 32,
+      "outline": 2
+    },
+    "submit": "Submit",
+    "input": {
+      "bg": {
+        "type": "rect",
+        "size": { "x": 100, "y": 50 },
+        "fill_color": "black",
+        "outline_color": "white",
+        "font_size": 32,
+        "outline": 2
+      },
+      "text": {
+        "font_size": 32,
+        "font": "ComicSans.ttf"
+      }
+    }
+  },
   "game_over": {
     "offset_x": 40,
     "offset_y": 40,

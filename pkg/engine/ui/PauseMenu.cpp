@@ -2,9 +2,9 @@
 
 #include "GameBus.hpp"
 
-engine::PauseMenu::PauseMenu(const Window& window, std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
+engine::PauseMenu::PauseMenu(std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
                              std::unique_ptr<Button>&& continue_btn, std::unique_ptr<Button>&& quit, float offset)
-    : layout_(offset) {
+    : Form<VerticalLayout>(offset) {
     continue_btn->set_cb([] {
         GameBus::get().emit(GameEvent::GameUnpaused, nullptr);
     });
@@ -24,14 +24,4 @@ engine::PauseMenu::PauseMenu(const Window& window, std::unique_ptr<Displayable>&
 
     layout_.set_items(std::move(items));
     layout_.init(1);
-
-    set_pos(window.get_center() - layout_.get_size() / 2);
 }
-
-void engine::PauseMenu::draw(Window& window) {
-    layout_.draw(window);
-}
-
-void engine::PauseMenu::set_pos(const sf::Vector2f& pos) {
-    layout_.set_pos(pos);
-};

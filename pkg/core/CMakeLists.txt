@@ -20,6 +20,7 @@ set(SOURCES
     game/objects/GameObject.cpp
     game/objects/DisplayableFactory.cpp
     game/ui/Button.cpp
+    game/ui/TextInput.cpp
 )
 
 set(INCLUDE_DIRS

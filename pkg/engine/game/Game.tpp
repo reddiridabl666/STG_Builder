@@ -87,6 +87,7 @@ void Game<RTreeType>::register_events() {
     });
 
     events_registered_ = true;
+    status_ = Status::WinScreen;
 }
 
 template <typename RTreeType>
@@ -406,6 +407,9 @@ void Game<RTreeType>::draw_ui() {
             break;
         case Status::WinScreen:
             draw_with_default_view(ui_.win_screen);
+            break;
+        case Status::ScoreInput:
+            draw_with_default_view(ui_.score_input);
             break;
         case Status::Running:
 #ifdef DEBUG  // clang-format off

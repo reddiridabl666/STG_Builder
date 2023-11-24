@@ -3,9 +3,9 @@
 #include <numeric>
 
 VerticalLayout::VerticalLayout(std::unique_ptr<Displayable>&& container,
-                               std::vector<std::unique_ptr<Displayable>>&& items, float offset)
+                               std::vector<std::unique_ptr<Displayable>>&& items, float offset, size_t init_value)
     : Layout(std::move(container), std::move(items)), offset_(offset) {
-    init();
+    init(init_value);
 }
 
 void VerticalLayout::set_pos(const sf::Vector2f& pos) {

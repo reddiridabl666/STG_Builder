@@ -1,9 +1,6 @@
 #pragma once
 
-#include "ButtonFactory.hpp"
-#include "DisplayableFactory.hpp"
 #include "Game.hpp"
-#include "TextFactory.hpp"
 #include "ui/SideMenu.hpp"
 
 namespace engine {
@@ -18,7 +15,7 @@ class GameFactory {
                                                      const std::string& base_dir);
 
   private:
-    static GameUi create_game_ui(const Window& window, const nl::json& game, assets::Manager& assets);
+    static GameUi create_game_ui(Window& window, const nl::json& game, assets::Manager& assets);
     static SideMenu create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets);
 
     template <typename T, typename Constructor>

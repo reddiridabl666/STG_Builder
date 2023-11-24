@@ -4,9 +4,9 @@
 #include "GameBus.hpp"
 #include "HorizontalLayout.hpp"
 
-engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
+engine::GameOver::GameOver(std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& msg,
                            std::unique_ptr<Button>&& retry, std::unique_ptr<Button>&& quit, float offset, float margin)
-    : layout_(margin) {
+    : Form<VerticalLayout>(margin) {
     retry->set_cb([] {
         GameBus::get().emit(GameEvent::GameRestarted, nullptr);
     });
@@ -32,14 +32,4 @@ engine::GameOver::GameOver(const Window& window, std::unique_ptr<Displayable>&& 
     layout_.set_container(std::move(bg));
     layout_.set_items(std::move(items));
     layout_.init(2);
-
-    set_pos(window.get_center() - get_size() / 2);
-}
-
-void engine::GameOver::draw(Window& window) const {
-    layout_.draw(window);
-}
-
-void engine::GameOver::set_pos(const sf::Vector2f& pos) {
-    layout_.set_pos(pos);
 }

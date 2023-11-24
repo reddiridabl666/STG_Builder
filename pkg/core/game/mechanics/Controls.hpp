@@ -117,9 +117,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(Keyboard::Key, {
 })
 
 inline const std::string& keys_to_str(sf::Keyboard::Key key) {
-    static const std::unordered_map<sf::Keyboard::Key, std::string> mapping = {
-        KEYS_TO_STR
-    };
+    static const std::unordered_map<sf::Keyboard::Key, std::string> mapping = {KEYS_TO_STR};
     return mapping.at(key);
 }
 }
