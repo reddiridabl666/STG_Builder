@@ -30,18 +30,18 @@ std::unique_ptr<Displayable> DisplayableFactory::create(const nl::json& json, as
     if (type == "rect") {
         return std::make_unique<RectObject>(
             json.value("size", sf::Vector2f{kDefaultSize, kDefaultSize}),
-            json.value("fill_color", sf::Color::White),
-            json.value("outline_color", sf::Color::Transparent),
-            json.value("outline", 0zu)
+            json.value("fill_color", sf::Color::Black),
+            json.value("outline_color", sf::Color::White),
+            json.value("outline", 1zu)
         );
     }
 
     if (type == "circle") {
         return std::make_unique<CircleObject>(
             json.value("radius", kDefaultSize),
-            json.value("fill_color", sf::Color::White),
-            json.value("outline_color", sf::Color::Transparent),
-            json.value("outline", 0zu)
+            json.value("fill_color", sf::Color::Black),
+            json.value("outline_color", sf::Color::White),
+            json.value("outline", 1zu)
         );
     }
     // clang-format on

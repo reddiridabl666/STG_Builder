@@ -1,9 +1,23 @@
 #include "HorizontalLayout.hpp"
 
+#include <fmt/core.h>
+
 HorizontalLayout::HorizontalLayout(std::unique_ptr<Displayable>&& container,
                                    std::vector<std::unique_ptr<Displayable>>&& items, float offset)
     : Layout(std::move(container), std::move(items)), offset_(offset) {
     init();
+}
+
+void HorizontalLayout::set_size(const sf::Vector2f& size, bool save_proportions) {
+    Layout::set_size(size, save_proportions);
+    auto items_width = [this] {
+        float res = 0;
+        for (auto& item : items_) {
+            res += item->width();
+        }
+        return res;
+    }();
+    offset_ = (size.x - items_width) / (items_.size() + 1);
 }
 
 void HorizontalLayout::set_pos(const sf::Vector2f& pos) {

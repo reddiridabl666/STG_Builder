@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/GameOver.hpp"
+#include "ui/Leaderboards.hpp"
 #include "ui/MainMenu.hpp"
 #include "ui/PauseMenu.hpp"
 #include "ui/ScoreInput.hpp"
@@ -13,5 +14,6 @@ struct GameUi {
     MainMenu main_menu;
     WinScreen win_screen;
     ScoreInput score_input;
+    LeaderboardsManager leaderboards;
 };
 }  // namespace engine

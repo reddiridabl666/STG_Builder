@@ -76,6 +76,7 @@ class Game {
     void resolve_timed_actions(float delta_time);
 
     void clear_dead();
+    void clear_non_player();
 
     void draw_ui();
 

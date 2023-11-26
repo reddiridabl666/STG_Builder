@@ -24,6 +24,8 @@ set(SOURCES
     ui/Layout.cpp
     ui/VerticalLayout.cpp
     ui/HorizontalLayout.cpp
+    ui/ScrollableVerticalLayout.cpp
+    ui/Leaderboards.cpp
 )
 
 set(INCLUDE_DIRS

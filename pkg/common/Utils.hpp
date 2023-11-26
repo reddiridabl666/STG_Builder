@@ -19,6 +19,15 @@ inline std::string time_to_str(time_t time) {
     return result;
 }
 
+inline std::string day_to_str(time_t time) {
+    static constexpr size_t kBufferSize = 80;
+
+    char buffer[kBufferSize];
+    std::strftime(buffer, kBufferSize, "%Y-%m-%d", localtime(&time));
+    std::string result(buffer);
+    return result;
+}
+
 template <typename T>
 std::string to_string(const T& obj) {
     std::stringstream out;

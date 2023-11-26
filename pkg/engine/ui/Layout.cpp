@@ -2,15 +2,6 @@
 
 #include <algorithm>
 
-// void Layout::insert_item(size_t pos, std::unique_ptr<Displayable>&& item, size_t init_val) {
-//     if (pos > items_.size()) {
-//         return;
-//     }
-
-//     items_.insert(items_.begin() + pos, std::move(item));
-//     init(init_val);
-// }
-
 void Layout::draw(Window& window) const {
     container_->draw(window);
     for (auto& item : items_) {
@@ -32,6 +23,10 @@ void Layout::set_rotation(float angle) {
     }
 }
 
+void Layout::set_size(const sf::Vector2f& size, bool save_proportions) {
+    container_->set_size(size, save_proportions);
+}
+
 void Layout::normalize_width(size_t from) {
     auto it = std::max_element(items_.begin() + from, items_.end(), [](const auto& left, const auto& right) {
         return left->width() < right->width();
@@ -43,6 +38,6 @@ void Layout::normalize_width(size_t from) {
 
     float width = (*it)->width();
     for (size_t i = std::min(from, items_.size()); i < items_.size(); ++i) {
-        items_[i]->set_width(width);
+        items_[i]->set_width(width, false);
     }
 }

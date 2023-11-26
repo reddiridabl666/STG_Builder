@@ -25,6 +25,8 @@ class PlayerManager {
         return players_.size();
     }
 
+    long get_score() const;
+
     void erase_player(size_t id);
     void clear();
 
@@ -35,13 +37,25 @@ class PlayerManager {
     void draw_markers(Window& window);
 
   private:
-    void add_player(const std::shared_ptr<GameObject>&, const PlayerOptions&);
-
     using KeyActions = std::unordered_map<sf::Keyboard::Key, std::string>;
+
+    struct PlayerEntry {
+        PlayerEntry(const std::shared_ptr<GameObject>& player, const PlayerMarkerProps& marker_props,
+                    assets::Fonts& fonts, KeyActions&& key_map);
+
+        std::shared_ptr<GameObject> player;
+        KeyActions key_map;
+        PlayerMarker marker;
+    };
+
+    bool add_player(const std::shared_ptr<GameObject>&, const PlayerMarkerProps& marker_props, assets::Fonts& fonts,
+                    const PlayerOptions&);
 
     PlayerLoader loader_;
 
-    std::vector<std::shared_ptr<GameObject>> players_;
-    std::vector<PlayerMarker> markers_;
-    std::vector<KeyActions> key_map_;
+    std::map<size_t, PlayerEntry> players_;
+    // std::vector<PlayerMarker> markers_;
+    // std::vector<KeyActions> key_map_;
+
+    std::string score_key_ = "score";
 };

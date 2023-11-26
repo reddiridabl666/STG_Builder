@@ -12,7 +12,7 @@ class DummyDisplayable : public Displayable {
     }
 
     sf::FloatRect get_bounds() const override {
-        return sf::FloatRect{pos(), get_size()};
+        return sf::FloatRect{pos() - get_origin(), get_size()};
     }
 
     sf::Transformable& transformable() override {

@@ -11,6 +11,16 @@ struct TextProps {
     size_t font_size = 30;
     sf::Color color = sf::Color::White;
 
+    static TextProps copy_with(const TextProps& props, const std::string& text) {
+        auto res = props;
+        return res.with(text);
+    }
+
+    TextProps& with(const std::string& text) {
+        this->text = text;
+        return *this;
+    }
+
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(TextProps, text, font, color, font_size);
 };
 
@@ -57,6 +67,8 @@ class Text : virtual public Displayable {
     void set_contents(const std::string& contents) {
         text_.setString(contents);
     }
+
+    void scale(float, float) override {}
 
   private:
     std::shared_ptr<sf::Font> font_;

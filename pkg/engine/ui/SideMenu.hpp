@@ -42,11 +42,13 @@ class SideMenu {
 
     void draw(Window& window);
 
-    void update(const PlayerList& players);
+    void update(const std::vector<std::weak_ptr<const GameObject>>& players);
 
     void update_layout(const Window& window, const SideMenuProps& props);
-    void update_item(size_t id, const PlayerList& players, assets::Manager& assets, const nl::json& updated);
-    void add_item(const PlayerList& players, assets::Manager& assets, const nl::json& item);
+    void update_item(size_t id, const std::vector<std::weak_ptr<const GameObject>>& players, assets::Manager& assets,
+                     const nl::json& updated);
+    void add_item(const std::vector<std::weak_ptr<const GameObject>>& players, assets::Manager& assets,
+                  const nl::json& item);
 
     void clear();
     void erase_player(size_t id);

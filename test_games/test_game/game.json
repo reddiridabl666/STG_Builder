@@ -73,6 +73,10 @@
       }
     }
   },
+  "leaderboards": {
+    "table_bg": "none",
+    "date": "Date"
+  },
   "game_over": {
     "offset_x": 40,
     "offset_y": 40,
@@ -116,7 +120,7 @@
     },
     "button_style": {
       "type": "rect",
-      "size": { "x": 100, "y": 50 },
+      "size": { "x": 200, "y": 50 },
       "fill_color": "black",
       "outline_color": "white",
       "font_size": 32,

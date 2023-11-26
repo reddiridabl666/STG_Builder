@@ -16,11 +16,16 @@
 
 namespace engine {
 
-class LeaderboardsManager {
+class LeaderboardsStore {
   public:
+    struct Entry;
+    using list = std::multiset<Entry, std::greater<Entry>>;
+
+    LeaderboardsStore(list&& scores) : scores_(std::move(scores)) {}
+
     struct Entry {
         std::string name = "player-name";
-        size_t score = 0;
+        long score = 0;
         time_t time = 0;
 
         auto operator<=>(const Entry& other) const {
@@ -36,48 +41,84 @@ class LeaderboardsManager {
         friend void from_json(const nl::json& json, Entry& entry) {
             try {
                 entry.name = json.at(0).get<std::string>();
-                entry.score = json.at(1).get<size_t>();
+                entry.score = json.at(1).get<long>();
                 entry.time = json.at(2).get<time_t>();
             } catch (...) {
             }
         }
     };
 
-    void add_entry(const std::string& name, size_t score) {
-        scores_.emplace(name, score, std::time(nullptr));
-    }
-
-    void dump() {
-        json::create(leaderboards_path_, scores_);
+    Entry add_entry(const std::string& name, size_t score) {
+        return *scores_.emplace(name, score, std::time(nullptr));
     }
 
     const auto& entries() const {
         return scores_;
     }
 
-    using list = std::set<Entry, std::greater<Entry>>;
-
   private:
-    std::set<Entry, std::greater<Entry>> scores_;
-    std::filesystem::path leaderboards_path_;
+    list scores_;
 };
 
 class LeaderboardsView : public Form<VerticalLayout> {
   public:
-    LeaderboardsView(std::unique_ptr<Displayable>&& bg, std::unique_ptr<Text>&& num, std::unique_ptr<Text>&& name,
-                     std::unique_ptr<Text>&& score, std::unique_ptr<Text>&& day, std::unique_ptr<Button>&& back);
+    struct EntryText {
+        EntryText(TextProps& text, const std::string& num, const std::string& name, const std::string& score,
+                  const std::string& when, assets::Fonts& fonts);
 
-    void set(const LeaderboardsManager::list&, assets::Manager& assets);
+        std::unique_ptr<Text> num;
+        std::unique_ptr<Text> name;
+        std::unique_ptr<Text> score;
+        std::unique_ptr<Text> when;
+    };
+
+    LeaderboardsView(Window& window, std::unique_ptr<Displayable>&& bg, std::unique_ptr<Displayable>&& header_bg,
+                     EntryText&& text, std::unique_ptr<Button>&& back,
+                     std::unique_ptr<ScrollableVerticalLayout>&& boards_view, float offset_x, float offset_y);
+
+    void scroll(int by) {
+        scrollable_->scroll(by);
+    }
 
     struct Entry : public HorizontalLayout {
-        Entry(size_t id, const LeaderboardsManager::Entry& entry, const TextProps& text_props_,
-              const nl::json& bg_props_, assets::Manager& assets);
+        Entry(std::unique_ptr<Displayable>&& bg, EntryText&& text, float offset);
     };
 
   private:
-    TextProps text_props_;
-    nl::json bg_props_;
+    ScrollableVerticalLayout* scrollable_;
+};
 
-    HorizontalLayout header_;
+class LeaderboardsManager {
+  public:
+    LeaderboardsManager(const std::filesystem::path& leaderboards_path, const nl::json& ui_info);
+
+    void create_view(Window& window, assets::Manager& assets);
+
+    void draw(Window& window) {
+        if (view_) {
+            view_->draw(window);
+        }
+    }
+
+    LeaderboardsStore::Entry add_entry(const std::string& name, size_t score) {
+        const auto& entry = store_.add_entry(name, score);
+        dump();
+        return entry;
+    }
+
+    void dump() {
+        json::create(leaderboards_path_, store_.entries());
+    }
+
+    void scroll_to(const LeaderboardsStore::Entry& entry);
+
+  private:
+    std::unique_ptr<ScrollableVerticalLayout> make_boards_view(Window& window, float offset_x, float offset_y,
+                                                               TextProps& text_props, assets::Manager& assets);
+
+    LeaderboardsStore store_;
+    std::unique_ptr<LeaderboardsView> view_;
+    std::filesystem::path leaderboards_path_;
+    nl::json ui_info_;
 };
 }  // namespace engine

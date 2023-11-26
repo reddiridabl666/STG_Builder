@@ -15,7 +15,8 @@ class GameFactory {
                                                      const std::string& base_dir);
 
   private:
-    static GameUi create_game_ui(Window& window, const nl::json& game, assets::Manager& assets);
+    static GameUi create_game_ui(Window& window, const std::string& leaderboards_path, const nl::json& game,
+                                 assets::Manager& assets);
     static SideMenu create_side_menu(const Window& window, const nl::json& menu, assets::Manager& assets);
 
     template <typename T, typename Constructor>
@@ -69,7 +70,7 @@ inline T GameFactory::create(Window& window, const nl::json& game, const nl::jso
     return constructor(
         window,
         SpriteObject(manager.textures().get_or(game.value("bg", ""), assets::kFallbackImage)),
-        create_game_ui(window, game, manager),
+        create_game_ui(window, base_dir + "/leaderboards.json", game, manager),
         create_side_menu(window, game.value("side_menu", nl::json::object()), manager),
         PlayerLoader(game.value("players", nl::json::array()), game.value("player_marker", PlayerMarkerProps{})),
         std::move(manager),

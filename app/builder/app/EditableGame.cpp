@@ -5,7 +5,7 @@ void EditableGame::render_debug() {
     draw_with_default_view(bg_);
     draw_objects();
 
-    menu_.update(player_manager_.players());
+    menu_.update(GameState::get().objects_by_tag(GameObjectTag::Player));
     menu_.draw(window_);
 
     rtree_.draw(window_);
@@ -58,7 +58,7 @@ void EditableGame::update_side_menu(const engine::SideMenuProps& props) {
 }
 
 void EditableGame::update_menu_item(size_t id, const nl::json& item) {
-    menu_.update_item(id, player_manager_.players(), assets_, item);
+    menu_.update_item(id, GameState::get().objects_by_tag(GameObjectTag::Player), assets_, item);
 }
 
 void EditableGame::erase_menu_item(size_t id) {
@@ -66,7 +66,7 @@ void EditableGame::erase_menu_item(size_t id) {
 }
 
 void EditableGame::add_menu_item(const nl::json& json) {
-    menu_.add_item(player_manager_.players(), assets_, json);
+    menu_.add_item(GameState::get().objects_by_tag(GameObjectTag::Player), assets_, json);
 }
 
 void EditableGame::set_object_pos(const std::shared_ptr<GameObject>& obj, const sf::Vector2f& pos) {

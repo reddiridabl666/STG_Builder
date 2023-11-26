@@ -4,9 +4,8 @@
 
 class ScrollableVerticalLayout : public VerticalLayout {
   public:
-    void add_item(std::unique_ptr<Displayable>&& item) {
-        items_.push_back(std::move(item));
-    }
+    ScrollableVerticalLayout(Window& window, std::unique_ptr<Displayable>&& container,
+                             std::vector<std::unique_ptr<Displayable>>&& items, size_t num_shown, float offset_y);
 
     void set_pos(const sf::Vector2f& pos) override;
 
@@ -16,7 +15,18 @@ class ScrollableVerticalLayout : public VerticalLayout {
         set_pos(pos());
     }
 
+    void scroll(int by = 1);
+    void scroll_non_cycle(int by = 1);
+
+    void init();
+
+    ~ScrollableVerticalLayout() override;
+
   private:
-    size_t start_;
+    static inline size_t max_id_ = 0;
+
+    size_t start_ = 0;
     size_t num_shown_;
+    Window& window_;
+    size_t id_;
 };

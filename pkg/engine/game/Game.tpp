@@ -86,12 +86,19 @@ void Game<RTreeType>::register_events() {
         status_ = Status::ScoreInput;
     });
 
-    GameBus::get().on(GameEvent::NameEntered, [this](const auto&) {
+    GameBus::get().on(GameEvent::LeaderboardsOpened, [this](const auto& name) {
         status_ = Status::Leaderboards;
+        if (name.is_string()) {
+            const auto& entry =
+                ui_.leaderboards.add_entry(name.template get<std::string>(), player_manager_.get_score());
+            ui_.leaderboards.create_view(window_, assets_);
+            ui_.leaderboards.scroll_to(entry);
+            return;
+        }
+        ui_.leaderboards.create_view(window_, assets_);
     });
 
     events_registered_ = true;
-    status_ = Status::WinScreen;
 }
 
 template <typename RTreeType>
@@ -113,7 +120,7 @@ Game<RTreeType>::~Game() {
         GameBus::get().off(GameEvent::MainMenuOpened);
         GameBus::get().off(GameEvent::GameStarted);
         GameBus::get().off(GameEvent::ScoreInputOpened);
-        GameBus::get().off(GameEvent::NameEntered);
+        GameBus::get().off(GameEvent::LeaderboardsOpened);
     }
 }
 
@@ -301,8 +308,8 @@ bool Game<RTreeType>::update_level(float delta_time) {
 
 template <typename RTreeType>
 void Game<RTreeType>::generate_players() {
-    menu_.clear();
-    player_manager_.clear();
+    // menu_.clear();
+    // player_manager_.clear();
 
     auto players = player_manager_.load_players(assets_, level_->field(), types_);
 
@@ -369,11 +376,19 @@ void Game<RTreeType>::clear_dead() {
 }
 
 template <typename RTreeType>
+void Game<RTreeType>::clear_non_player() {
+    std::erase_if(objects_, [this](const auto& elem) {
+        if (elem.second->tag() != GameObjectTag::Player) {
+            remove_object_from_rtree(elem.second);
+            return true;
+        }
+        return false;
+    });
+}
+
+template <typename RTreeType>
 void Game<RTreeType>::clear() {
-    objects_.clear();
-    rtree_.clear();
-    hitboxes_.clear();
-    player_manager_.clear();
+    clear_non_player();
     GameState::get().reset();
     for (auto& [_, type] : types_) {
         type.reset_count();
@@ -393,8 +408,8 @@ void Game<RTreeType>::reset() {
 
 template <typename RTreeType>
 void Game<RTreeType>::draw_ui() {
-    if (status_ != Status::MainMenu && status_ != Status::Settings) {
-        menu_.update(player_manager_.players());
+    if (status_ != Status::MainMenu && status_ != Status::Settings && status_ != Status::Leaderboards) {
+        menu_.update(GameState::get().objects_by_tag(GameObjectTag::Player));
         menu_.draw(window_);
     }
 
@@ -416,6 +431,9 @@ void Game<RTreeType>::draw_ui() {
             break;
         case Status::ScoreInput:
             draw_with_default_view(ui_.score_input);
+            break;
+        case Status::Leaderboards:
+            draw_with_default_view(ui_.leaderboards);
             break;
         case Status::Running:
 #ifdef DEBUG  // clang-format off

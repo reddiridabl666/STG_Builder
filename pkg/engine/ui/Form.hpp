@@ -5,8 +5,13 @@
 template <typename LayoutType>
 class Form {
   public:
+    Form() = default;
     Form(std::unique_ptr<Displayable>&& container, float offset) : layout_(std::move(container), offset) {}
     Form(LayoutType&& layout) : layout_(std::move(layout)) {}
+
+    void set(LayoutType&& layout) {
+        layout_ = layout;
+    }
 
     void draw(Window& window) {
         layout_.draw(window);

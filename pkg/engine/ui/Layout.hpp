@@ -54,6 +54,8 @@ class Layout : public Displayable {
 
     void set_rotation(float angle) override;
 
+    void set_size(const sf::Vector2f& size, bool save_proportions = false) override;
+
     void set_container(std::unique_ptr<Displayable>&& container) {
         container_ = std::move(container);
     }

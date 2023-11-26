@@ -40,14 +40,14 @@ void SideMenu::draw(Window& window) {
     window.set_view(init_view);
 }
 
-void SideMenu::update(const PlayerList& players) {
+void SideMenu::update(const std::vector<std::weak_ptr<const GameObject>>& players) {
     for (size_t i = 0; i < players.size(); ++i) {
-        if (!players[i]) {
+        if (players[i].expired()) {
             continue;
         }
 
         for (auto& stat : player_stats_[i].stats) {
-            stat.ui->update(players[i]->props().get(stat.key));
+            stat.ui->update(players[i].lock()->props().get(stat.key));
         }
     }
 }
@@ -92,14 +92,15 @@ void SideMenu::add_player(const GameObject& player, assets::Manager& assets) {
     prev_pos_.y += player_gap_;
 }
 
-void SideMenu::update_item(size_t id, const PlayerList& players, assets::Manager& assets, const nl::json& updated) {
+void SideMenu::update_item(size_t id, const std::vector<std::weak_ptr<const GameObject>>& players,
+                           assets::Manager& assets, const nl::json& updated) {
     settings_[id] = updated;
 
     size_t player_id = 0;
     for (auto& player_ui : player_stats_) {
         player_ui.stats[id].key = updated.at("value").get<std::string>();
 
-        float value = players[player_id]->props().get(player_ui.stats[id].key);
+        float value = players[player_id].lock()->props().get(player_ui.stats[id].key);
 
         auto ui = StatDisplayFactory::create(value, updated, assets);
         if (!ui) {
@@ -160,12 +161,13 @@ void SideMenu::update_layout(const Window& window, const SideMenuProps& props) {
     update_layout();
 }
 
-void SideMenu::add_item(const PlayerList& players, assets::Manager& assets, const nl::json& item) {
+void SideMenu::add_item(const std::vector<std::weak_ptr<const GameObject>>& players, assets::Manager& assets,
+                        const nl::json& item) {
     settings_.push_back(item);
     auto key = item.at("value").get<std::string>();
 
     for (size_t i = 0; i < player_stats_.size(); ++i) {
-        auto ui = StatDisplayFactory::create(players[i]->props().get(key), item, assets);
+        auto ui = StatDisplayFactory::create(players[i].lock()->props().get(key), item, assets);
         if (!ui) {
 #ifdef DEBUG
             LOG(fmt::format("Error creating GameUI, got: {}", item.dump(4)));

@@ -9,7 +9,7 @@ size_t GameState::enemy_count() {
 }
 
 void GameState::reset() {
-    objects_.clear();
+    // objects_.clear();
 }
 
 const std::vector<std::weak_ptr<const GameObject>>& GameState::objects_by_tag(GameObjectTag tag) {

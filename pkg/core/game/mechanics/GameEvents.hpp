@@ -12,7 +12,7 @@ enum class GameEvent {
     GameStarted,
     MainMenuOpened,
     ScoreInputOpened,
-    NameEntered,
+    LeaderboardsOpened,
 };
 
 // clang-format off
