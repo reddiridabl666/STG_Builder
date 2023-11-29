@@ -32,10 +32,19 @@ void func_input(const char* const* types, const std::unordered_map<std::string, 
             float res = val.get<float>();
 
             ImGui::InputFloat(field_label.c_str(), &res);
-            if (ImGui::IsItemEdited()) {
+            if (ImGui::IsItemDeactivatedAfterEdit()) {
                 val = res;
             }
             continue;
+        }
+
+        if (val.is_string()) {
+            auto res = val.get<std::string>();
+
+            ImGui::InputText(field_label.c_str(), &res);
+            if (ImGui::IsItemDeactivatedAfterEdit()) {
+                val = res;
+            }
         }
 
         if (!val.is_object()) {

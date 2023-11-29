@@ -12,6 +12,7 @@ set(SOURCES
     elements/StringPoint.cpp
     elements/LevelInfo.cpp
     elements/KeyMapInput.cpp
+    elements/TimedActionInput.cpp
     elements/tabs/MainTab.cpp
     elements/tabs/EntitiesTab.cpp
     elements/tabs/EntityEntry.cpp

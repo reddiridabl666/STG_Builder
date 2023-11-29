@@ -41,7 +41,7 @@
         "quit": "To main menu",
         "retry": "Try again"
     },
-    "last_updated": 1701236341,
+    "last_updated": 1701249273,
     "leaderboards": {
         "date": "Date",
         "table_bg": "none"
@@ -171,8 +171,8 @@
                 }
             },
             "pos": {
-                "x": 267.0,
-                "y": 1013.77783203125
+                "x": 534.0,
+                "y": 1041.77783203125
             },
             "rotation": 0,
             "score": 0,
@@ -181,6 +181,14 @@
         },
         {
             "health": 100,
+            "lives": {
+                "args": {
+                    "op": ">",
+                    "property": "health",
+                    "than": 0
+                },
+                "type": "condition"
+            },
             "opts": {
                 "joy": {
                     "shoot": 0,
@@ -216,8 +224,8 @@
                 }
             },
             "pos": {
-                "x": 432.0,
-                "y": 1018.77783203125
+                "x": 513.0,
+                "y": 1081.77783203125
             },
             "rotation": 0,
             "stop_at_bounds": true,

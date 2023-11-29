@@ -4,6 +4,7 @@
 #include "ImguiUtils.hpp"
 #include "Map.hpp"
 #include "Messages.hpp"
+#include "TimedActionInput.hpp"
 
 namespace ui {
 void from_json(const nl::json& json, SingleActionInput::Value& value) {

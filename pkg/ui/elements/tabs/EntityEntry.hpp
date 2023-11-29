@@ -1,11 +1,13 @@
 #pragma once
 
 #include "ActionMapInput.hpp"
+#include "FuncInfo.hpp"
 #include "HitboxProps.hpp"
 #include "ImguiUtils.hpp"
 #include "Json.hpp"
 #include "Messages.hpp"
 #include "PatternInput.hpp"
+#include "TimedActionInput.hpp"
 
 #ifdef DEBUG
 #include "Debug.hpp"
@@ -37,8 +39,8 @@ struct EntityEntry : public Element {
     }
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(EntityEntry, image, speed, description, tag, size, hitbox,
-                                                on_player_action, on_own_action, collision, on_character_death,
-                                                patterns)
+                                                on_player_action, on_own_action, collision, on_character_death, lives,
+                                                patterns, timed_actions)
 
   private:
     std::shared_ptr<sf::Texture> texture_;
@@ -62,8 +64,11 @@ struct EntityEntry : public Element {
     ActionMapInput collision;
     ActionMapInput on_character_death;
 
+    TimedActionListInput timed_actions;
+
+    FuncInfo lives;
+
     std::unordered_map<std::string, PatternInput> patterns;
-    std::string new_pattern_;
 
     // Utilities
     bool shown_ = false;
@@ -72,6 +77,7 @@ struct EntityEntry : public Element {
     ImVec4 outline_color_;
     ImVec4 fill_color_;
     int tag_id = 0;
+    std::string new_pattern_;
 
     nl::json* data_;
     size_t obj_count_ = 0;

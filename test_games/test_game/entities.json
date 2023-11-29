@@ -32,6 +32,25 @@
             "type": "rect"
         },
         "image": "enemy.png",
+        "lives": {
+            "args": [
+                {
+                    "args": {
+                        "op": ">",
+                        "property": "health",
+                        "than": 0
+                    },
+                    "type": "condition"
+                },
+                {
+                    "args": {
+                        "margin": 100
+                    },
+                    "type": "bounds"
+                }
+            ],
+            "type": "all"
+        },
         "on_character_death": {},
         "on_own_action": {},
         "on_player_action": {},
@@ -55,7 +74,15 @@
             "y": 80.0
         },
         "speed": 50.0,
-        "tag": "enemy"
+        "tag": "enemy",
+        "timed_actions": [
+            {
+                "action": "shoot",
+                "delay": 1.5,
+                "property": "enemy_pattern",
+                "timeout": 0.699999988079071
+            }
+        ]
     },
     "enemy_bullet": {
         "collision": {
@@ -73,6 +100,10 @@
             "type": "circle"
         },
         "image": "red_enemy_bullet.png",
+        "lives": {
+            "args": {},
+            "type": ""
+        },
         "on_character_death": {},
         "on_own_action": {},
         "on_player_action": {},
@@ -82,7 +113,8 @@
             "y": 30.0
         },
         "speed": 600.0,
-        "tag": "enemy_bullet"
+        "tag": "enemy_bullet",
+        "timed_actions": null
     },
     "leaf_bullet": {
         "collision": {
@@ -103,6 +135,10 @@
             "type": "rect"
         },
         "image": "leaf_bullet.png",
+        "lives": {
+            "args": {},
+            "type": ""
+        },
         "on_character_death": {},
         "on_own_action": {},
         "on_player_action": {},
@@ -112,7 +148,8 @@
             "y": 35.0
         },
         "speed": 600.0,
-        "tag": "player_bullet"
+        "tag": "player_bullet",
+        "timed_actions": null
     },
     "player": {
         "collision": {
@@ -151,6 +188,10 @@
             "type": "rect"
         },
         "image": "player.png",
+        "lives": {
+            "args": {},
+            "type": ""
+        },
         "on_character_death": {
             "enemy": {
                 "action": "add",
@@ -255,7 +296,8 @@
             "y": 60.0
         },
         "speed": 300.0,
-        "tag": "player"
+        "tag": "player",
+        "timed_actions": null
     },
     "red enemy": {
         "collision": {
@@ -285,6 +327,25 @@
             "type": "rect"
         },
         "image": "red_enemy.png",
+        "lives": {
+            "args": [
+                {
+                    "args": {
+                        "op": ">",
+                        "property": "health",
+                        "than": 0
+                    },
+                    "type": "condition"
+                },
+                {
+                    "args": {
+                        "margin": 100
+                    },
+                    "type": "bounds"
+                }
+            ],
+            "type": "all"
+        },
         "on_character_death": {},
         "on_own_action": {},
         "on_player_action": {
@@ -301,7 +362,8 @@
             "y": 100.0
         },
         "speed": 10.0,
-        "tag": "enemy"
+        "tag": "enemy",
+        "timed_actions": null
     },
     "test_bullet": {
         "collision": {
@@ -319,6 +381,10 @@
             "type": "circle"
         },
         "image": "bullet.png",
+        "lives": {
+            "args": {},
+            "type": ""
+        },
         "on_character_death": {},
         "on_own_action": {},
         "on_player_action": {},
@@ -328,6 +394,7 @@
             "y": 25.0
         },
         "speed": 500.0,
-        "tag": "player_bullet"
+        "tag": "player_bullet",
+        "timed_actions": null
     }
 }

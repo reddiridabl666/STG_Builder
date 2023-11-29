@@ -4,13 +4,16 @@
 
 #include "Bus.hpp"
 #include "Combo.hpp"
+#include "FuncInput.hpp"
 
 namespace {
 static const std::vector<std::string> object_tags = {"enemy", "player", "enemy_bullet", "player_bullet"};
 }  // namespace
 
 namespace ui {
-const std::unordered_set<std::string> EntityEntry::kBaseValues = {"image", "size", "tag", "speed", ""};
+const std::unordered_set<std::string> EntityEntry::kBaseValues = {
+    "image",         "size",   "tag",        "speed", "patterns", "on_player_actions", "on_character_death",
+    "on_own_action", "hitbox", "description"};
 
 EntityEntry::EntityEntry(const std::string& name, nl::json* json, std::shared_ptr<sf::Texture>&& image,
                          size_t obj_count)
@@ -127,6 +130,10 @@ void EntityEntry::draw(const Window&) {
             ImGui::PopID();
         }
 
+        if (ImGui::CollapsingHeader(message(Message::IsAlive))) {
+            AliveFuncInput(lives);
+        }
+
         collision.draw(message(Message::Collisions));
 
         on_player_action.draw(message(Message::OnPlayerActions));
@@ -134,6 +141,10 @@ void EntityEntry::draw(const Window&) {
         on_own_action.draw(message(Message::OnOwnActions));
 
         on_character_death.draw(message(Message::OnCharacterDeath));
+
+        if (ImGui::CollapsingHeader(message(Message::TimedActions))) {
+            timed_actions.draw();
+        }
 
         if (ImGui::CollapsingHeader(message(Message::Patterns))) {
             draw_map(patterns, new_pattern_);

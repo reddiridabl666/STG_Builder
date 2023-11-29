@@ -25,6 +25,7 @@ struct Timed {
     std::unique_ptr<Action> action;
     float timeout;
     float cur;
+    bool once;
 
     friend void from_json(const nl::json& json, Timed&);
 };

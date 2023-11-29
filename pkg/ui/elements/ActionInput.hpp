@@ -30,6 +30,7 @@ struct SingleActionInput {
 
     void draw();
 
+  protected:
     std::string property = "score";
     std::string action = "add";
     Value value;
