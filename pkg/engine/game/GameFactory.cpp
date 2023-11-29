@@ -40,7 +40,7 @@ MainMenu create_main_menu(const Window& window, const nl::json& json, assets::Ma
         DisplayableFactory::create(json.value("bg", nl::json::object()), assets.textures()),
         TextFactory::create_unique(json.value("message", nl::json::object()), assets.fonts()),
         ButtonFactory::create_unique(json.value("start", "Start"), btn_style, assets),
-        ButtonFactory::create_unique(json.value("settings", "Settings"), btn_style, assets),
+        // ButtonFactory::create_unique(json.value("settings", "Settings"), btn_style, assets),
         ButtonFactory::create_unique(json.value("leaderboards", "Leaderboards"), btn_style, assets),
         ButtonFactory::create_unique(json.value("quit", "Quit"), btn_style, assets),
         json.value("offset", 50.f),

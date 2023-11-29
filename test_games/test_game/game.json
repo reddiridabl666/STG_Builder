@@ -41,7 +41,7 @@
         "quit": "To main menu",
         "retry": "Try again"
     },
-    "last_updated": 1701249273,
+    "last_updated": 1701249671,
     "leaderboards": {
         "date": "Date",
         "table_bg": "none"
@@ -171,8 +171,8 @@
                 }
             },
             "pos": {
-                "x": 534.0,
-                "y": 1041.77783203125
+                "x": 281.0,
+                "y": 1076.77783203125
             },
             "rotation": 0,
             "score": 0,
