@@ -21,6 +21,7 @@ class Game {
         MainMenu,
         Running,
         Restart,
+        Preview,
         Paused,
         Settings,
         GameOver,
@@ -108,9 +109,10 @@ class Game {
     float level_transition_;
     float level_transition_cur_;
 
+    Status status_ = Status::MainMenu;
+
   private:
     bool events_registered_ = false;
-    Status status_ = Status::MainMenu;
 };
 }  // namespace engine
 

@@ -1,12 +1,12 @@
 #include "ObjectType.hpp"
 
-#include "ActionFactory.hpp"
-#include "ActionMap.hpp"
 #include "AssetManager.hpp"
 #include "GameState.hpp"
 #include "HitboxFactory.hpp"
 #include "Player.hpp"
 #include "SpriteObject.hpp"
+#include "actions/ActionFactory.hpp"
+#include "actions/ActionMap.hpp"
 
 std::shared_ptr<GameObject> ObjectType::create_object(const ObjectOptions& opts, assets::Manager& assets) const {
     auto texture = get_texture(assets.textures());

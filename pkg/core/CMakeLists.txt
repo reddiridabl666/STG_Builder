@@ -31,7 +31,7 @@ set(INCLUDE_DIRS
     game/objects
     game/ui
     game/mechanics
-    game/mechanics/actions
+    # game/mechanics/actions
     game/collisions
     game/collisions/hitbox
     game/collisions/rtree

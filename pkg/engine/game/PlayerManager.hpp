@@ -46,6 +46,7 @@ class PlayerManager {
         std::shared_ptr<GameObject> player;
         KeyActions key_map;
         PlayerMarker marker;
+        sf::Vector2f init_pos;
     };
 
     bool add_player(const std::shared_ptr<GameObject>&, const PlayerMarkerProps& marker_props, assets::Fonts& fonts,
@@ -54,8 +55,6 @@ class PlayerManager {
     PlayerLoader loader_;
 
     std::map<size_t, PlayerEntry> players_;
-    // std::vector<PlayerMarker> markers_;
-    // std::vector<KeyActions> key_map_;
 
     std::string score_key_ = "score";
 };

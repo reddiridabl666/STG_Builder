@@ -26,7 +26,10 @@ void Button::draw(Window& window) const {
     if (get_bounds().contains(mouse_pos)) {
         window.set_mouse_cursor(sf::Cursor::Hand);
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            was_pressed_ = true;
+        } else if (was_pressed_) {
             cb_();
+            was_pressed_ = false;
         }
     }
 }

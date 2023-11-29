@@ -45,4 +45,5 @@ class Button : public Displayable {
     Text text_;
     std::function<void()> cb_;
     float padding_ = 10;
+    mutable bool was_pressed_ = false;
 };

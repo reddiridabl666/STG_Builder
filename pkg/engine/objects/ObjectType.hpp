@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ActionMap.hpp"
 #include "Asset.hpp"
 #include "AssetManager.hpp"
 #include "GameObject.hpp"
@@ -15,7 +14,8 @@
 #include "Pattern.hpp"
 #include "Player.hpp"
 #include "Properties.hpp"
-#include "TimedAction.hpp"
+#include "actions/ActionMap.hpp"
+#include "actions/TimedAction.hpp"
 
 struct PlayerOptions;
 

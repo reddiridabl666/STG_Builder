@@ -41,6 +41,12 @@ struct Properties {
         values_[key] = value;
     }
 
+    void reset() {
+        for (auto& [_, val] : values_) {
+            val.reset();
+        }
+    }
+
     void append_to(Properties& other) const {
         std::for_each(values_.begin(), values_.end(), [&other](auto&& el) {
             other.values_[el.first] = el.second;

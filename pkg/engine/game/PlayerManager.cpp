@@ -60,6 +60,10 @@ PlayerList PlayerManager::load_players(assets::Manager& assets, const GameField&
         }
     }
 
+    for (auto& [_, player] : players_) {
+        player.player->set_pos(player.init_pos);
+    }
+
     return res;
 }
 
@@ -87,4 +91,5 @@ PlayerManager::PlayerEntry::PlayerEntry(const std::shared_ptr<GameObject>& obj, 
                                         assets::Fonts& fonts, KeyActions&& key_map)
     : player(obj),
       key_map(std::move(key_map)),
-      marker(engine::TextFactory::create(marker_props.text, fonts), player, marker_props.offset) {}
+      marker(engine::TextFactory::create(marker_props.text, fonts), player, marker_props.offset),
+      init_pos(player->pos()) {}

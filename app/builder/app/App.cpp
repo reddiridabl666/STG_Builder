@@ -5,12 +5,12 @@
 #include <SFML/System/Clock.hpp>
 #include <fstream>
 
+#include "../utils/TimedAction.hpp"
 #include "EditorWindow.hpp"
 #include "Json.hpp"
 #include "Messages.hpp"
 #include "ObjectEditor.hpp"
 #include "SideMenuTab.hpp"
-#include "TimedAction.hpp"
 #include "ui/common/Bus.hpp"
 #include "ui/common/Fonts.hpp"
 #include "ui/elements/Button.hpp"
@@ -173,9 +173,13 @@ void App::run() noexcept {
                 case State::LevelEditor:
                     game_->render_debug();
                     break;
-                case State::GamePreview:
-                    game_->render(game_clock_.restart().asSeconds());
+                case State::GamePreview: {
+                    auto status = game_->render(game_clock_.restart().asSeconds());
+                    if (status == EditableGame::Status::Ended) {
+                        state_.schedule_state_change(State::LevelEditor);
+                    }
                     break;
+                }
                 default:
                     break;
             }
@@ -371,7 +375,6 @@ void App::on_state_start(State state) {
         case State::GamePreview:
             builder_.save();
             game_ = builder_.create_engine(window_);
-            game_->register_events();
             game_->prepare_preview(builder_.current_level_num());
             game_clock_.restart();
         default:
@@ -393,7 +396,9 @@ void App::on_state_end(State state) {
             builder_.save();
             ui_.erase("obj_editor");
             ui_.erase("play_btn");
-            game_->clear();
+            return;
+        case State::GamePreview:
+            game_->reset();
             return;
         default:
             return;

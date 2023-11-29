@@ -26,6 +26,7 @@ void EditableGame::reload_objects() {
     }
 
     generate_players();
+    status_ = Status::Preview;
 }
 
 std::shared_ptr<GameObject> EditableGame::get_object(const sf::Vector2f& pos) {
@@ -186,11 +187,13 @@ void EditableGame::update_object_type(const std::string& name, ObjectType&& obj_
 }
 
 void EditableGame::prepare_preview(size_t level) {
+    register_events();
     auto err = choose_level(level);
     if (err) {
         throw err;
     }
     generate_players();
+    start();
 }
 
 Error EditableGame::choose_level(size_t num) {

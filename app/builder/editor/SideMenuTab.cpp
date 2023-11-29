@@ -5,7 +5,7 @@
 #include "Combo.hpp"
 #include "ImguiUtils.hpp"
 #include "Messages.hpp"
-#include "SideMenu.hpp"
+#include "ui/SideMenu.hpp"
 #include "ui/common/Bus.hpp"
 
 #ifdef DEBUG

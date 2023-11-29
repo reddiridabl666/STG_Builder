@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include "Errors.hpp"
 #include "GameEvents.hpp"
@@ -13,7 +14,7 @@
 #include "Movement.hpp"
 #include "Observable.hpp"
 #include "Properties.hpp"
-#include "TimedAction.hpp"
+#include "actions/TimedAction.hpp"
 
 class GameObject : public ImageContainer, public Hideable, public std::enable_shared_from_this<GameObject> {
   public:

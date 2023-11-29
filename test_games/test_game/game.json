@@ -1,288 +1,345 @@
 {
-  "bg": "bg.jpg",
-  "description": "All features are being tested in this game",
-  "field_size": {
-    "height": 0.8999999761581421,
-    "left": 0.05000000074505806,
-    "top": 0.05000000074505806,
-    "width": 0.5
-  },
-  "level_transition": 1.5,
-  "fps": 60,
-  "fullscreen": false,
-  "main_menu": {
-    "offset": 40,
-    "bg": {
-      "type": "rect",
-      "size": { "x": 400, "y": 200 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "outline": 3
+    "bg": "bg.jpg",
+    "description": "All features are being tested in this game",
+    "field_size": {
+        "height": 0.8999999761581421,
+        "left": 0.05000000074505806,
+        "top": 0.05000000074505806,
+        "width": 0.5
     },
-    "message": {
-      "text": "Hello, world!",
-      "font_size": 48
-    },
-    "button_style": {
-      "type": "rect",
-      "size": { "x": 100, "y": 50 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "font_size": 32,
-      "outline": 2
-    },
-    "start": "Start",
-    "settings": "Settings",
-    "leaderboards": "Leaderboards",
-    "quit": "Exit"
-  },
-  "score_input": {
-    "offset": 40,
-    "bg": {
-      "type": "rect",
-      "size": { "x": 400, "y": 200 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "outline": 3
-    },
-    "message": {
-      "text": "Enter your name",
-      "font_size": 48
-    },
-    "button_style": {
-      "type": "rect",
-      "size": { "x": 100, "y": 50 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "font_size": 32,
-      "outline": 2
-    },
-    "submit": "Submit",
-    "input": {
-      "bg": {
-        "type": "rect",
-        "size": { "x": 100, "y": 50 },
-        "fill_color": "black",
-        "outline_color": "white",
-        "font_size": 32,
-        "outline": 2
-      },
-      "text": {
-        "font_size": 32,
-        "font": "ComicSans.ttf"
-      }
-    }
-  },
-  "leaderboards": {
-    "table_bg": "none",
-    "date": "Date"
-  },
-  "game_over": {
-    "offset_x": 40,
-    "offset_y": 40,
-    "bg": {
-      "type": "rect",
-      "size": { "x": 400, "y": 200 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "outline": 3
-    },
-    "message": {
-      "text": "Game over",
-      "font": "ComicSans.ttf",
-      "font_size": 48
-    },
-    "button_style": {
-      "type": "rect",
-      "size": { "x": 100, "y": 50 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "font_size": 32,
-      "outline": 2
-    },
-    "retry": "Try again",
-    "quit": "To main menu"
-  },
-  "win_screen": {
-    "offset_x": 40,
-    "offset_y": 40,
-    "bg": {
-      "type": "rect",
-      "size": { "x": 400, "y": 200 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "outline": 3
-    },
-    "message": {
-      "text": "You won!",
-      "font": "ComicSans.ttf",
-      "font_size": 48
-    },
-    "button_style": {
-      "type": "rect",
-      "size": { "x": 200, "y": 50 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "font_size": 32,
-      "outline": 2
-    },
-    "score": "Submit score",
-    "quit": "To main menu"
-  },
-  "pause_menu": {
-    "offset": 40,
-    "bg": {
-      "type": "rect",
-      "size": { "x": 400, "y": 200 },
-      "fill_color": "black",
-      "outline_color": "white",
-      "outline": 3
-    },
-    "button_style": {
-      "type": "rect",
-      "size": { "x": 100, "y": 50 },
-      "fill_color": "black",
-      "font_size": 32,
-      "outline_color": "white",
-      "outline": 2
-    },
-    "message": {
-      "text": "Pause",
-      "font_size": 48
-    },
-    "continue": "Continue",
-    "quit": "To main menu"
-  },
-  "last_updated": 1700329144,
-  "levels": 2,
-  "player_marker": {
-    "offset": { "x": 0, "y": -60 },
-    "text": {
-      "text": "P{}",
-      "font_size": 20
-    }
-  },
-  "menu": {
-    "ratio": 0.3,
-    "stats": ["health", "score"]
-  },
-  "name": "My first game",
-  "players": [
-    {
-      "health": 100,
-      "lives": {
-        "args": {
-          "op": ">",
-          "property": "health",
-          "than": 0
+    "fps": 60,
+    "fullscreen": false,
+    "game_over": {
+        "bg": {
+            "fill_color": "black",
+            "outline": 3,
+            "outline_color": "white",
+            "size": {
+                "x": 400,
+                "y": 200
+            },
+            "type": "rect"
         },
-        "type": "condition"
-      },
-      "opts": {
-        "joy": {
-          "shoot": 0,
-          "slow": 0,
-          "special": 0
+        "button_style": {
+            "fill_color": "black",
+            "font_size": 32,
+            "outline": 2,
+            "outline_color": "white",
+            "size": {
+                "x": 100,
+                "y": 50
+            },
+            "type": "rect"
         },
-        "keys": {
-          "move": {
-            "down": ["S"],
-            "left": ["A"],
-            "right": ["D"],
-            "up": ["W"]
-          },
-          "other": {
-            "shoot": ["Space"],
-            "slow": ["LShift"]
-          }
+        "message": {
+            "font": "ComicSans.ttf",
+            "font_size": 48,
+            "text": "Game over"
+        },
+        "offset_x": 40,
+        "offset_y": 40,
+        "quit": "To main menu",
+        "retry": "Try again"
+    },
+    "last_updated": 1701236341,
+    "leaderboards": {
+        "date": "Date",
+        "table_bg": "none"
+    },
+    "level_transition": 1.5,
+    "levels": 2,
+    "main_menu": {
+        "bg": {
+            "fill_color": "black",
+            "outline": 3,
+            "outline_color": "white",
+            "size": {
+                "x": 400,
+                "y": 200
+            },
+            "type": "rect"
+        },
+        "button_style": {
+            "fill_color": "black",
+            "font_size": 32,
+            "outline": 2,
+            "outline_color": "white",
+            "size": {
+                "x": 100,
+                "y": 50
+            },
+            "type": "rect"
+        },
+        "leaderboards": "Leaderboards",
+        "message": {
+            "font_size": 48,
+            "text": "Hello, world!"
+        },
+        "offset": 40,
+        "quit": "Exit",
+        "settings": "Settings",
+        "start": "Start"
+    },
+    "menu": {
+        "ratio": 0.3,
+        "stats": [
+            "health",
+            "score"
+        ]
+    },
+    "name": "My first game",
+    "pause_menu": {
+        "bg": {
+            "fill_color": "black",
+            "outline": 3,
+            "outline_color": "white",
+            "size": {
+                "x": 400,
+                "y": 200
+            },
+            "type": "rect"
+        },
+        "button_style": {
+            "fill_color": "black",
+            "font_size": 32,
+            "outline": 2,
+            "outline_color": "white",
+            "size": {
+                "x": 100,
+                "y": 50
+            },
+            "type": "rect"
+        },
+        "continue": "Continue",
+        "message": {
+            "font_size": 48,
+            "text": "Pause"
+        },
+        "offset": 40,
+        "quit": "To main menu"
+    },
+    "player_marker": {
+        "offset": {
+            "x": 0,
+            "y": -60
+        },
+        "text": {
+            "font_size": 20,
+            "text": "P{}"
         }
-      },
-      "pos": {
-        "x": 267.0,
-        "y": 1013.77783203125
-      },
-      "rotation": 0,
-      "score": 0,
-      "stop_at_bounds": true,
-      "type": "player"
     },
-    {
-      "health": 100,
-      "lives": {
-        "args": {
-          "op": ">",
-          "property": "health",
-          "than": 0
+    "players": [
+        {
+            "health": 100,
+            "lives": {
+                "args": {
+                    "op": ">",
+                    "property": "health",
+                    "than": 0
+                },
+                "type": "condition"
+            },
+            "opts": {
+                "joy": {
+                    "shoot": 0,
+                    "slow": 0,
+                    "special": 0
+                },
+                "keys": {
+                    "move": {
+                        "down": [
+                            "S"
+                        ],
+                        "left": [
+                            "A"
+                        ],
+                        "right": [
+                            "D"
+                        ],
+                        "up": [
+                            "W"
+                        ]
+                    },
+                    "other": {
+                        "shoot": [
+                            "Space"
+                        ],
+                        "slow": [
+                            "LShift"
+                        ]
+                    }
+                }
+            },
+            "pos": {
+                "x": 267.0,
+                "y": 1013.77783203125
+            },
+            "rotation": 0,
+            "score": 0,
+            "stop_at_bounds": true,
+            "type": "player"
         },
-        "type": "condition"
-      },
-      "opts": {
-        "joy": {
-          "shoot": 0,
-          "slow": 0,
-          "special": 0
-        },
-        "keys": {
-          "move": {
-            "down": ["Down"],
-            "left": ["Left"],
-            "right": ["Right"],
-            "up": ["Up"]
-          },
-          "other": {
-            "shoot": ["Z"],
-            "slow": ["X"],
-            "special": ["C"]
-          }
+        {
+            "health": 100,
+            "opts": {
+                "joy": {
+                    "shoot": 0,
+                    "slow": 0,
+                    "special": 0
+                },
+                "keys": {
+                    "move": {
+                        "down": [
+                            "Down"
+                        ],
+                        "left": [
+                            "Left"
+                        ],
+                        "right": [
+                            "Right"
+                        ],
+                        "up": [
+                            "Up"
+                        ]
+                    },
+                    "other": {
+                        "shoot": [
+                            "Z"
+                        ],
+                        "slow": [
+                            "X"
+                        ],
+                        "special": [
+                            "C"
+                        ]
+                    }
+                }
+            },
+            "pos": {
+                "x": 432.0,
+                "y": 1018.77783203125
+            },
+            "rotation": 0,
+            "stop_at_bounds": true,
+            "type": "player"
         }
-      },
-      "pos": {
-        "x": 513.0,
-        "y": 1081.77783203125
-      },
-      "rotation": 0,
-      "stop_at_bounds": true,
-      "type": "player"
-    }
-  ],
-  "side_menu": {
-    "bg": "level1_bg.jpg",
-    "gap": 25.0,
-    "offset": {
-      "x": 65.0,
-      "y": 40.0
+    ],
+    "score_input": {
+        "bg": {
+            "fill_color": "black",
+            "outline": 3,
+            "outline_color": "white",
+            "size": {
+                "x": 400,
+                "y": 200
+            },
+            "type": "rect"
+        },
+        "button_style": {
+            "fill_color": "black",
+            "font_size": 32,
+            "outline": 2,
+            "outline_color": "white",
+            "size": {
+                "x": 100,
+                "y": 50
+            },
+            "type": "rect"
+        },
+        "input": {
+            "bg": {
+                "fill_color": "black",
+                "font_size": 32,
+                "outline": 2,
+                "outline_color": "white",
+                "size": {
+                    "x": 100,
+                    "y": 50
+                },
+                "type": "rect"
+            },
+            "text": {
+                "font": "ComicSans.ttf",
+                "font_size": 32
+            }
+        },
+        "message": {
+            "font_size": 48,
+            "text": "Enter your name"
+        },
+        "offset": 40,
+        "submit": "Submit"
     },
-    "player_gap": 50.0,
-    "player_label_gap": 5,
-    "player_label": {
-      "text": "Player {}",
-      "font_size": 24
+    "side_menu": {
+        "bg": "level1_bg.jpg",
+        "gap": 25.0,
+        "offset": {
+            "x": 65.0,
+            "y": 40.0
+        },
+        "player_gap": 50.0,
+        "player_label": {
+            "font_size": 24,
+            "text": "Player {}"
+        },
+        "player_label_gap": 5,
+        "size": {
+            "height": 0.8999999761581421,
+            "left": 0.6700000166893005,
+            "top": 0.05000000074505806,
+            "width": 0.27000001072883606
+        },
+        "stats": [
+            {
+                "font": "ComicSans.ttf",
+                "prefix": "Score:",
+                "size": 48,
+                "type": "counter",
+                "value": "score"
+            },
+            {
+                "empty": "player_hp_empty.png",
+                "full": "player_hp_full.png",
+                "type": "bar",
+                "value": "health",
+                "width": 200
+            }
+        ]
     },
     "size": {
-      "height": 0.8999999761581421,
-      "left": 0.6700000166893005,
-      "top": 0.05000000074505806,
-      "width": 0.27000001072883606
+        "x": 1280,
+        "y": 720
     },
-    "stats": [
-      {
-        "font": "ComicSans.ttf",
-        "prefix": "Score:",
-        "size": 48,
-        "type": "counter",
-        "value": "score"
-      },
-      {
-        "empty": "player_hp_empty.png",
-        "full": "player_hp_full.png",
-        "type": "bar",
-        "value": "health",
-        "width": 200
-      }
-    ]
-  },
-  "size": {
-    "x": 1280,
-    "y": 720
-  }
+    "win_screen": {
+        "bg": {
+            "fill_color": "black",
+            "outline": 3,
+            "outline_color": "white",
+            "size": {
+                "x": 400,
+                "y": 200
+            },
+            "type": "rect"
+        },
+        "button_style": {
+            "fill_color": "black",
+            "font_size": 32,
+            "outline": 2,
+            "outline_color": "white",
+            "size": {
+                "x": 200,
+                "y": 50
+            },
+            "type": "rect"
+        },
+        "message": {
+            "font": "ComicSans.ttf",
+            "font_size": 48,
+            "text": "You won!"
+        },
+        "offset_x": 40,
+        "offset_y": 40,
+        "quit": "To main menu",
+        "score": "Submit score"
+    }
 }

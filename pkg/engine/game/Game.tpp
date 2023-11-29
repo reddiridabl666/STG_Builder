@@ -1,4 +1,5 @@
-#include "ActionQueue.hpp"
+#pragma once
+
 #include "AssetManager.hpp"
 #include "GameBus.hpp"
 #include "GameState.hpp"
@@ -6,6 +7,7 @@
 #include "ObjectTypeFactory.hpp"
 #include "PlayerManager.hpp"
 #include "Utils.hpp"
+#include "actions/ActionQueue.hpp"
 #include "ui/GameOver.hpp"
 #include "ui/MainMenu.hpp"
 #include "ui/PauseMenu.hpp"
@@ -36,17 +38,35 @@ template <typename RTreeType>
 void Game<RTreeType>::register_events() {
     window_.add_handler("game_key_pressed", sf::Event::KeyPressed, [this](const sf::Event& event) {
         if (event.key.code == sf::Keyboard::Escape) {
-            status_ = (status_ == Status::Paused ? Status::Running : Status::Paused);
+            if (status_ == Status::Running) {
+                status_ = Status::Paused;
+                return;
+            }
+
+            if (status_ == Status::Paused) {
+                status_ = Status::Running;
+                return;
+            }
+        }
+
+        if (status_ != Status::Running) {
             return;
         }
         fire_key_event(event.key.code, "_pressed");
     });
 
     window_.add_handler("game_key_released", sf::Event::KeyReleased, [this](const sf::Event& event) {
+        if (status_ != Status::Running) {
+            return;
+        }
         fire_key_event(event.key.code, "_released");
     });
 
     GameBus::get().on(GameEvent::BulletShot, [this](const nl::json& payload) {
+        if (status_ != Status::Running) {
+            return;
+        }
+
         std::string type_name = payload.value("type", "");
 
         auto obj = objects_.at(payload.value("object", ""));
@@ -129,6 +149,10 @@ void Game<RTreeType>::fire_key_event(sf::Keyboard::Key key, const std::string& s
     auto events = player_manager_.get_events(key);
     for (auto& [event, player] : events) {
         for (auto& [name, obj] : objects_) {
+            if (!obj) {
+                continue;
+            }
+
             if (name != player->name()) {
                 types_[obj->type_name()].on_player(event + suffix, player, obj);
             } else {
@@ -140,7 +164,7 @@ void Game<RTreeType>::fire_key_event(sf::Keyboard::Key key, const std::string& s
 
 template <typename RTreeType>
 void Game<RTreeType>::start() {
-    if (status_ == Status::MainMenu) {
+    if (status_ == Status::MainMenu || status_ == Status::Preview) {
         status_ = Status::Running;
     }
 }
@@ -308,13 +332,15 @@ bool Game<RTreeType>::update_level(float delta_time) {
 
 template <typename RTreeType>
 void Game<RTreeType>::generate_players() {
-    // menu_.clear();
-    // player_manager_.clear();
-
     auto players = player_manager_.load_players(assets_, level_->field(), types_);
 
     for (auto&& player : players) {
+        player->props().reset();
         add_player(std::move(player));
+    }
+
+    for (auto& [_, obj] : objects_) {
+        add_object_to_rtree(obj);
     }
 }
 
@@ -378,12 +404,11 @@ void Game<RTreeType>::clear_dead() {
 template <typename RTreeType>
 void Game<RTreeType>::clear_non_player() {
     std::erase_if(objects_, [this](const auto& elem) {
-        if (elem.second->tag() != GameObjectTag::Player) {
-            remove_object_from_rtree(elem.second);
-            return true;
-        }
-        return false;
+        return elem.second->tag() != GameObjectTag::Player;
     });
+
+    rtree_.clear();
+    hitboxes_.clear();
 }
 
 template <typename RTreeType>

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Action.hpp"
 #include "Json.hpp"
 
