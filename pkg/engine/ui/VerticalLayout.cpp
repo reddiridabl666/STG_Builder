@@ -46,7 +46,12 @@ void VerticalLayout::init(size_t from) {
     }();
 
     container_height += offset_ * (items_.size() + 1);
-    float container_width = std::max(container_->width(), (*widest)->width() + offset_);
+    float container_width = [&] {
+        if (widest == items_.end()) {
+            return container_->width();
+        }
+        return std::max(container_->width(), (*widest)->width() + offset_);
+    }();
 
     container_->set_size(sf::Vector2f{container_width, container_height});
 

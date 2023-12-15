@@ -47,9 +47,14 @@ void ScrollableVerticalLayout::init() {
         }
         return res;
     }();
-
     container_height += offset_ * std::min(items_.size(), num_shown_);
-    float container_width = std::max(container_->width(), (*widest)->width());
+
+    float container_width = [&] {
+        if (widest == items_.end()) {
+            return container_->width();
+        }
+        return std::max(container_->width(), (*widest)->width() + offset_);
+    }();
 
     container_->set_size(sf::Vector2f{container_width, container_height});
 

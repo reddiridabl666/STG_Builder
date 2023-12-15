@@ -24,7 +24,7 @@
                 "g": 71,
                 "r": 255
             },
-            "shown": true,
+            "shown": false,
             "size": {
                 "x": 70.0,
                 "y": 70.0
@@ -180,7 +180,7 @@
             },
             "outline": 2,
             "outline_color": "green",
-            "shown": true,
+            "shown": false,
             "size": {
                 "x": 20.0,
                 "y": 25.0
@@ -319,7 +319,7 @@
             },
             "outline": 2,
             "outline_color": "red",
-            "shown": true,
+            "shown": false,
             "size": {
                 "x": 90.0,
                 "y": 95.0

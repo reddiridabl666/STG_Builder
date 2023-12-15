@@ -65,18 +65,12 @@ fs::path GameBuilder::new_game(const fs::path& game) const {
     fs::copy(path.parent_path() / assets::kFallbackImage, path / "assets/images");
     fs::copy(path.parent_path() / assets::kFallbackFont, path / "assets/fonts");
 
-    nl::json game_json{{"name", path.stem().string()},
-                       {"description", ui::GameInfo::kDefaultDesc},
-                       {"levels", 0},
-                       {"field_size", GameField::kDefaultRatio},
-                       {"players", nl::json::array({
-                                       {"image", assets::kFallbackImage},
-                                       {"size", sf::Vector2f{100, 100}},
-                                       {"speed", 300},
-                                   })},
-                       {
-                           "side_menu",
-                       }};
+    nl::json game_json = {{"name", path.stem().string()},
+                          {"description", ui::GameInfo::kDefaultDesc},
+                          {"levels", 0},
+                          {"field_size", GameField::kDefaultRatio},
+                          {"players", nl::json::array()},
+                          {"side_menu", nl::json::object()}};
 
     json::create(path / "game.json", game_json);
 

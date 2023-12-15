@@ -64,6 +64,10 @@
             "type": "enemy"
         },
         {
+            "lives": {
+                "args": {},
+                "type": ""
+            },
             "move": {
                 "args": {
                     "radius": {
@@ -77,10 +81,11 @@
                 "type": "circular"
             },
             "pos": {
-                "x": 396.0,
-                "y": 759.77783203125
+                "x": 326.0,
+                "y": 770.77783203125
             },
-            "rotation": 180,
+            "rotation": 190,
+            "stop_at_bounds": false,
             "type": "enemy"
         },
         {
@@ -132,6 +137,6 @@
             "type": "enemy"
         }
     ],
-    "last_updated": 1701249671,
+    "last_updated": 1702656669,
     "name": "The first level"
 }

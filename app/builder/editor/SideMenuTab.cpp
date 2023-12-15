@@ -208,9 +208,11 @@ struct SideMenuTabContents : public Element {
 
 Menu::Tab SideMenuTab(nl::json& json) {
     std::vector<std::unique_ptr<GameUiProps>> stats;
-    stats.reserve(json.at("stats").size());
 
-    for (auto& [_, elem] : json.at("stats").items()) {
+    auto json_stats = json.value("stats", nl::json::array());
+    stats.reserve(json_stats.size());
+
+    for (auto& [_, elem] : json_stats.items()) {
         auto ui = GameUiPropsFactory::create(elem);
         if (!ui) {
 #ifdef DEBUG

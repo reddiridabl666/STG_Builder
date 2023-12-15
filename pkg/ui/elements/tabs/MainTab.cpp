@@ -1,6 +1,7 @@
 #include "MainTab.hpp"
 
 #include "Bus.hpp"
+#include "GameField.hpp"
 #include "ImguiUtils.hpp"
 #include "Json.hpp"
 #include "Messages.hpp"
@@ -21,7 +22,8 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SideMenuOptions, size, stats)
 
 struct MainTabContents : public Element {
   public:
-    MainTabContents(nl::json& data) : data(data) {}
+    MainTabContents() = default;
+    MainTabContents(nl::json& data) : data(&data) {}
 
     void draw(const Window&) override {
         ImGui::InputText(message(Message::Name), &name);
@@ -52,15 +54,19 @@ struct MainTabContents : public Element {
     }
 
     ~MainTabContents() {
+        if (!data) {
+            return;
+        }
+
         try {
-            data["name"] = name;
-            data["description"] = description;
-            data["fullscreen"] = fullscreen;
-            data["field_size"] = field_size;
-            // data["fps"] = fps;
-            data["bg"] = bg;
-            data["size"] = size;
-            data["last_updated"] = time(nullptr);
+            data->emplace("name", name);
+            data->emplace("description", description);
+            data->emplace("fullscreen", fullscreen);
+            data->emplace("field_size", field_size);
+            // data->emplace("fps", fps);
+            data->emplace("bg", bg);
+            data->emplace("size", size);
+            data->emplace("last_updated", time(nullptr));
         } catch (std::exception& e) {
 #ifdef DEBUG
             LOG(e.what());
@@ -72,16 +78,16 @@ struct MainTabContents : public Element {
     std::string name;
     std::string description;
     sf::Vector2i size;
-    sf::FloatRect field_size;
-    int fps;
-    bool fullscreen;
+    sf::FloatRect field_size = GameField::kDefaultRatio;
+    int fps = 60;
+    bool fullscreen = false;
     std::string bg;
 
     SideMenuOptions menu;
 
-    nl::json& data;
+    nl::json* data;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(MainTabContents, name, description, size, field_size, fullscreen, bg)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MainTabContents, name, description, size, field_size, fullscreen, bg)
 };
 }  // namespace
 

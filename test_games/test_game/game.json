@@ -41,7 +41,7 @@
         "quit": "To main menu",
         "retry": "Try again"
     },
-    "last_updated": 1701249671,
+    "last_updated": 1701343991,
     "leaderboards": {
         "date": "Date",
         "table_bg": "none"
@@ -261,7 +261,7 @@
                 "outline": 2,
                 "outline_color": "white",
                 "size": {
-                    "x": 100,
+                    "x": 300,
                     "y": 50
                 },
                 "type": "rect"
